@@ -2,14 +2,21 @@
 
 import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 export function LogoutButton() {
   const router = useRouter()
+  const { showToast } = useToast()
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/login')
-    router.refresh()
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      showToast('Sesión cerrada', 'success')
+      router.push('/login')
+      router.refresh()
+    } catch {
+      showToast('Error al cerrar sesión', 'error')
+    }
   }
 
   return (

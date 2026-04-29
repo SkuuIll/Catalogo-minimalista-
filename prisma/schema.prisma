@@ -60,15 +60,18 @@ model Specification {
 }
 
 model SiteSettings {
-  id             String  @id @default(cuid())
-  siteName       String  @default("Aura")
-  siteTagline    String  @default("Minimalist")
-  heroTitle      String  @default("Curaduría de Objetos Esenciales")
-  heroSubtitle   String  @default("Un catálogo minimalista con artículos de alta calidad diseñados para el estilo de vida moderno.")
-  primaryColor   String  @default("#d4a853")
-  showCategories Boolean @default(true)
-  geminiApiKey   String?
-  whatsappNumber String? // Número para botón de contacto/compra
-  whatsappMessage String? @default("Hola, estoy interesado en el producto:")
-  updatedAt      DateTime @updatedAt
+  id              String  @id @default(cuid())
+  siteName        String  @default("Aura")
+  siteTagline     String  @default("Catálogo Premium")
+  siteDescription String  @default("Catálogo minimalista de productos premium. Explora tecnología, audio, accesorios y más.")
+  heroTitle       String  @default("Productos que importan")
+  heroSubtitle    String  @default("Selección curada de tecnología, audio, accesorios y moda. Calidad sobre cantidad.")
+  primaryColor    String  @default("#bf9b4e")
+  logoUrl         String? // Logo principal (header)
+  faviconUrl      String? // Favicon personalizado
+  showCategories  Boolean @default(true)
+  geminiApiKey    String?
+  whatsappNumber  String?
+  whatsappMessage String?  @default("Hola, quiero información sobre:")
+  updatedAt       DateTime @updatedAt
 }

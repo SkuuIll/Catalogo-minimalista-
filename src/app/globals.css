@@ -40,6 +40,11 @@
 }
 
 @layer base {
+  html {
+    /* Slightly larger base for better readability on all screens */
+    font-size: 15px;
+  }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -47,26 +52,38 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
+    /* Comfortable reading size on mobile */
+    font-size: 0.933rem; /* ~14px from 15px base */
+    line-height: 1.6;
   }
+
   ::selection { background: rgba(191, 155, 78, 0.2); color: var(--text); }
+
+  /* Prevent iOS zoom on input focus */
+  @supports (-webkit-touch-callout: none) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
 }
 
+/* ─── Glass surfaces ─────────────────────────────── */
 @layer utilities {
   .glass {
-    background: rgba(13, 13, 13, 0.85);
+    background: rgba(13, 13, 13, 0.88);
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
   }
   .glass-strong {
-    background: rgba(6, 6, 6, 0.92);
+    background: rgba(6, 6, 6, 0.94);
     backdrop-filter: blur(32px) saturate(180%);
     -webkit-backdrop-filter: blur(32px) saturate(180%);
   }
   .text-balance { text-wrap: balance; }
 }
 
-/* Scrollbar minimalista */
-::-webkit-scrollbar { width: 4px; }
+/* ─── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 8px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
@@ -77,79 +94,74 @@
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-/* Focus para accesibilidad */
+/* ─── Focus ring ─────────────────────────────────── */
 *:focus-visible {
   outline: 1.5px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Micro-interactions — Make Interfaces Feel Better */
+/* ─── Micro-interactions ─────────────────────────── */
 @media (hover: hover) {
   .hover-lift {
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .hover-lift:hover {
-    transform: translateY(-1px);
-  }
+  .hover-lift:hover { transform: translateY(-1px); }
 }
 
-/* Active press feedback */
 .active-press {
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.active-press:active {
-  transform: scale(0.97);
-}
+.active-press:active { transform: scale(0.97); }
 
-/* Transition tokens */
-.transition-smooth {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.transition-fast {
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-}
+.transition-smooth { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.transition-fast   { transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
 
-/* Performance hints */
-.will-change-opacity {
-  will-change: opacity;
-}
-.will-change-transform {
-  will-change: transform;
-}
+/* ─── Performance hints ──────────────────────────── */
+.will-change-opacity   { will-change: opacity; }
+.will-change-transform { will-change: transform; }
 
+/* ─── Smooth scroll ──────────────────────────────── */
 html { scroll-behavior: smooth; }
 
-@supports (-webkit-touch-callout: none) {
-  input, textarea, select { font-size: 16px !important; }
-}
-
-/* Animaciones profesionales */
+/* ─── Animations ─────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-up {
   animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(24px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-.animate-slide-in {
-  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
+.animate-slide-in { animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
-.animate-ping { animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+@keyframes ping    { 75%, 100% { transform: scale(2); opacity: 0; } }
+@keyframes pulse   { 50% { opacity: 0.4; } }
+@keyframes spin    { to { transform: rotate(360deg); } }
 
-@keyframes pulse { 50% { opacity: 0.4; } }
+.animate-ping  { animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
 .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-spin  { animation: spin 0.8s linear infinite; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-.animate-spin { animation: spin 0.8s linear infinite; }
-
-/* Utility */
+/* ─── Text utilities ─────────────────────────────── */
 .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ─── Product card image hover ───────────────────── */
+.product-img-hover {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .product-img-hover { transform: scale(1.04); }

@@ -4,33 +4,57 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ImageUpload } from '@/components/ImageUpload'
-import { ArrowLeft, Check, Loader2, Wand2 } from 'lucide-react'
+import { ArrowLeft, Check, Loader2, Wand2, Plus, X } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 interface Category { id: string; name: string; parentId: string | null }
 
 export default function NewProductPage() {
   const router = useRouter()
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [images, setImages] = useState<string[]>([])
-  const [specs, setSpecs] = useState<{key: string; value: string}[]>([])
-  const [formData, setFormData] = useState({ name: '', description: '', price: '', discountPrice: '', status: 'AVAILABLE', categoryId: '', featured: false })
+  const [specs, setSpecs] = useState<{ key: string; value: string }[]>([])
+  const [formData, setFormData] = useState({
+    name: '', description: '', price: '', discountPrice: '',
+    status: 'AVAILABLE', categoryId: '', featured: false,
+  })
 
-  useEffect(() => { fetch('/api/categories').then(r => r.json()).then(setCategories) }, [])
+  useEffect(() => {
+    fetch('/api/categories').then(r => r.json()).then(setCategories)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true)
+    e.preventDefault()
+    setLoading(true)
     try {
       const cat = categories.find(c => c.id === formData.categoryId)
       const res = await fetch('/api/products', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, images: images.length ? JSON.stringify(images) : null, imageUrl: images[0] || null, categoryName: cat?.name || null, specifications: specs })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          images: images.length ? JSON.stringify(images) : null,
+          imageUrl: images[0] || null,
+          categoryName: cat?.name || null,
+          specifications: specs.filter(s => s.key && s.value),
+        }),
       })
-      if (res.ok) { router.push('/admin'); router.refresh() }
-      else alert('Error al crear')
-    } catch { alert('Error de conexión') }
-    finally { setLoading(false) }
+      if (res.ok) {
+        showToast('Producto creado correctamente', 'success')
+        router.push('/admin')
+        router.refresh()
+      } else {
+        const data = await res.json()
+        showToast(data.error || 'Error al crear', 'error')
+      }
+    } catch {
+      showToast('Error de conexión', 'error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -39,82 +63,129 @@ export default function NewProductPage() {
   }
 
   const generateSpecs = async () => {
-    if (!formData.name || !formData.description) { alert('Completa nombre y descripción'); return }
+    if (!formData.name || !formData.description) {
+      showToast('Completá nombre y descripción primero', 'error')
+      return
+    }
     setGenerating(true)
     try {
       const cat = categories.find(c => c.id === formData.categoryId)
       const res = await fetch('/api/gemini/generate-specs', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productName: formData.name, description: formData.description, category: cat?.name || 'General' })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: formData.name,
+          description: formData.description,
+          category: cat?.name || 'General',
+        }),
       })
       const data = await res.json()
-      if (data.specifications) setSpecs(data.specifications)
-      else alert(data.error || 'Error generando')
-    } catch { alert('Error de conexión') }
-    finally { setGenerating(false) }
+      if (data.specifications) {
+        setSpecs(data.specifications)
+        showToast(`${data.specifications.length} especificaciones generadas`, 'success')
+      } else {
+        showToast(data.error || 'Error generando especificaciones', 'error')
+      }
+    } catch {
+      showToast('Error de conexión', 'error')
+    } finally {
+      setGenerating(false)
+    }
   }
 
   const addSpec = () => setSpecs([...specs, { key: '', value: '' }])
-  const updateSpec = (i: number, field: 'key' | 'value', val: string) => { const n = [...specs]; n[i][field] = val; setSpecs(n) }
+  const updateSpec = (i: number, field: 'key' | 'value', val: string) => {
+    const n = [...specs]; n[i][field] = val; setSpecs(n)
+  }
   const removeSpec = (i: number) => setSpecs(specs.filter((_, idx) => idx !== i))
 
   return (
     <div className="min-h-screen bg-[#060606]">
       <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-[#1a1a1a]">
-        <div className="flex items-center h-11 px-4 gap-3">
-          <Link href="/admin" className="p-1 -ml-1 text-white/30 hover:text-white/60 transition-colors">
-            <ArrowLeft className="w-4.5 h-4.5" />
+        <div className="flex items-center h-12 px-4 gap-3">
+          <Link href="/admin" className="p-1.5 -ml-1 text-white/30 hover:text-white/60 transition-colors rounded-lg">
+            <ArrowLeft className="w-4 h-4" />
           </Link>
           <h1 className="font-serif text-sm font-medium text-white">Nuevo producto</h1>
         </div>
       </header>
 
-      <div className="h-11" />
+      <div className="h-12" />
 
-      <main className="max-w-xl mx-auto py-6 px-4">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <main className="max-w-2xl mx-auto py-6 px-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+
           {/* Images */}
           <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-2xl p-5">
-            <label className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3 block">Imágenes</label>
+            <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/30 mb-3 block">
+              Imágenes del producto
+            </label>
             <ImageUpload onUpload={urls => setImages(urls)} multiple />
           </div>
 
-          {/* Info */}
+          {/* Core fields */}
           <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-2xl p-5 space-y-4">
+            <FieldLabel>Información básica</FieldLabel>
+
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Nombre</label>
-              <input type="text" name="name" required value={formData.name} onChange={handleChange}
-                className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white focus:outline-none focus:border-white/10 transition-all" />
+              <label className="field-label">Nombre del producto *</label>
+              <input
+                type="text" name="name" required
+                value={formData.name} onChange={handleChange}
+                className="field-input"
+                placeholder="Ej: Sony WH-1000XM5"
+              />
             </div>
+
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Descripción</label>
-              <textarea name="description" rows={4} required value={formData.description} onChange={handleChange}
-                className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl p-3 text-[13px] text-white focus:outline-none focus:border-white/10 transition-all resize-none" />
+              <label className="field-label">Descripción *</label>
+              <textarea
+                name="description" rows={4} required
+                value={formData.description} onChange={handleChange}
+                className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl p-3 text-sm text-white placeholder-white/15 focus:outline-none focus:border-[#bf9b4e]/30 transition-all resize-none leading-relaxed"
+                placeholder="Descripción detallada del producto…"
+              />
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Precio (ARS)</label>
-                <input type="number" name="price" step="0.01" min="0" required value={formData.price} onChange={handleChange}
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white focus:outline-none focus:border-white/10 transition-all" />
+                <label className="field-label">Precio (ARS) *</label>
+                <input
+                  type="number" name="price" step="0.01" min="0" required
+                  value={formData.price} onChange={handleChange}
+                  className="field-input"
+                  placeholder="0.00"
+                />
               </div>
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Precio anterior</label>
-                <input type="number" name="discountPrice" step="0.01" min="0" value={formData.discountPrice} onChange={handleChange} placeholder="Sin oferta"
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white placeholder-white/10 focus:outline-none focus:border-white/10 transition-all" />
+                <label className="field-label">Precio original <span className="text-white/20 normal-case font-normal">(si hay oferta)</span></label>
+                <input
+                  type="number" name="discountPrice" step="0.01" min="0"
+                  value={formData.discountPrice} onChange={handleChange}
+                  className="field-input"
+                  placeholder="Sin oferta"
+                />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Estado</label>
-                <select name="status" value={formData.status} onChange={handleChange}
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white focus:outline-none focus:border-white/10 transition-all appearance-none">
+                <label className="field-label">Estado</label>
+                <select
+                  name="status" value={formData.status} onChange={handleChange}
+                  className="field-input appearance-none"
+                >
                   <option value="AVAILABLE">Disponible</option>
                   <option value="PREORDER">Por pedido</option>
                   <option value="OUT_OF_STOCK">Sin stock</option>
                 </select>
               </div>
-              <div className="col-span-2">
-                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Categoría</label>
-                <select name="categoryId" value={formData.categoryId} onChange={handleChange}
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white focus:outline-none focus:border-white/10 transition-all appearance-none">
+              <div>
+                <label className="field-label">Categoría</label>
+                <select
+                  name="categoryId" value={formData.categoryId} onChange={handleChange}
+                  className="field-input appearance-none"
+                >
                   <option value="">Sin categoría</option>
                   {categories.filter(c => !c.parentId).map(cat => (
                     <optgroup key={cat.id} label={cat.name}>
@@ -127,45 +198,124 @@ export default function NewProductPage() {
                 </select>
               </div>
             </div>
-            <label className="flex items-center gap-2 p-3 rounded-xl bg-[#111] border border-[#1a1a1a] cursor-pointer">
-              <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} className="w-4 h-4 rounded accent-[#bf9b4e]" />
-              <span className="text-[13px] text-white/60">Producto destacado</span>
+
+            <label className="flex items-center gap-2.5 p-3 rounded-xl bg-[#111] border border-[#1a1a1a] cursor-pointer hover:border-white/10 transition-all">
+              <input
+                type="checkbox" name="featured"
+                checked={formData.featured} onChange={handleChange}
+                className="w-4 h-4 rounded accent-[#bf9b4e]"
+              />
+              <div>
+                <span className="text-sm text-white/70 font-medium">Producto destacado</span>
+                <p className="text-xs text-white/30">Aparece en la sección destacados del catálogo</p>
+              </div>
             </label>
           </div>
 
-          {/* Specs */}
+          {/* Specifications */}
           <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">Especificaciones</label>
-              <button type="button" onClick={generateSpecs} disabled={generating}
-                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-[#111] border border-[#1a1a1a] text-[11px] text-white/50 hover:text-white hover:border-white/10 transition-all disabled:opacity-50">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <FieldLabel>Especificaciones técnicas</FieldLabel>
+                <p className="text-xs text-white/25 mt-0.5">Características y datos técnicos del producto</p>
+              </div>
+              <button
+                type="button" onClick={generateSpecs} disabled={generating}
+                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-[#bf9b4e]/10 border border-[#bf9b4e]/20 text-xs text-[#bf9b4e] hover:bg-[#bf9b4e]/20 transition-all disabled:opacity-50"
+              >
                 {generating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                {generating ? 'Generando' : 'IA'}
+                {generating ? 'Generando…' : 'Generar con IA'}
               </button>
             </div>
-            <div className="space-y-2">
-              {specs.map((s, i) => (
-                <div key={i} className="flex gap-2">
-                  <input value={s.key} onChange={e => updateSpec(i, 'key', e.target.value)} placeholder="Característica"
-                    className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-10 px-3 text-[12px] text-white placeholder-white/10 focus:outline-none focus:border-white/10 transition-all" />
-                  <input value={s.value} onChange={e => updateSpec(i, 'value', e.target.value)} placeholder="Valor"
-                    className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-10 px-3 text-[12px] text-white placeholder-white/10 focus:outline-none focus:border-white/10 transition-all" />
-                  <button type="button" onClick={() => removeSpec(i)} className="px-2 text-white/15 hover:text-[#e05555] transition-colors">×</button>
-                </div>
-              ))}
-            </div>
-            <button type="button" onClick={addSpec} className="mt-3 text-[11px] text-white/30 hover:text-white/60 transition-colors">+ Agregar especificación</button>
+
+            {specs.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {specs.map((s, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <input
+                      value={s.key} onChange={e => updateSpec(i, 'key', e.target.value)}
+                      placeholder="Característica"
+                      className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-10 px-3 text-sm text-white placeholder-white/15 focus:outline-none focus:border-white/15 transition-all"
+                    />
+                    <input
+                      value={s.value} onChange={e => updateSpec(i, 'value', e.target.value)}
+                      placeholder="Valor"
+                      className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-10 px-3 text-sm text-white placeholder-white/15 focus:outline-none focus:border-white/15 transition-all"
+                    />
+                    <button
+                      type="button" onClick={() => removeSpec(i)}
+                      className="p-2 text-white/20 hover:text-[#e05555] hover:bg-[#e05555]/5 rounded-lg transition-all flex-shrink-0"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              type="button" onClick={addSpec}
+              className="inline-flex items-center gap-1.5 text-xs text-[#bf9b4e]/60 hover:text-[#bf9b4e] transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Agregar especificación
+            </button>
           </div>
 
-          <div className="flex justify-end">
-            <button type="submit" disabled={loading}
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-white text-black text-xs font-semibold hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50">
-              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-              {loading ? 'Creando' : 'Crear producto'}
+          {/* Submit */}
+          <div className="flex justify-end gap-3 pb-8">
+            <Link
+              href="/admin"
+              className="h-11 px-6 rounded-xl bg-[#111] border border-[#1a1a1a] text-sm text-white/60 hover:text-white hover:border-white/10 transition-all flex items-center"
+            >
+              Cancelar
+            </Link>
+            <button
+              type="submit" disabled={loading}
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-white text-black text-sm font-semibold hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+              {loading ? 'Creando…' : 'Crear producto'}
             </button>
           </div>
         </form>
       </main>
+
+      <style jsx global>{`
+        .field-label {
+          display: block;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: rgb(255 255 255 / 0.30);
+          margin-bottom: 6px;
+        }
+        .field-input {
+          width: 100%;
+          background: #111;
+          border: 1px solid #1a1a1a;
+          border-radius: 12px;
+          height: 44px;
+          padding: 0 12px;
+          font-size: 14px;
+          color: white;
+          outline: none;
+          transition: border-color 0.15s;
+        }
+        .field-input:focus {
+          border-color: rgb(191 155 78 / 0.30);
+        }
+        .field-input::placeholder {
+          color: rgb(255 255 255 / 0.15);
+        }
+      `}</style>
     </div>
+  )
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/30">{children}</p>
   )
 }

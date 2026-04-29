@@ -3,19 +3,19 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Lock, Mail, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, ArrowLeft } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { showToast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
     try {
       const res = await fetch('/api/auth/login', {
@@ -25,12 +25,13 @@ export default function LoginPage() {
       })
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error || 'Error de autenticación')
+        throw new Error(data.error || 'Credenciales inválidas')
       }
+      showToast('Bienvenido al panel', 'success')
       router.push('/admin')
       router.refresh()
     } catch (err: any) {
-      setError(err.message)
+      showToast(err.message || 'Error de conexión', 'error')
     } finally {
       setLoading(false)
     }
@@ -41,7 +42,7 @@ export default function LoginPage() {
       <div className="px-4 pt-4">
         <Link href="/" className="inline-flex items-center gap-1.5 text-[12px] text-white/30 hover:text-white/60 transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
-          Volver
+          Volver a la tienda
         </Link>
       </div>
 
@@ -49,20 +50,13 @@ export default function LoginPage() {
         <div className="w-full max-w-xs">
           <div className="text-center mb-8">
             <div className="w-14 h-14 rounded-2xl bg-[#111] border border-[#1a1a1a] flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-6 h-6 text-white/50" />
+              <Lock className="w-6 h-6 text-[#bf9b4e]" />
             </div>
-            <h1 className="font-serif text-xl font-medium text-white">Iniciar sesión</h1>
-            <p className="mt-1.5 text-[13px] text-white/30">Panel de administración</p>
+            <h1 className="font-serif text-xl font-medium text-white">Panel de Administración</h1>
+            <p className="mt-1.5 text-[13px] text-white/30">Ingresá tus credenciales para continuar</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-3">
-            {error && (
-              <div className="bg-[#e05555]/5 border border-[#e05555]/15 p-3 rounded-xl flex items-center gap-2.5">
-                <AlertCircle className="w-3.5 h-3.5 text-[#e05555] flex-shrink-0" />
-                <p className="text-[11px] text-[#e05555]">{error}</p>
-              </div>
-            )}
-
             <div className="space-y-2.5">
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/15" />
@@ -103,17 +97,19 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-[#060606]/20 border-t-[#060606] rounded-full animate-spin" />
-                  Autenticando
+                  Iniciando sesión...
                 </>
               ) : (
-                'Ingresar'
+                'Iniciar sesión'
               )}
             </button>
           </form>
 
-          <p className="text-center mt-6 text-[11px] text-white/35">
-            Acceso exclusivo para administradores
-          </p>
+          <div className="mt-8 pt-6 border-t border-[#1a1a1a] text-center">
+            <Link href="/" className="text-[11px] text-white/25 hover:text-white/40 transition-colors">
+              ← Volver al catálogo
+            </Link>
+          </div>
         </div>
       </div>
     </div>

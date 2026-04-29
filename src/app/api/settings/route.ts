@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const settings = await prisma.siteSettings.findFirst()
     return NextResponse.json(settings)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error al obtener configuración' }, { status: 500 })
   }
 }
@@ -17,15 +17,17 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json()
     const existing = await prisma.siteSettings.findFirst()
-
     const settings = await prisma.siteSettings.upsert({
       where: { id: existing?.id || 'default' },
       update: {
         siteName: body.siteName,
         siteTagline: body.siteTagline,
+        siteDescription: body.siteDescription,
         heroTitle: body.heroTitle,
         heroSubtitle: body.heroSubtitle,
         primaryColor: body.primaryColor,
+        logoUrl: body.logoUrl,
+        faviconUrl: body.faviconUrl,
         showCategories: body.showCategories,
         geminiApiKey: body.geminiApiKey,
         whatsappNumber: body.whatsappNumber,
@@ -35,9 +37,12 @@ export async function PUT(request: Request) {
         id: 'default',
         siteName: body.siteName,
         siteTagline: body.siteTagline,
+        siteDescription: body.siteDescription,
         heroTitle: body.heroTitle,
         heroSubtitle: body.heroSubtitle,
         primaryColor: body.primaryColor,
+        logoUrl: body.logoUrl,
+        faviconUrl: body.faviconUrl,
         showCategories: body.showCategories ?? true,
         geminiApiKey: body.geminiApiKey,
         whatsappNumber: body.whatsappNumber,
@@ -45,7 +50,7 @@ export async function PUT(request: Request) {
       },
     })
     return NextResponse.json(settings)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error al guardar configuración' }, { status: 500 })
   }
 }

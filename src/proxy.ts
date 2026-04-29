@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const session = request.cookies.get('session')?.value
   const pathname = request.nextUrl.pathname
+
+  // Allow login and logout without session
+  if (pathname === '/api/auth/login' || pathname === '/api/auth/logout') {
+    return NextResponse.next()
+  }
 
   // API calls: solo verificar que exista cookie, la validación real se hace en las API routes
   if (pathname.startsWith('/api/')) {
@@ -46,6 +51,7 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/login',
+    '/api/auth/:path*',
     '/api/products/:path*',
     '/api/categories/:path*',
     '/api/upload/:path*',

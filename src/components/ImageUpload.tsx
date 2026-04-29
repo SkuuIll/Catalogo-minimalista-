@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, Link2, X, Images, Loader2, Check, Trash2 } from 'lucide-react'
+import { Upload, Link2, X, Images, Loader2 } from 'lucide-react'
+import { useToast } from './Toast'
 
 export function ImageUpload({
   onUpload,
@@ -12,12 +13,40 @@ export function ImageUpload({
   defaultImages?: string[]
   multiple?: boolean
 }) {
+  const { showToast } = useToast()
   const [previewUrls, setPreviewUrls] = useState<string[]>(defaultImages.filter(Boolean))
   const [uploading, setUploading] = useState<Set<number>>(new Set())
   const [dragOver, setDragOver] = useState(false)
   const [mode, setMode] = useState<'upload' | 'url'>('upload')
   const [urlInput, setUrlInput] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const uploadFile = async (file: File, index: number) => {
+    setUploading(prev => new Set(prev).add(index))
+    try {
+      const fd = new FormData()
+      fd.append('files', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: fd, credentials: 'include' })
+      const data = await res.json()
+      if (data.success && data.url) {
+        setPreviewUrls(prev => {
+          const copy = [...prev]
+          copy[index] = data.url
+          onUpload(copy.filter(u => !u.startsWith('blob:')))
+          return copy
+        })
+      } else {
+        showToast(data.error || 'Error al subir', 'error')
+      }
+    } catch (err) {
+      showToast('Error de conexión', 'error')
+    }
+    setUploading(prev => {
+      const next = new Set(prev)
+      next.delete(index)
+      return next
+    })
+  }
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
@@ -26,7 +55,7 @@ export function ImageUpload({
       if (f.size > 5 * 1024 * 1024) return false
       return true
     })
-    if (!validFiles.length) { alert('Solo JPG/PNG/WEBP, máx 5MB'); return }
+    if (!validFiles.length) { showToast('Solo JPG/PNG/WEBP, máx 5MB', 'error'); return }
 
     const startIdx = previewUrls.length
     const localUrls = validFiles.map(f => URL.createObjectURL(f))
@@ -34,27 +63,7 @@ export function ImageUpload({
 
     for (let i = 0; i < validFiles.length; i++) {
       const idx = startIdx + i
-      setUploading(prev => new Set(prev).add(idx))
-      try {
-        const fd = new FormData()
-        fd.append('file', validFiles[i])
-        const res = await fetch('/api/upload', { method: 'POST', body: fd, credentials: 'include' })
-        const data = await res.json()
-        if (data.success) {
-          setPreviewUrls(prev => {
-            const copy = [...prev]
-            copy[idx] = data.url
-            // Notificar URLs finales
-            onUpload(copy.filter(u => !u.startsWith('blob:')))
-            return copy
-          })
-        }
-      } catch { /* keep local preview */ }
-      setUploading(prev => {
-        const next = new Set(prev)
-        next.delete(idx)
-        return next
-      })
+      uploadFile(validFiles[i], idx)
     }
     if (inputRef.current) inputRef.current.value = ''
   }
@@ -63,6 +72,10 @@ export function ImageUpload({
   const handleDrop = (e: React.DragEvent) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files) }
 
   const removeImage = (index: number) => {
+    const urlToRemove = previewUrls[index]
+    if (urlToRemove && !urlToRemove.startsWith('blob:')) {
+      // Optionally notify server to delete file
+    }
     setPreviewUrls(prev => {
       const next = prev.filter((_, i) => i !== index)
       onUpload(next.filter(u => !u.startsWith('blob:')))
@@ -72,8 +85,9 @@ export function ImageUpload({
 
   const addUrlImage = () => {
     if (!urlInput.trim()) return
+    const newUrl = urlInput.trim()
     setPreviewUrls(prev => {
-      const next = multiple ? [...prev, urlInput.trim()] : [urlInput.trim()]
+      const next = multiple ? [...prev, newUrl] : [newUrl]
       onUpload(next)
       return next
     })
@@ -82,23 +96,20 @@ export function ImageUpload({
 
   return (
     <div className="space-y-3">
-      {/* Preview grid con botones de borrar siempre visibles */}
       {previewUrls.length > 0 && (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
           {previewUrls.map((url, index) => {
             const isBlob = url.startsWith('blob:')
             const isLoading = uploading.has(index)
             return (
-              <div key={`${url}-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-[#111] border border-[#1a1a1a]">
+              <div key={`${url}-${index}`} className="relative aspect-square rounded-xl overflow-hidden bg-[#111] border border-[#1a1a1a]">
                 <img src={url} alt="" className="w-full h-full object-cover" />
-                {/* Loading overlay */}
                 {(isBlob || isLoading) && (
                   <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1">
                     <Loader2 className="w-5 h-5 text-white animate-spin" />
                     <span className="text-[10px] text-white/60">Subiendo</span>
                   </div>
                 )}
-                {/* Botón borrar siempre visible */}
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); removeImage(index) }}
@@ -106,7 +117,6 @@ export function ImageUpload({
                 >
                   <X className="w-3 h-3" />
                 </button>
-                {/* Badge de índice */}
                 <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/70 text-[9px] text-white/60 font-medium">
                   {index + 1}
                 </span>
@@ -116,7 +126,6 @@ export function ImageUpload({
         </div>
       )}
 
-      {/* Modo tabs */}
       <div className="flex gap-1 p-1 bg-[#111] rounded-xl w-fit">
         <button
           type="button"

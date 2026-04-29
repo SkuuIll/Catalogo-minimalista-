@@ -47,7 +47,7 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt: string }
             {images.map((src, i) => (
               <div
                 key={src}
-                className="absolute inset-0 transition-transform duration-400 ease-out"
+                className="absolute inset-0 transition-transform duration-500 ease-out"
                 style={{ transform: `translateX(${(i - current) * 100}%)` }}
               >
                 <img src={src} alt={`${alt} ${i + 1}`} className="w-full h-full object-cover" draggable={false} />
