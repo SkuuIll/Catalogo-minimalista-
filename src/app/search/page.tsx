@@ -93,8 +93,8 @@ export default function SearchPage() {
                           <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-white/10" /></div>
                         )}
                       </div>
-                      <h3 className="text-[11px] font-medium text-white/90 line-clamp-1">{p.name}</h3>
-                      <span className="text-[11px] font-semibold text-[#bf9b4e] mt-0.5">${p.price.toFixed(2)}</span>
+                      <h3 className="text-[12px] font-medium text-white/90 line-clamp-1">{p.name}</h3>
+                      <span className="text-[12px] font-semibold text-[#bf9b4e] mt-0.5">${p.price.toFixed(2)}</span>
                     </Link>
                   )
                 })}
@@ -140,8 +140,8 @@ export default function SearchPage() {
                           <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-white/10" /></div>
                         )}
                       </div>
-                      <h3 className="text-[11px] font-medium text-white/90 line-clamp-1">{p.name}</h3>
-                      <span className="text-[11px] font-semibold text-[#bf9b4e] mt-0.5">${p.price.toFixed(2)}</span>
+                      <h3 className="text-[12px] font-medium text-white/90 line-clamp-1">{p.name}</h3>
+                      <span className="text-[12px] font-semibold text-[#bf9b4e] mt-0.5">${p.price.toFixed(2)}</span>
                     </Link>
                   )
                 })}

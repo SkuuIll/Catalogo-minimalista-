@@ -156,7 +156,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <div className="flex items-center gap-3 mt-2">
             <span className="text-xl font-bold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
             {product.featured && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-[#bf9b4e]/70">
+              <span className="inline-flex items-center gap-1 text-[12px] text-[#bf9b4e]/70">
                 <Star className="w-3 h-3 fill-[#bf9b4e] text-[#bf9b4e]" />
                 Destacado
               </span>

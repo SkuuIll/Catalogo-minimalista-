@@ -47,7 +47,7 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
       {/* Featured */}
       {!search && !activeCategory && featured.length > 0 && (
         <section className="px-4 pt-4 pb-1">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35 mb-3">Destacados</h2>
+          <h2 className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/35 mb-3">Destacados</h2>
           <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-2">
             {featured.map(product => {
               let imgs: string[] = []
@@ -82,7 +82,7 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
       {!search && (
         <section className="px-4 py-4">
           <div className="flex justify-between items-end mb-3">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">Categorías</h2>
+            <h2 className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/35">Categorías</h2>
             {activeCategory && (
               <button onClick={() => { setActiveCategory(null); setActiveSubcategory(null) }} className="text-[11px] text-[#bf9b4e]/70 hover:text-[#bf9b4e] transition-colors">
                 Ver todo
@@ -130,7 +130,7 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
       {/* Products grid */}
       <section className="px-4 py-4">
         <div className="flex justify-between items-end mb-3">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">
+          <h2 className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/35">
             {search ? 'Resultados' : activeCategory ? activeCat?.name : 'Catálogo'}
           </h2>
           <span className="text-[10px] text-white/35">{filtered.length} productos</span>
@@ -198,10 +198,10 @@ function ProductCard({ product }: { product: any }) {
         )}
       </div>
 
-      <h3 className="text-[11px] font-medium text-white/90 leading-tight line-clamp-1">{product.name}</h3>
+      <h3 className="text-[12px] font-medium text-white/90 leading-tight line-clamp-1">{product.name}</h3>
       <div className="flex items-center justify-between mt-0.5">
-        <span className="text-[11px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
-        {product.category && <span className="text-[9px] text-white/35">{product.category.name}</span>}
+        <span className="text-[12px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+        {product.category && <span className="text-[10px] text-white/35">{product.category.name}</span>}
       </div>
     </Link>
   )
