@@ -5,31 +5,29 @@ import { ImageCarousel } from '@/components/ImageCarousel'
 import { BottomNav } from '@/components/BottomNav'
 import {
   ArrowLeft, Share2, Heart, Star, Package,
-  Check, Shield, Truck, RotateCcw, ChevronRight
+  Check, Shield, Truck, RotateCcw, ChevronRight,
+  MessageCircle
 } from 'lucide-react'
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const product = await prisma.product.findUnique({
-    where: { id },
-    include: {
-      category: { include: { parent: true } },
-      specifications: true,
-    }
-  })
+  const [product, settings] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: { include: { parent: true } },
+        specifications: true,
+      }
+    }),
+    prisma.siteSettings.findFirst()
+  ])
 
   if (!product) notFound()
 
-  // Parsear múltiples imágenes
   let images: string[] = []
   try {
-    if (product.images) {
-      images = JSON.parse(product.images)
-    }
-  } catch {
-    images = []
-  }
-  // Fallback a imagen legacy
+    if (product.images) images = JSON.parse(product.images)
+  } catch {}
   if (images.length === 0) {
     const legacy = product.imagePath || product.imageUrl
     if (legacy) images = [legacy]
@@ -39,23 +37,27 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (product.category?.parent) breadcrumb.push(product.category.parent.name)
   if (product.category) breadcrumb.push(product.category.name)
 
-  // Productos relacionados (misma categoría)
   const related = await prisma.product.findMany({
     where: { categoryId: product.categoryId, id: { not: product.id } },
     take: 6,
     include: { category: true },
   })
 
+  // WhatsApp link
+  const waNumber = settings?.whatsappNumber?.replace(/\D/g, '')
+  const waMessage = encodeURIComponent(`${settings?.whatsappMessage || 'Hola, estoy interesado en el producto:'} ${product.name} ($${product.price.toFixed(2)})`)
+  const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waMessage}` : null
+
+  const isAvailable = product.status === 'AVAILABLE'
+  const isPreorder = product.status === 'PREORDER'
+  const isOutOfStock = product.status === 'OUT_OF_STOCK'
+
   return (
     <div className="min-h-screen bg-background text-on-surface sm:pb-0 pb-24">
-      {/* Header flotante */}
       <header className="fixed top-0 left-0 right-0 z-50">
         <div className="glass-strong border-b border-white/[0.06]">
           <div className="flex items-center justify-between h-12 px-4">
-            <Link
-              href="/"
-              className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors"
-            >
+            <Link href="/" className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors">
               <ArrowLeft className="w-4 h-4 text-white" />
             </Link>
             <div className="flex gap-2">
@@ -70,14 +72,12 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         </div>
       </header>
 
-      {/* Carrusel de imágenes */}
       <div>
         <ImageCarousel images={images} alt={product.name} />
       </div>
 
       <main className="px-4 sm:px-6 max-w-3xl mx-auto -mt-4 relative z-10">
         <div className="glass-strong rounded-2xl sm:rounded-3xl border border-white/[0.06] p-4 sm:p-6 shadow-2xl shadow-black/20">
-          {/* Breadcrumb */}
           {breadcrumb.length > 0 && (
             <div className="flex items-center gap-1.5 mb-3 text-[11px] text-on-surface-variant/50">
               {breadcrumb.map((item, i) => (
@@ -89,7 +89,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
           )}
 
-          {/* Nombre y precio */}
+          {/* Status badge */}
+          <div className="mb-3">
+            <StatusBadge status={product.status} />
+          </div>
+
           <div className="flex items-start justify-between gap-4 mb-3">
             <h1 className="font-serif text-xl sm:text-2xl font-medium text-on-surface leading-tight">
               {product.name}
@@ -105,19 +109,16 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
 
-          {/* Descripción */}
           <p className="text-sm text-on-surface-variant/70 leading-relaxed mb-5">
             {product.description}
           </p>
 
-          {/* Badges */}
           <div className="flex flex-wrap gap-2 mb-6">
             <Badge icon={<Truck className="w-3 h-3" />} text="Envío gratis" />
             <Badge icon={<Shield className="w-3 h-3" />} text="Garantía" />
             <Badge icon={<RotateCcw className="w-3 h-3" />} text="30 días devolución" />
           </div>
 
-          {/* Especificaciones */}
           {product.specifications.length > 0 && (
             <div className="mb-6">
               <h2 className="text-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
@@ -135,7 +136,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
           )}
 
-          {/* Productos relacionados */}
           {related.length > 0 && (
             <div>
               <h2 className="text-sm font-semibold text-on-surface mb-3">También te puede gustar</h2>
@@ -169,15 +169,32 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 sm:hidden">
         <div className="glass-strong border-t border-white/[0.06] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div>
               <span className="text-[10px] text-on-surface-variant/50">Total</span>
               <div className="text-lg font-bold text-primary">${product.price.toFixed(2)}</div>
             </div>
-            <button className="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl text-sm font-semibold shadow-lg shadow-primary/20 active:scale-95 transition-transform">
-              <Check className="w-4 h-4" />
-              Contactar
-            </button>
+            <div className="flex gap-2">
+              {isOutOfStock ? (
+                <button disabled className="flex items-center gap-2 px-5 py-3 bg-surface-container text-on-surface-variant rounded-xl text-sm font-semibold cursor-not-allowed">
+                  Agotado
+                </button>
+              ) : (
+                <>
+                  {waLink && (
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-5 py-3 bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-emerald-500/20 active:scale-95 transition-transform"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      {isPreorder ? 'Pedir por WhatsApp' : 'Comprar'}
+                    </a>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -193,5 +210,25 @@ function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
       <span className="text-primary">{icon}</span>
       <span className="text-[10px] font-medium text-on-surface-variant">{text}</span>
     </div>
+  )
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles = {
+    AVAILABLE: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20',
+    PREORDER: 'bg-amber-400/10 text-amber-400 border-amber-400/20',
+    OUT_OF_STOCK: 'bg-error/10 text-error border-error/20',
+  }
+  const labels = {
+    AVAILABLE: 'Disponible',
+    PREORDER: 'Por pedido',
+    OUT_OF_STOCK: 'Sin stock',
+  }
+  const style = styles[status as keyof typeof styles] || styles.AVAILABLE
+  const label = labels[status as keyof typeof labels] || status
+  return (
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium border ${style}`}>
+      {label}
+    </span>
   )
 }

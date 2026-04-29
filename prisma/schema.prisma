@@ -37,6 +37,7 @@ model Product {
   name           String
   description    String
   price          Float
+  status         String          @default("AVAILABLE") // AVAILABLE | PREORDER | OUT_OF_STOCK
   images         String?         // JSON array of image URLs/paths
   imageUrl       String?         // legacy single image
   imagePath      String?         // legacy single image
@@ -66,5 +67,7 @@ model SiteSettings {
   primaryColor   String  @default("#d4a853")
   showCategories Boolean @default(true)
   geminiApiKey   String?
+  whatsappNumber String? // Número para botón de contacto/compra
+  whatsappMessage String? @default("Hola, estoy interesado en el producto:")
   updatedAt      DateTime @updatedAt
 }

@@ -25,6 +25,8 @@ export async function PUT(request: Request) {
         primaryColor: body.primaryColor,
         showCategories: body.showCategories,
         geminiApiKey: body.geminiApiKey,
+        whatsappNumber: body.whatsappNumber,
+        whatsappMessage: body.whatsappMessage,
       },
       create: {
         id: 'default',
@@ -35,6 +37,8 @@ export async function PUT(request: Request) {
         primaryColor: body.primaryColor,
         showCategories: body.showCategories ?? true,
         geminiApiKey: body.geminiApiKey,
+        whatsappNumber: body.whatsappNumber,
+        whatsappMessage: body.whatsappMessage,
       },
     })
     return NextResponse.json(settings)

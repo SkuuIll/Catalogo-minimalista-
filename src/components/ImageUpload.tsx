@@ -12,7 +12,7 @@ export function ImageUpload({
   defaultImages?: string[]
   multiple?: boolean
 }) {
-  const [previewUrls, setPreviewUrls] = useState<string[]>(defaultImages)
+  const [previewUrls, setPreviewUrls] = useState<string[]>(defaultImages.filter(Boolean))
   const [loading, setLoading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [mode, setMode] = useState<'upload' | 'url'>('upload')

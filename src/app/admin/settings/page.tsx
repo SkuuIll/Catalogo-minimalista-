@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft, Settings, Palette, Type, Eye, Loader2,
-  Check, Globe, Paintbrush, KeyRound, Sparkles
+  Check, Globe, Paintbrush, KeyRound, Sparkles,
+  MessageCircle, Phone
 } from 'lucide-react'
 
 interface SiteSettings {
@@ -16,6 +17,8 @@ interface SiteSettings {
   primaryColor: string
   showCategories: boolean
   geminiApiKey: string
+  whatsappNumber: string
+  whatsappMessage: string
 }
 
 export default function SettingsPage() {
@@ -29,6 +32,8 @@ export default function SettingsPage() {
     primaryColor: '#d4a853',
     showCategories: true,
     geminiApiKey: '',
+    whatsappNumber: '',
+    whatsappMessage: 'Hola, estoy interesado en el producto:',
   })
 
   useEffect(() => {
@@ -44,6 +49,8 @@ export default function SettingsPage() {
             primaryColor: data.primaryColor || '#d4a853',
             showCategories: data.showCategories ?? true,
             geminiApiKey: data.geminiApiKey || '',
+            whatsappNumber: data.whatsappNumber || '',
+            whatsappMessage: data.whatsappMessage || 'Hola, estoy interesado en el producto:',
           })
         }
       })
@@ -179,6 +186,43 @@ export default function SettingsPage() {
                   onChange={e => setSettings({ ...settings, heroSubtitle: e.target.value })}
                   className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface resize-none focus:outline-none focus:border-primary/40 transition-all"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* WhatsApp */}
+          <div className="glass p-5 sm:p-6 rounded-xl sm:rounded-2xl border border-white/[0.06]">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <MessageCircle className="w-4 h-4 text-emerald-500" />
+              </div>
+              <h2 className="font-serif text-base text-on-surface">WhatsApp</h2>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <Phone className="w-3 h-3" /> Número de WhatsApp
+                </label>
+                <input
+                  type="tel"
+                  value={settings.whatsappNumber}
+                  onChange={e => setSettings({ ...settings, whatsappNumber: e.target.value })}
+                  placeholder="+54 9 11 1234 5678"
+                  className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-emerald-500/40 transition-all"
+                />
+                <p className="text-[11px] text-on-surface-variant/40 mt-1.5">Incluye código de país. Ej: +5491112345678</p>
+              </div>
+              <div>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <MessageCircle className="w-3 h-3" /> Mensaje predeterminado
+                </label>
+                <input
+                  value={settings.whatsappMessage}
+                  onChange={e => setSettings({ ...settings, whatsappMessage: e.target.value })}
+                  placeholder="Hola, estoy interesado en el producto:"
+                  className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-emerald-500/40 transition-all"
+                />
+                <p className="text-[11px] text-on-surface-variant/40 mt-1.5">Se añadirá automáticamente el nombre y precio del producto.</p>
               </div>
             </div>
           </div>
