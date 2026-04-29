@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { decrypt } from '@/lib/auth'
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const session = request.cookies.get('session')?.value
 
-  // Protect both /admin and /api/products
+  // Proteger /admin y operaciones destructivas en /api/products
   if (
     request.nextUrl.pathname.startsWith('/admin') ||
     (request.nextUrl.pathname.startsWith('/api/products') && request.method !== 'GET')

@@ -8,7 +8,7 @@ export async function GET() {
     })
     return NextResponse.json(products)
   } catch (error) {
-    return NextResponse.json({ error: 'Error fetching products' }, { status: 500 })
+    return NextResponse.json({ error: 'Error al obtener los productos' }, { status: 500 })
   }
 }
 
@@ -26,6 +26,6 @@ export async function POST(request: Request) {
     })
     return NextResponse.json(product)
   } catch (error) {
-    return NextResponse.json({ error: 'Error creating product' }, { status: 500 })
+    return NextResponse.json({ error: 'Error al crear el producto' }, { status: 500 })
   }
 }

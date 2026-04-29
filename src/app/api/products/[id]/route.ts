@@ -12,6 +12,6 @@ export async function DELETE(
     })
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: 'Error deleting product' }, { status: 500 })
+    return NextResponse.json({ error: 'Error al eliminar el producto' }, { status: 500 })
   }
 }

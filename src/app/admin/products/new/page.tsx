@@ -30,11 +30,11 @@ export default function NewProductPage() {
         router.push('/admin')
         router.refresh()
       } else {
-        alert('Error creating artifact')
+        alert('Error al crear el producto')
       }
     } catch (error) {
       console.error(error)
-      alert('Connection error')
+      alert('Error de conexión')
     } finally {
       setLoading(false)
     }
@@ -45,44 +45,44 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-on-surface py-16 px-5 sm:px-16">
+    <div className="min-h-screen bg-background text-on-surface py-10 sm:py-16 px-4 sm:px-6 lg:px-16">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-12 flex items-center justify-between">
-          <h1 className="font-serif text-[32px] font-medium leading-[1.2] text-on-surface">New Artifact</h1>
-          <Link href="/admin" className="text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant hover:text-primary transition-colors">
-            Cancel
+        <div className="mb-8 sm:mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h1 className="font-serif text-2xl sm:text-[32px] font-medium leading-[1.2] text-on-surface">Nuevo Producto</h1>
+          <Link href="/admin" className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant hover:text-primary transition-colors">
+            Cancelar
           </Link>
         </div>
 
-        <div className="glass p-8 sm:p-12 rounded-lg border border-white/5">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="glass p-6 sm:p-8 lg:p-12 rounded-xl border border-white/5">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             <div>
-              <label className="block text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Artifact Name</label>
+              <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Nombre del Producto</label>
               <input
                 type="text"
                 name="name"
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-[18px] text-on-surface transition-colors"
+                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base sm:text-lg text-on-surface transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Description</label>
+              <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Descripción</label>
               <textarea
                 name="description"
                 rows={4}
                 required
                 value={formData.description}
                 onChange={handleChange}
-                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-[16px] text-on-surface transition-colors resize-none"
+                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base text-on-surface transition-colors resize-none"
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-y-8 gap-x-8 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-y-6 sm:gap-y-8 gap-x-8 sm:grid-cols-2">
               <div>
-                <label className="block text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Price (USD)</label>
+                <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Precio (USD)</label>
                 <input
                   type="number"
                   name="price"
@@ -91,41 +91,41 @@ export default function NewProductPage() {
                   required
                   value={formData.price}
                   onChange={handleChange}
-                  className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-[18px] font-serif text-on-surface transition-colors"
+                  className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base sm:text-lg font-serif text-on-surface transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Category</label>
+                <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Categoría</label>
                 <input
                   type="text"
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-[16px] text-on-surface transition-colors"
+                  className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base text-on-surface transition-colors"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Image URL</label>
+              <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">URL de la Imagen</label>
               <input
                 type="url"
                 name="imageUrl"
                 value={formData.imageUrl}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-[16px] text-on-surface transition-colors placeholder-on-surface-variant/50"
+                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base text-on-surface transition-colors placeholder-on-surface-variant/50"
               />
             </div>
 
-            <div className="pt-8">
-              <div className="flex justify-end gap-6">
+            <div className="pt-4 sm:pt-8">
+              <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full sm:w-auto inline-flex justify-center py-4 px-8 border border-transparent rounded bg-gradient-to-r from-primary-container to-[#8E6E37] text-[14px] font-semibold tracking-[0.05em] text-on-primary hover:opacity-90 transition-all disabled:opacity-50"
+                  className="w-full sm:w-auto inline-flex justify-center py-3.5 sm:py-4 px-6 sm:px-8 border border-transparent rounded-lg bg-gradient-to-r from-primary-container to-[#8E6E37] text-sm font-semibold tracking-[0.05em] text-on-primary hover:opacity-90 transition-all disabled:opacity-50"
                 >
-                  {loading ? 'Registering...' : 'Register Artifact'}
+                  {loading ? 'Registrando...' : 'Registrar Producto'}
                 </button>
               </div>
             </div>

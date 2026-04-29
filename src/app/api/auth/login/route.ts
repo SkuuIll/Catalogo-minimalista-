@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { email, password } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 })
+      return NextResponse.json({ error: 'Credenciales incompletas' }, { status: 400 })
     }
 
     const user = await prisma.user.findUnique({
@@ -17,30 +17,29 @@ export async function POST(request: Request) {
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+      return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 })
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+      return NextResponse.json({ error: 'Credenciales inválidas' }, { status: 401 })
     }
 
     const session = await encrypt({ id: user.id, email: user.email })
 
-    // Set cookie
     const cookieStore = await cookies()
     cookieStore.set('session', session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24,
     })
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Login error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error de login:', error)
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }

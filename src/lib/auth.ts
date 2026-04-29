@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose'
 
-const secretKey = process.env.JWT_SECRET || 'super-secret-key-12345'
+const secretKey = process.env.JWT_SECRET || 'fallback-secret-key-12345'
 const key = new TextEncoder().encode(secretKey)
 
 export async function encrypt(payload: any) {
