@@ -38,7 +38,7 @@ export function ImageUpload({
       try {
         const fd = new FormData()
         fd.append('file', validFiles[i])
-        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+        const res = await fetch('/api/upload', { method: 'POST', body: fd, credentials: 'include' })
         const data = await res.json()
         if (data.success) {
           setPreviewUrls(prev => {
