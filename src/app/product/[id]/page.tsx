@@ -5,7 +5,7 @@ import { ImageCarousel } from '@/components/ImageCarousel'
 import { BottomNav } from '@/components/BottomNav'
 import {
   ArrowLeft, Share2, Heart, Star, Package,
-  Check, Shield, Truck, RotateCcw
+  Check, Shield, Truck, RotateCcw, ChevronRight
 } from 'lucide-react'
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,16 +20,35 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   if (!product) notFound()
 
-  const images = product.images ? JSON.parse(product.images) : []
-  const allImages = images.length > 0 ? images : [product.imagePath || product.imageUrl].filter(Boolean)
+  // Parsear múltiples imágenes
+  let images: string[] = []
+  try {
+    if (product.images) {
+      images = JSON.parse(product.images)
+    }
+  } catch {
+    images = []
+  }
+  // Fallback a imagen legacy
+  if (images.length === 0) {
+    const legacy = product.imagePath || product.imageUrl
+    if (legacy) images = [legacy]
+  }
 
   const breadcrumb = []
   if (product.category?.parent) breadcrumb.push(product.category.parent.name)
   if (product.category) breadcrumb.push(product.category.name)
 
+  // Productos relacionados (misma categoría)
+  const related = await prisma.product.findMany({
+    where: { categoryId: product.categoryId, id: { not: product.id } },
+    take: 6,
+    include: { category: true },
+  })
+
   return (
-    <div className="min-h-screen bg-background text-on-surface sm:pb-0 pb-20">
-      {/* Header tipo app */}
+    <div className="min-h-screen bg-background text-on-surface sm:pb-0 pb-24">
+      {/* Header flotante */}
       <header className="fixed top-0 left-0 right-0 z-50">
         <div className="glass-strong border-b border-white/[0.06]">
           <div className="flex items-center justify-between h-12 px-4">
@@ -52,8 +71,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       </header>
 
       {/* Carrusel de imágenes */}
-      <div className="pt-0">
-        <ImageCarousel images={allImages as string[]} alt={product.name} />
+      <div>
+        <ImageCarousel images={images} alt={product.name} />
       </div>
 
       <main className="px-4 sm:px-6 max-w-3xl mx-auto -mt-4 relative z-10">
@@ -63,7 +82,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             <div className="flex items-center gap-1.5 mb-3 text-[11px] text-on-surface-variant/50">
               {breadcrumb.map((item, i) => (
                 <span key={i} className="flex items-center gap-1.5">
-                  {i > 0 && <span>/</span>}
+                  {i > 0 && <ChevronRight className="w-3 h-3" />}
                   <span>{item}</span>
                 </span>
               ))}
@@ -79,7 +98,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               <span className="text-xl sm:text-2xl font-bold text-primary">${product.price.toFixed(2)}</span>
               {product.featured && (
                 <div className="flex items-center justify-end gap-1 mt-1">
-                  <Star className="w-3 h-3 text-primary" />
+                  <Star className="w-3 h-3 text-primary fill-primary" />
                   <span className="text-[10px] text-primary font-medium">Destacado</span>
                 </div>
               )}
@@ -95,12 +114,12 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <div className="flex flex-wrap gap-2 mb-6">
             <Badge icon={<Truck className="w-3 h-3" />} text="Envío gratis" />
             <Badge icon={<Shield className="w-3 h-3" />} text="Garantía" />
-            <Badge icon={<RotateCcw className="w-3 h-3" />} text="Devolución 30 días" />
+            <Badge icon={<RotateCcw className="w-3 h-3" />} text="30 días devolución" />
           </div>
 
           {/* Especificaciones */}
           {product.specifications.length > 0 && (
-            <div className="mb-5">
+            <div className="mb-6">
               <h2 className="text-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
                 <Package className="w-4 h-4 text-primary" />
                 Especificaciones
@@ -112,6 +131,35 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                     <span className="text-xs font-medium text-on-surface text-right">{spec.value}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Productos relacionados */}
+          {related.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-on-surface mb-3">También te puede gustar</h2>
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+                {related.map((p) => {
+                  let pImages: string[] = []
+                  try { if (p.images) pImages = JSON.parse(p.images) } catch {}
+                  const pImg = pImages[0] || p.imagePath || p.imageUrl
+                  return (
+                    <Link key={p.id} href={`/product/${p.id}`} className="flex-shrink-0 w-28 sm:w-32 group">
+                      <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface ring-1 ring-white/[0.04] mb-1.5">
+                        {pImg ? (
+                          <img src={pImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-surface-container">
+                            <Package className="w-5 h-5 text-on-surface-variant/20" />
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="text-[11px] font-medium text-on-surface line-clamp-1">{p.name}</h3>
+                      <span className="text-[11px] text-primary font-semibold">${p.price.toFixed(2)}</span>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           )}

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { ImageUpload } from '@/components/ImageUpload'
 import {
   ArrowLeft, Check, Loader2, Package, Star, Hash, Wand2,
-  Sparkles, ChevronDown
+  Sparkles
 } from 'lucide-react'
 
 interface Category {
@@ -20,7 +20,7 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
-  const [images, setImages] = useState<string[]>([])
+  const [productImages, setProductImages] = useState<string[]>([])
   const [specs, setSpecs] = useState<{key: string; value: string}[]>([])
   const [formData, setFormData] = useState({
     name: '',
@@ -47,8 +47,8 @@ export default function NewProductPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          images: images.length > 0 ? JSON.stringify(images) : null,
-          imageUrl: images[0] || null,
+          images: productImages.length > 0 ? JSON.stringify(productImages) : null,
+          imageUrl: productImages[0] || null,
           categoryName: category?.name || null,
           specifications: specs,
         })
@@ -58,10 +58,10 @@ export default function NewProductPage() {
         router.push('/admin')
         router.refresh()
       } else {
-        alert('Error al crear el producto')
+        const err = await res.json()
+        alert(err.error || 'Error al crear el producto')
       }
     } catch (error) {
-      console.error(error)
       alert('Error de conexión')
     } finally {
       setLoading(false)
@@ -76,14 +76,8 @@ export default function NewProductPage() {
     })
   }
 
-  const handleImageUpload = (url: string) => {
-    if (url && !images.includes(url)) {
-      setImages(prev => [...prev, url])
-    }
-  }
-
-  const removeImage = (url: string) => {
-    setImages(prev => prev.filter(i => i !== url))
+  const handleImagesChange = (urls: string[]) => {
+    setProductImages(urls)
   }
 
   const generateSpecs = async () => {
@@ -145,27 +139,9 @@ export default function NewProductPage() {
             {/* Múltiples Imágenes */}
             <div>
               <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-3">
-                <Package className="w-3 h-3" /> Imágenes
+                <Package className="w-3 h-3" /> Imágenes del Producto
               </label>
-              
-              {images.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
-                  {images.map((url) => (
-                    <div key={url} className="relative aspect-square rounded-xl overflow-hidden bg-surface-container ring-1 ring-white/[0.04]">
-                      <img src={url} alt="" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(url)}
-                        className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white text-xs hover:bg-error/80 transition-colors"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              <ImageUpload onUpload={handleImageUpload} />
+              <ImageUpload onUpload={handleImagesChange} multiple />
             </div>
 
             <div>
