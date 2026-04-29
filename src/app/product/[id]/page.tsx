@@ -110,7 +110,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <div className="min-h-screen bg-[#060606] pb-16 sm:pb-0">
+    <div className="min-h-screen bg-[#060606] pb-24 sm:pb-0">
       {/* Header flotante */}
       <header className="fixed top-0 left-0 right-0 z-50">
         <div className="glass border-b border-[#1a1a1a]">
@@ -218,7 +218,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       </main>
 
       {/* Sticky action bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 sm:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-[70] sm:hidden">
         <div className="glass border-t border-[#1a1a1a] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <div className="flex items-center justify-between">
             <div>

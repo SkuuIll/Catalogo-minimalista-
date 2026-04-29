@@ -8,6 +8,9 @@ export function BottomNav() {
   const pathname = usePathname()
   const isActive = (path: string) => pathname === path || (path === '/' && pathname === '/')
 
+  // No mostrar en páginas de detalle de producto (tienen su propia action bar)
+  if (pathname.startsWith('/product/')) return null
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[70] sm:hidden">
       <div className="glass border-t border-[#1a1a1a] pb-[env(safe-area-inset-bottom)]">

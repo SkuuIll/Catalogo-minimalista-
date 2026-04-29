@@ -30,7 +30,7 @@ export default async function Home() {
               <span className="font-serif text-sm font-medium tracking-tight text-white">
                 {settings?.siteName || 'Aura'}
               </span>
-              <span className="ml-1.5 text-[9px] font-medium uppercase tracking-[0.25em] text-white/25">
+              <span className="ml-1.5 text-[9px] font-medium uppercase tracking-[0.25em] text-white/35">
                 {settings?.siteTagline}
               </span>
             </Link>
@@ -55,13 +55,13 @@ export default async function Home() {
           <p className="mt-2.5 text-[13px] text-white/45 leading-relaxed max-w-sm">
             {settings?.heroSubtitle || 'Selección curada de tecnología, audio, accesorios y moda. Calidad sobre cantidad.'}
           </p>
-          <div className="flex items-center gap-4 mt-3">
+            <div className="flex items-center gap-4 mt-3">
             <div className="h-px flex-1 bg-[#1a1a1a]" />
-            <div className="flex items-center gap-2 text-[11px] text-white/35 font-medium">
+            <div className="flex items-center gap-2 text-[12px] text-white/40 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3cb371]" />
               Envío gratis
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-white/35 font-medium">
+            <div className="flex items-center gap-2 text-[12px] text-white/40 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-[#bf9b4e]" />
               Curaduría experta
             </div>
