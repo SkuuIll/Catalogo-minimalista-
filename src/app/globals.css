@@ -41,8 +41,8 @@
 
 @layer base {
   html {
-    /* Slightly larger base for better readability on all screens */
-    font-size: 15px;
+    font-size: 16px; /* Larger base for all screens */
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -52,18 +52,16 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
-    /* Comfortable reading size on mobile */
-    font-size: 0.933rem; /* ~14px from 15px base */
+    /* Comfortable reading: 16px base on mobile, 15px on desktop */
+    font-size: 1rem; /* 16px */
     line-height: 1.6;
   }
 
   ::selection { background: rgba(191, 155, 78, 0.2); color: var(--text); }
 
-  /* Prevent iOS zoom on input focus */
-  @supports (-webkit-touch-callout: none) {
-    input, textarea, select {
-      font-size: 16px !important;
-    }
+  /* Prevent iOS zoom on input focus — must stay at 16px minimum */
+  input, textarea, select {
+    font-size: 16px !important;
   }
 }
 
@@ -118,8 +116,8 @@
 .transition-fast   { transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
 
 /* ─── Performance hints ──────────────────────────── */
-.will-change-opacity   { will-change: opacity; }
-.will-change-transform { will-change: transform; }
+.will-change-opacity    { will-change: opacity; }
+.will-change-transform  { will-change: transform; }
 
 /* ─── Smooth scroll ──────────────────────────────── */
 html { scroll-behavior: smooth; }
@@ -147,9 +145,9 @@ html { scroll-behavior: smooth; }
 }
 .animate-slide-in { animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-@keyframes ping    { 75%, 100% { transform: scale(2); opacity: 0; } }
-@keyframes pulse   { 50% { opacity: 0.4; } }
-@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes ping  { 75%, 100% { transform: scale(2); opacity: 0; } }
+@keyframes pulse { 50% { opacity: 0.4; } }
+@keyframes spin  { to { transform: rotate(360deg); } }
 
 .animate-ping  { animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
 .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }

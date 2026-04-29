@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
         await writeFile(filePath, buffer)
 
-        results.push({ success: true, url: `/uploads/${filename}`, filename })
+        results.push({ success: true, url: `/api/uploads/${filename}`, filename })
       } catch (fileErr) {
         console.error('Error writing file:', file.name, fileErr)
         results.push({ error: 'Error al guardar el archivo', filename: file.name })

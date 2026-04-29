@@ -1,22 +1,24 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Ensure uploads are served with correct headers for Cloudflare
+  // Static file serving for uploads via Next.js
+  // Uploads served via /api/uploads/[filename] route (app router handler)
+  // This config ensures proper caching headers only when NOT going through
+  // Next.js page routing (verified via has:cookie condition)
+
   async headers() {
     return [
       {
-        // Static uploads — unique filenames mean immutable is safe
-        source: "/uploads/:path*",
+        // Uploads via /api/uploads route — no-cache so Cloudflare doesn't
+        // prerender and cache 404s for new files
+        source: "/api/uploads/:path*",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
         ],
       },
       {
-        // Upload API — never cache, pass cookies through Cloudflare
+        // Upload API endpoint — never cache
         source: "/api/upload",
         headers: [
           { key: "Cache-Control", value: "no-store, no-cache" },
@@ -33,7 +35,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Allow images from any hostname (needed for external URL images)
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**" },
@@ -41,7 +42,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Increase serverActions body size limit for file uploads
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",

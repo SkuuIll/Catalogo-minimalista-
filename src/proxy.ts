@@ -21,6 +21,16 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // GET for uploads/images are safe — don't require session
+    if (request.method === 'GET' && (
+      pathname.startsWith('/api/uploads/') ||
+      pathname.startsWith('/api/products') ||
+      pathname.startsWith('/api/categories') ||
+      pathname.startsWith('/api/settings')
+    )) {
+      return NextResponse.next()
+    }
+
     // POST, PATCH, DELETE, etc requieren sesión
     if (!session) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
@@ -51,11 +61,11 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/login',
-    '/api/auth/:path*',
-    '/api/products/:path*',
-    '/api/categories/:path*',
-    '/api/upload/:path*',
-    '/api/settings/:path*',
-    '/api/gemini/:path*',
+'/api/auth/:path*',
+      '/api/products/:path*',
+      '/api/categories/:path*',
+      '/api/settings/:path*',
+      '/api/gemini/:path*',
+      '/api/uploads/:path*',
   ],
 }
