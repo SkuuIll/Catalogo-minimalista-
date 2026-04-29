@@ -72,7 +72,7 @@ export default function LoginPage() {
                   placeholder="Correo electrónico"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-12 pl-10 pr-4 text-[13px] text-white placeholder-white/15 focus:outline-none focus:border-[#bf9b4e]/30 transition-all"
+                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-12 pl-10 pr-4 text-[13px] text-white placeholder-white/25 focus:outline-none focus:border-[#bf9b4e]/30 transition-all"
                 />
               </div>
               <div className="relative">
@@ -111,7 +111,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center mt-6 text-[11px] text-white/15">
+          <p className="text-center mt-6 text-[11px] text-white/35">
             Acceso exclusivo para administradores
           </p>
         </div>

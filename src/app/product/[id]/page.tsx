@@ -135,7 +135,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <main className="px-4 pt-5 pb-4 max-w-2xl mx-auto">
         {/* Breadcrumb + Status */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-1 text-[11px] text-white/25">
+          <div className="flex items-center gap-1 text-[11px] text-white/35">
             {breadcrumb.map((item, i) => (
               <span key={i} className="flex items-center gap-1">
                 {i > 0 && <ChevronRight className="w-3 h-3" />}
@@ -179,7 +179,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         {/* Specifications */}
         {product.specifications.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Especificaciones</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35 mb-3">Especificaciones</h2>
             <div className="rounded-2xl border border-[#1a1a1a] overflow-hidden divide-y divide-[#1a1a1a]">
               {product.specifications.map(spec => (
                 <div key={spec.id} className="flex justify-between px-4 py-3">
@@ -194,7 +194,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         {/* Related */}
         {related.length > 0 && (
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Relacionados</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35 mb-3">Relacionados</h2>
             <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-1">
               {related.map(p => {
                 let rImgs: string[] = []

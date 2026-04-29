@@ -47,14 +47,25 @@ export default async function Home() {
       <div className="h-11" />
 
       <main className="pb-8">
-        {/* Hero */}
-        <section className="px-4 pt-6 pb-2">
-          <h1 className="font-serif text-2xl leading-[1.15] font-medium text-white tracking-tight">
-            {settings?.heroTitle || 'Curaduría esencial'}
+        {/* Hero — Five-Second Filter: what, who, why */}
+        <section className="px-4 pt-6 pb-4 border-b border-[#1a1a1a]/50">
+          <h1 className="font-serif text-[26px] leading-[1.1] font-medium text-white tracking-tight">
+            {settings?.heroTitle || 'Productos que importan'}
           </h1>
-          <p className="mt-2 text-[13px] text-white/40 leading-relaxed max-w-md">
-            {settings?.heroSubtitle}
+          <p className="mt-2.5 text-[13px] text-white/45 leading-relaxed max-w-sm">
+            {settings?.heroSubtitle || 'Selección curada de tecnología, audio, accesorios y moda. Calidad sobre cantidad.'}
           </p>
+          <div className="flex items-center gap-4 mt-3">
+            <div className="h-px flex-1 bg-[#1a1a1a]" />
+            <div className="flex items-center gap-2 text-[11px] text-white/35 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3cb371]" />
+              Envío gratis
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-white/35 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#bf9b4e]" />
+              Curaduría experta
+            </div>
+          </div>
         </section>
 
         <CatalogClient products={products} categories={categories} />

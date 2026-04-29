@@ -37,7 +37,7 @@ export default async function ExplorePage() {
       <main className="px-4 pt-5 pb-8">
         {/* Categories grid */}
         <section className="mb-8">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-4">Categorías</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35 mb-4">Categorías</h2>
           <div className="grid grid-cols-2 gap-2.5">
             {parentCategories.map(cat => (
               <Link
@@ -49,7 +49,7 @@ export default async function ExplorePage() {
                   <Grid3X3 className="w-4 h-4 text-white/30" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-0.5">{cat.name}</h3>
-                <p className="text-[11px] text-white/25">{cat._count.products} productos</p>
+                <p className="text-[11px] text-white/35">{cat._count.products} productos</p>
                 {cat.children.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-3">
                     {cat.children.slice(0, 3).map((sub: any) => (
@@ -68,7 +68,7 @@ export default async function ExplorePage() {
         {/* Recent products */}
         <section>
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">Recientes</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">Recientes</h2>
             <Link href="/" className="text-[11px] text-white/30 hover:text-white/60 transition-colors flex items-center gap-1">
               Ver todo <ArrowRight className="w-3 h-3" />
             </Link>

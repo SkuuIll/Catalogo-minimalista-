@@ -67,18 +67,18 @@ export default function SearchPage() {
 
       <main className="px-4 pt-4">
         {loading ? (
-          <div className="py-12 text-center text-white/20 text-sm">Cargando</div>
+          <div className="py-12 text-center text-white/35 text-sm">Cargando</div>
         ) : query.trim() ? (
           <section>
             <div className="flex justify-between items-end mb-3">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">Resultados</h2>
-              <span className="text-[10px] text-white/20">{results.length} encontrados</span>
+              <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">Resultados</h2>
+              <span className="text-[10px] text-white/35">{results.length} encontrados</span>
             </div>
             {results.length === 0 ? (
               <div className="py-16 text-center">
                 <Package className="w-8 h-8 text-white/10 mx-auto mb-3" />
-                <p className="text-white/30 text-sm font-medium">Sin resultados</p>
-                <p className="text-white/15 text-xs mt-1">Intenta otro término</p>
+                <p className="text-white/40 text-sm font-medium">Sin resultados</p>
+                <p className="text-white/35 text-xs mt-1">Intenta otro término</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3">
@@ -106,7 +106,7 @@ export default function SearchPage() {
             {recent.length > 0 && (
               <section className="mb-6">
                 <div className="flex justify-between items-end mb-3">
-                  <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">Recientes</h2>
+                  <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">Recientes</h2>
                   <button onClick={() => { setRecent([]); localStorage.removeItem('recentSearches') }} className="text-[11px] text-white/30 hover:text-white/60 transition-colors">
                     Borrar
                   </button>
@@ -127,7 +127,7 @@ export default function SearchPage() {
             )}
 
             <section>
-              <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Catálogo</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35 mb-3">Catálogo</h2>
               <div className="grid grid-cols-2 gap-3">
                 {products.slice(0, 12).map(p => {
                   let imgs: string[] = []

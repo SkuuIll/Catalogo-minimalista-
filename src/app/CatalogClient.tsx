@@ -47,7 +47,7 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
       {/* Featured */}
       {!search && !activeCategory && featured.length > 0 && (
         <section className="px-4 pt-4 pb-1">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Destacados</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35 mb-3">Destacados</h2>
           <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-2">
             {featured.map(product => {
               let imgs: string[] = []
@@ -82,7 +82,7 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
       {!search && (
         <section className="px-4 py-4">
           <div className="flex justify-between items-end mb-3">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">Categorías</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">Categorías</h2>
             {activeCategory && (
               <button onClick={() => { setActiveCategory(null); setActiveSubcategory(null) }} className="text-[11px] text-[#bf9b4e]/70 hover:text-[#bf9b4e] transition-colors">
                 Ver todo
@@ -130,10 +130,10 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
       {/* Products grid */}
       <section className="px-4 py-4">
         <div className="flex justify-between items-end mb-3">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">
             {search ? 'Resultados' : activeCategory ? activeCat?.name : 'Catálogo'}
           </h2>
-          <span className="text-[10px] text-white/20">{filtered.length} productos</span>
+          <span className="text-[10px] text-white/35">{filtered.length} productos</span>
         </div>
 
         {filtered.length === 0 ? (
@@ -141,8 +141,8 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
             <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-[#111] flex items-center justify-center border border-[#1a1a1a]">
               <Package className="w-5 h-5 text-white/10" />
             </div>
-            <p className="text-white/30 text-sm font-medium">{search ? 'Sin resultados' : 'Sin productos'}</p>
-            <p className="text-white/15 text-xs mt-1">{search ? 'Intenta otro término' : 'Prueba otra categoría'}</p>
+            <p className="text-white/40 text-sm font-medium">{search ? 'Sin resultados' : 'Sin productos'}</p>
+            <p className="text-white/35 text-xs mt-1">{search ? 'Intenta otro término' : 'Prueba otra categoría'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
@@ -201,7 +201,7 @@ function ProductCard({ product }: { product: any }) {
       <h3 className="text-[11px] font-medium text-white/90 leading-tight line-clamp-1">{product.name}</h3>
       <div className="flex items-center justify-between mt-0.5">
         <span className="text-[11px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
-        {product.category && <span className="text-[9px] text-white/25">{product.category.name}</span>}
+        {product.category && <span className="text-[9px] text-white/35">{product.category.name}</span>}
       </div>
     </Link>
   )
