@@ -102,12 +102,18 @@ export default async function AdminDashboard() {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-medium text-white truncate">{product.name}</span>
                         <StatusBadge status={product.status} />
+                        {product.discountPrice && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-[#e05555]/10 text-[#e05555]">
+                            -{Math.round((1 - product.price / product.discountPrice) * 100)}%
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs text-white/30 mt-0.5">
                         {product.category?.name || product.categoryName || 'Sin categoría'} · <span className="text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+                        {product.discountPrice && <span className="text-white/20 line-through ml-1">${product.discountPrice.toFixed(2)}</span>}
                         {product.featured && <span className="ml-2 text-[#bf9b4e]/60">· Destacado</span>}
                       </div>
                     </div>

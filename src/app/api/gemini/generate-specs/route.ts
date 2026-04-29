@@ -1,7 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextResponse } from 'next/server'
+import { verifyAuth } from '@/lib/auth-helper'
 
 export async function POST(request: Request) {
+  const authed = await verifyAuth(request)
+  if (!authed) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   try {
     const { productName, description, category } = await request.json()
 

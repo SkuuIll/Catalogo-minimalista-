@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { mkdir } from 'fs/promises'
+import { verifyAuth } from '@/lib/auth-helper'
 
 export async function POST(request: Request) {
+  const authed = await verifyAuth(request)
+  if (!authed) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   try {
     const formData = await request.formData()
     const files = formData.getAll('files') as File[]

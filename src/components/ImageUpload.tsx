@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, Link2, ImageIcon, X, Images, Loader2 } from 'lucide-react'
+import { Upload, Link2, X, Images, Loader2, Check, Trash2 } from 'lucide-react'
 
 export function ImageUpload({
   onUpload,
@@ -13,7 +13,7 @@ export function ImageUpload({
   multiple?: boolean
 }) {
   const [previewUrls, setPreviewUrls] = useState<string[]>(defaultImages.filter(Boolean))
-  const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState<Set<number>>(new Set())
   const [dragOver, setDragOver] = useState(false)
   const [mode, setMode] = useState<'upload' | 'url'>('upload')
   const [urlInput, setUrlInput] = useState('')
@@ -21,76 +21,46 @@ export function ImageUpload({
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return
-
-    const validFiles = Array.from(files).filter(file => {
-      if (!file.type.startsWith('image/')) return false
-      if (file.size > 5 * 1024 * 1024) return false
+    const validFiles = Array.from(files).filter(f => {
+      if (!f.type.startsWith('image/')) return false
+      if (f.size > 5 * 1024 * 1024) return false
       return true
     })
+    if (!validFiles.length) { alert('Solo JPG/PNG/WEBP, máx 5MB'); return }
 
-    if (validFiles.length === 0) {
-      alert('Solo imágenes JPG/PNG/WEBP, máx 5MB')
-      return
-    }
+    const startIdx = previewUrls.length
+    const localUrls = validFiles.map(f => URL.createObjectURL(f))
+    setPreviewUrls(prev => multiple ? [...prev, ...localUrls] : localUrls)
 
-    setLoading(true)
-    const newUrls: string[] = []
-
-    for (const file of validFiles) {
-      // Preview local inmediato
-      const localUrl = URL.createObjectURL(file)
-      newUrls.push(localUrl)
-    }
-    setPreviewUrls(prev => multiple ? [...prev, ...newUrls] : newUrls)
-
-    // Subir al servidor
     for (let i = 0; i < validFiles.length; i++) {
-      const file = validFiles[i]
+      const idx = startIdx + i
+      setUploading(prev => new Set(prev).add(idx))
       try {
-        const formData = new FormData()
-        formData.append('file', file)
-
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        })
-
+        const fd = new FormData()
+        fd.append('file', validFiles[i])
+        const res = await fetch('/api/upload', { method: 'POST', body: fd })
         const data = await res.json()
         if (data.success) {
-          const uploadedUrl = data.url
-          newUrls[i] = uploadedUrl
           setPreviewUrls(prev => {
             const copy = [...prev]
-            const idx = copy.indexOf(URL.createObjectURL(file))
-            if (idx >= 0) copy[idx] = uploadedUrl
+            copy[idx] = data.url
+            // Notificar URLs finales
+            onUpload(copy.filter(u => !u.startsWith('blob:')))
             return copy
           })
         }
-      } catch (e) {
-        console.error('Upload error:', e)
-      }
+      } catch { /* keep local preview */ }
+      setUploading(prev => {
+        const next = new Set(prev)
+        next.delete(idx)
+        return next
+      })
     }
-
-    // Notificar con todas las URLs finales (las que se subieron + las previas)
-    setPreviewUrls(prev => {
-      const all = [...prev]
-      onUpload(all.filter(u => !u.startsWith('blob:')))
-      return all
-    })
-
-    setLoading(false)
     if (inputRef.current) inputRef.current.value = ''
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setDragOver(false)
-    handleFiles(e.dataTransfer.files)
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => handleFiles(e.target.files)
+  const handleDrop = (e: React.DragEvent) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files) }
 
   const removeImage = (index: number) => {
     setPreviewUrls(prev => {
@@ -112,50 +82,55 @@ export function ImageUpload({
 
   return (
     <div className="space-y-3">
-      {/* Preview grid */}
+      {/* Preview grid con botones de borrar siempre visibles */}
       {previewUrls.length > 0 && (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-          {previewUrls.map((url, index) => (
-            <div key={`${url}-${index}`} className="relative aspect-square rounded-xl overflow-hidden bg-surface-container ring-1 ring-white/[0.04] group">
-              <img src={url} alt={`Imagen ${index + 1}`} className="w-full h-full object-cover" />
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-error/80 transition-colors opacity-0 group-hover:opacity-100"
-              >
-                <X className="w-3 h-3" />
-              </button>
-              {url.startsWith('blob:') && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 text-white animate-spin" />
-                </div>
-              )}
-            </div>
-          ))}
+          {previewUrls.map((url, index) => {
+            const isBlob = url.startsWith('blob:')
+            const isLoading = uploading.has(index)
+            return (
+              <div key={`${url}-${index}`} className="relative group aspect-square rounded-xl overflow-hidden bg-[#111] border border-[#1a1a1a]">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+                {/* Loading overlay */}
+                {(isBlob || isLoading) && (
+                  <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1">
+                    <Loader2 className="w-5 h-5 text-white animate-spin" />
+                    <span className="text-[10px] text-white/60">Subiendo</span>
+                  </div>
+                )}
+                {/* Botón borrar siempre visible */}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); removeImage(index) }}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 flex items-center justify-center text-white hover:bg-[#e05555] transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+                {/* Badge de índice */}
+                <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/70 text-[9px] text-white/60 font-medium">
+                  {index + 1}
+                </span>
+              </div>
+            )
+          })}
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-surface-container rounded-lg w-fit">
+      {/* Modo tabs */}
+      <div className="flex gap-1 p-1 bg-[#111] rounded-xl w-fit">
         <button
           type="button"
           onClick={() => setMode('upload')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-            mode === 'upload' ? 'bg-background text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
-          }`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === 'upload' ? 'bg-[#060606] text-white' : 'text-white/40 hover:text-white/70'}`}
         >
-          <Upload className="w-3.5 h-3.5" />
-          Subir {multiple && <span className="text-[10px] opacity-60">(múltiple)</span>}
+          <Upload className="w-3.5 h-3.5" /> Subir
         </button>
         <button
           type="button"
           onClick={() => setMode('url')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-            mode === 'url' ? 'bg-background text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
-          }`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === 'url' ? 'bg-[#060606] text-white' : 'text-white/40 hover:text-white/70'}`}
         >
-          <Link2 className="w-3.5 h-3.5" />
-          URL
+          <Link2 className="w-3.5 h-3.5" /> URL
         </button>
       </div>
 
@@ -165,51 +140,30 @@ export function ImageUpload({
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onClick={() => inputRef.current?.click()}
-          className={`
-            relative w-full h-40 sm:h-48 rounded-xl border-2 border-dashed cursor-pointer
-            flex flex-col items-center justify-center gap-2 transition-all overflow-hidden
-            ${dragOver ? 'border-primary bg-primary/5' : 'border-outline-variant/40 hover:border-primary/40'}
-          `}
+          className={`relative w-full h-36 sm:h-44 rounded-xl border-2 border-dashed cursor-pointer flex flex-col items-center justify-center gap-1.5 transition-all ${dragOver ? 'border-[#bf9b4e] bg-[#bf9b4e]/5' : 'border-[#1a1a1a] hover:border-white/10'}`}
         >
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${dragOver ? 'bg-primary/10' : 'bg-surface-container'}`}>
-            {loading ? (
-              <Loader2 className="w-5 h-5 text-primary animate-spin" />
-            ) : (
-              <Images className={`w-5 h-5 ${dragOver ? 'text-primary' : 'text-on-surface-variant'}`} />
-            )}
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${dragOver ? 'bg-[#bf9b4e]/10' : 'bg-[#111]'}`}>
+            <Images className={`w-5 h-5 ${dragOver ? 'text-[#bf9b4e]' : 'text-white/30'}`} />
           </div>
-          <span className="text-sm text-on-surface-variant font-medium">
-            {loading ? 'Subiendo...' : multiple ? 'Arrastra imágenes o haz clic' : 'Arrastra una imagen o haz clic'}
+          <span className="text-sm text-white/40 font-medium">
+            {multiple ? 'Arrastrá imágenes o hacé clic' : 'Arrastrá una imagen o hacé clic'}
           </span>
-          <span className="text-[11px] text-on-surface-variant/50">JPG, PNG, WEBP · Máx 5MB cada una</span>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            multiple={multiple}
-            onChange={handleChange}
-            className="hidden"
-          />
+          <span className="text-[11px] text-white/20">JPG, PNG, WEBP · Máx 5MB</span>
+          <input ref={inputRef} type="file" accept="image/*" multiple={multiple} onChange={handleChange} className="hidden" />
         </div>
       ) : (
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <input
-              type="url"
-              placeholder="https://ejemplo.com/imagen.jpg"
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addUrlImage())}
-              className="flex-1 bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary/40 transition-all"
-            />
-            <button
-              type="button"
-              onClick={addUrlImage}
-              className="px-4 py-2.5 bg-primary/10 border border-primary/20 text-primary rounded-lg text-xs font-semibold hover:bg-primary/20 transition-colors"
-            >
-              Agregar
-            </button>
-          </div>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            placeholder="https://ejemplo.com/imagen.jpg"
+            value={urlInput}
+            onChange={e => setUrlInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addUrlImage())}
+            className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white placeholder-white/15 focus:outline-none focus:border-white/10 transition-all"
+          />
+          <button type="button" onClick={addUrlImage} className="px-4 h-11 rounded-xl bg-white text-black text-xs font-semibold hover:bg-white/90 active:scale-[0.98] transition-all">
+            Agregar
+          </button>
         </div>
       )}
     </div>

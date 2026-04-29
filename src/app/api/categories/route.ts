@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyAuth } from '@/lib/auth-helper'
 
 export async function GET() {
   try {
@@ -18,6 +19,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const authed = await verifyAuth(request)
+  if (!authed) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   try {
     const body = await request.json()
     const category = await prisma.category.create({

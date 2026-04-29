@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyAuth } from '@/lib/auth-helper'
 
 export async function GET(
   request: Request,
@@ -29,6 +30,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authed = await verifyAuth(request)
+  if (!authed) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
   try {
     const resolvedParams = await params
     await prisma.product.delete({
@@ -44,6 +48,9 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authed = await verifyAuth(request)
+  if (!authed) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
   try {
     const resolvedParams = await params
     const body = await request.json()
