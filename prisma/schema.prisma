@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -19,13 +19,42 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  icon        String?   // emoji o clase de icono
+  order       Int       @default(0)
+  active      Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model Product {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   description String
   price       Float
   imageUrl    String?
-  category    String?
-  createdAt   DateTime @default(now())
+  imagePath   String?   // ruta local de imagen subida
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  // fallback string para compatibilidad
+  categoryName String?
+  featured    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model SiteSettings {
+  id          String   @id @default(cuid())
+  siteName    String   @default("Aura")
+  siteTagline String   @default("Minimalist")
+  heroTitle   String   @default("Curaduría de Objetos Esenciales")
+  heroSubtitle String  @default("Un catálogo minimalista con artículos de alta calidad diseñados para el estilo de vida moderno.")
+  primaryColor String  @default("#d4a853")
+  showCategories Boolean @default(true)
   updatedAt   DateTime @updatedAt
 }

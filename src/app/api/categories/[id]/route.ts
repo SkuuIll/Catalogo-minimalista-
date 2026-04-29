@@ -7,12 +7,12 @@ export async function DELETE(
 ) {
   try {
     const resolvedParams = await params
-    await prisma.product.delete({
+    await prisma.category.delete({
       where: { id: resolvedParams.id }
     })
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: 'Error al eliminar el producto' }, { status: 500 })
+    return NextResponse.json({ error: 'Error al eliminar categoría' }, { status: 500 })
   }
 }
 
@@ -23,21 +23,19 @@ export async function PATCH(
   try {
     const resolvedParams = await params
     const body = await request.json()
-    const product = await prisma.product.update({
+    const category = await prisma.category.update({
       where: { id: resolvedParams.id },
       data: {
         name: body.name,
+        slug: body.slug,
         description: body.description,
-        price: body.price ? parseFloat(body.price) : undefined,
-        categoryId: body.categoryId,
-        categoryName: body.categoryName,
-        imageUrl: body.imageUrl,
-        imagePath: body.imagePath,
-        featured: body.featured,
+        icon: body.icon,
+        order: body.order,
+        active: body.active,
       }
     })
-    return NextResponse.json(product)
+    return NextResponse.json(category)
   } catch (error) {
-    return NextResponse.json({ error: 'Error al actualizar el producto' }, { status: 500 })
+    return NextResponse.json({ error: 'Error al actualizar categoría' }, { status: 500 })
   }
 }
