@@ -18,9 +18,17 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700"],
 });
 
+const siteUrl = process.env.SITE_URL || "https://catalogo-aura.vercel.app";
+const siteName = "Aura — Catálogo Premium";
+const siteDescription = "Catálogo minimalista de productos premium. Explora tecnología, audio, accesorios y más. 100% app móvil, diseño profesional.";
+
 export const metadata: Metadata = {
-  title: "Aura — Catálogo",
-  description: "Catálogo minimalista de productos premium. Explora tecnología, audio, accesorios y más.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: siteName,
+    template: `%s | ${siteName}`,
+  },
+  description: siteDescription,
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -34,6 +42,34 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/icon-192.png" }],
   },
+  openGraph: {
+    type: "website",
+    siteName,
+    title: siteName,
+    description: siteDescription,
+    url: siteUrl,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: siteName,
+      },
+    ],
+    locale: "es_AR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@auracatalogo",
+    creator: "@auracatalogo",
+    title: siteName,
+    description: siteDescription,
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
@@ -41,7 +77,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0a0a0a",
+  themeColor: "#060606",
   viewportFit: "cover",
 };
 
@@ -60,6 +96,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="canonical" href={siteUrl} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface overflow-x-hidden">
         {children}

@@ -1,12 +1,75 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { ImageCarousel } from '@/components/ImageCarousel'
 import { BottomNav } from '@/components/BottomNav'
 import {
   ArrowLeft, Share2, Heart, Star, Package,
   ChevronRight, MessageCircle, Check, X
 } from 'lucide-react'
+
+const siteUrl = process.env.SITE_URL || "https://catalogo-aura.vercel.app"
+
+function getProductImages(product: any): string[] {
+  let images: string[] = []
+  try { if (product.images) images = JSON.parse(product.images) } catch {}
+  if (images.length === 0) {
+    const legacy = product.imagePath || product.imageUrl
+    if (legacy) images = [legacy]
+  }
+  return images
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { category: true }
+  })
+
+  if (!product) {
+    return {
+      title: "Producto no encontrado",
+      description: "Este producto no existe o fue eliminado.",
+    }
+  }
+
+  const images = getProductImages(product)
+  const title = `${product.name} — $${product.price.toFixed(2)}`
+  const description = product.description.length > 160
+    ? product.description.substring(0, 157) + "..."
+    : product.description
+  const imageUrl = images[0] || `${siteUrl}/og-image.png`
+  const productUrl = `${siteUrl}/product/${product.id}`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: productUrl,
+      type: "article",
+      images: [
+        {
+          url: imageUrl.startsWith("http") ? imageUrl : `${siteUrl}${imageUrl}`,
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        },
+      ],
+      siteName: "Aura — Catálogo Premium",
+      locale: "es_AR",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl.startsWith("http") ? imageUrl : `${siteUrl}${imageUrl}`],
+    },
+  }
+}
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -23,12 +86,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   if (!product) notFound()
 
-  let images: string[] = []
-  try { if (product.images) images = JSON.parse(product.images) } catch {}
-  if (images.length === 0) {
-    const legacy = product.imagePath || product.imageUrl
-    if (legacy) images = [legacy]
-  }
+  const images = getProductImages(product)
 
   const breadcrumb: string[] = []
   if (product.category?.parent) breadcrumb.push(product.category.parent.name)
