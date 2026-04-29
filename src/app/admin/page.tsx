@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { LogoutButton } from './LogoutButton'
 import { DeleteProductButton } from './DeleteProductButton'
-import { Package, FolderOpen, Star, ShoppingBag, Plus, Settings, Pencil, AlertTriangle, TrendingUp, Eye } from 'lucide-react'
+import { Package, FolderOpen, Star, ShoppingBag, Plus, Settings, Pencil, AlertTriangle, TrendingUp, Eye, Tag } from 'lucide-react'
 
 export default async function AdminDashboard() {
   const products = await prisma.product.findMany({
@@ -13,6 +13,7 @@ export default async function AdminDashboard() {
   const totalValue = products.reduce((a, p) => a + p.price, 0)
   const outOfStock = products.filter(p => p.status === 'OUT_OF_STOCK').length
   const preorder = products.filter(p => p.status === 'PREORDER').length
+  const onSale = products.filter(p => p.discountPrice).length
 
   return (
     <div className="min-h-screen bg-[#060606]">
@@ -37,16 +38,17 @@ export default async function AdminDashboard() {
 
       <main className="max-w-5xl mx-auto py-6 px-4 sm:px-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-5">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3 mb-5">
           <Stat value={products.length} label="Productos" />
           <Stat value={categories.length} label="Categorías" />
           <Stat value={products.filter(p => p.featured).length} label="Destacados" />
+          <Stat value={onSale} label="En oferta" />
           <Stat value={`$${totalValue.toFixed(0)}`} label="Valor total" />
         </div>
 
         {/* Alerts */}
-        {(outOfStock > 0 || preorder > 0) && (
-          <div className="flex gap-2 mb-4">
+        {(outOfStock > 0 || preorder > 0 || onSale > 0) && (
+          <div className="flex flex-wrap gap-2 mb-4">
             {outOfStock > 0 && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e05555]/5 border border-[#e05555]/10 text-[11px] text-[#e05555] font-medium">
                 <AlertTriangle className="w-3 h-3" />
@@ -57,6 +59,12 @@ export default async function AdminDashboard() {
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#d4a030]/5 border border-[#d4a030]/10 text-[11px] text-[#d4a030] font-medium">
                 <TrendingUp className="w-3 h-3" />
                 {preorder} por pedido
+              </span>
+            )}
+            {onSale > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e05555]/5 border border-[#e05555]/10 text-[11px] text-[#e05555] font-medium">
+                <Star className="w-3 h-3" />
+                {onSale} en oferta
               </span>
             )}
           </div>

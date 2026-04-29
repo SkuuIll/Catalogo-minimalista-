@@ -55,6 +55,7 @@ export async function PATCH(
         name: body.name,
         description: body.description,
         price: body.price ? parseFloat(body.price) : undefined,
+        discountPrice: body.discountPrice !== undefined ? (body.discountPrice ? parseFloat(body.discountPrice) : null) : undefined,
         status: body.status,
         categoryId: body.categoryId || null,
         categoryName: body.categoryName || null,

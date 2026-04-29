@@ -18,7 +18,7 @@ export function MobileMenu() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[60] sm:hidden">
+        <div className="fixed inset-0 z-[90] sm:hidden">
           <div
             className="absolute inset-0 bg-black/80 backdrop-blur-md"
             onClick={() => setOpen(false)}

@@ -70,7 +70,12 @@ export function CatalogClient({ products, categories }: { products: any[]; categ
                     )}
                   </div>
                   <h3 className="text-[11px] font-medium text-white/90 line-clamp-1">{product.name}</h3>
-                  <span className="text-[11px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+                    {product.discountPrice && (
+                      <span className="text-[10px] text-white/25 line-through">${product.discountPrice.toFixed(2)}</span>
+                    )}
+                  </div>
                 </Link>
               )
             })}
@@ -192,6 +197,14 @@ function ProductCard({ product }: { product: any }) {
         {product.status === 'PREORDER' && (
           <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-[#d4a030]/20 backdrop-blur-md text-[9px] font-semibold text-[#d4a030]">Pedido</div>
         )}
+        {product.discountPrice && product.status !== 'OUT_OF_STOCK' && (
+          <div className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-md bg-[#e05555]/20 backdrop-blur-md text-[9px] font-bold text-[#e05555]">
+            -{Math.round((1 - product.price / product.discountPrice) * 100)}%
+          </div>
+        )}
+        {product.featured && !product.discountPrice && product.status !== 'OUT_OF_STOCK' && (
+          <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#bf9b4e]" />
+        )}
 
         {product.featured && product.status !== 'OUT_OF_STOCK' && (
           <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#bf9b4e]" />
@@ -200,7 +213,12 @@ function ProductCard({ product }: { product: any }) {
 
       <h3 className="text-[12px] font-medium text-white/90 leading-tight line-clamp-1">{product.name}</h3>
       <div className="flex items-center justify-between mt-0.5">
-        <span className="text-[12px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[12px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+          {product.discountPrice && (
+            <span className="text-[10px] text-white/25 line-through">${product.discountPrice.toFixed(2)}</span>
+          )}
+        </div>
         {product.category && <span className="text-[10px] text-white/35">{product.category.name}</span>}
       </div>
     </Link>

@@ -63,7 +63,8 @@ async function main() {
     {
       name: 'Smartphone Pro X',
       description: 'Último modelo con cámara profesional de 108MP, batería de 5000mAh y pantalla OLED de 120Hz.',
-      price: 999.99,
+      price: 849.99,
+      discountPrice: 999.99,
       status: 'AVAILABLE',
       categoryId: subCelulares.id,
       categoryName: 'Celulares',
@@ -98,7 +99,8 @@ async function main() {
     {
       name: 'Reloj Minimalista',
       description: 'Diseño elegante con correa de cuero genuino y caja de acero inoxidable cepillado.',
-      price: 120.00,
+      price: 89.99,
+      discountPrice: 120.00,
       status: 'PREORDER',
       categoryId: subRelojes.id,
       categoryName: 'Relojes',
@@ -179,7 +181,8 @@ async function main() {
     {
       name: 'Smartwatch Active',
       description: 'Monitoreo de salud, GPS integrado, resistencia al agua 5ATM.',
-      price: 199.00,
+      price: 149.99,
+      discountPrice: 199.00,
       status: 'PREORDER',
       categoryId: subRelojes.id,
       categoryName: 'Relojes',

@@ -19,7 +19,7 @@ export default function EditProductPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [images, setImages] = useState<string[]>([])
   const [specs, setSpecs] = useState<{key: string; value: string}[]>([])
-  const [formData, setFormData] = useState({ name: '', description: '', price: '', status: 'AVAILABLE', categoryId: '', featured: false })
+  const [formData, setFormData] = useState({ name: '', description: '', price: '', discountPrice: '', status: 'AVAILABLE', categoryId: '', featured: false })
 
   useEffect(() => {
     if (!id) return
@@ -32,7 +32,8 @@ export default function EditProductPage() {
       if (!prod.error) {
         setFormData({
           name: prod.name, description: prod.description,
-          price: prod.price?.toString() || '', status: prod.status || 'AVAILABLE',
+          price: prod.price?.toString() || '', discountPrice: prod.discountPrice?.toString() || '',
+          status: prod.status || 'AVAILABLE',
           categoryId: prod.categoryId || '', featured: prod.featured || false,
         })
         let imgs: string[] = []
@@ -126,9 +127,14 @@ export default function EditProductPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Precio USD</label>
+                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Precio (ARS)</label>
                 <input type="number" name="price" step="0.01" min="0" required value={formData.price} onChange={handleChange}
                   className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white focus:outline-none focus:border-white/10 transition-all" />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Precio anterior</label>
+                <input type="number" name="discountPrice" step="0.01" min="0" value={formData.discountPrice} onChange={handleChange} placeholder="Sin oferta"
+                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-11 px-3 text-[13px] text-white placeholder-white/10 focus:outline-none focus:border-white/10 transition-all" />
               </div>
               <div>
                 <label className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-1.5 block">Estado</label>

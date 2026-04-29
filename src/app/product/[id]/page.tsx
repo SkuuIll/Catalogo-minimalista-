@@ -154,8 +154,18 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             {product.name}
           </h1>
           <div className="flex items-center gap-3 mt-2">
-            <span className="text-xl font-bold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
-            {product.featured && (
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-bold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+              {product.discountPrice && (
+                <span className="text-sm text-white/25 line-through">${product.discountPrice.toFixed(2)}</span>
+              )}
+            </div>
+            {product.discountPrice && (
+              <span className="text-[12px] font-bold text-[#e05555]">
+                -{Math.round((1 - product.price / product.discountPrice) * 100)}%
+              </span>
+            )}
+            {product.featured && !product.discountPrice && (
               <span className="inline-flex items-center gap-1 text-[12px] text-[#bf9b4e]/70">
                 <Star className="w-3 h-3 fill-[#bf9b4e] text-[#bf9b4e]" />
                 Destacado

@@ -37,6 +37,7 @@ model Product {
   name           String
   description    String
   price          Float
+  discountPrice  Float?          // precio original cuando hay oferta
   status         String          @default("AVAILABLE") // AVAILABLE | PREORDER | OUT_OF_STOCK
   images         String?         // JSON array of image URLs/paths
   imageUrl       String?         // legacy single image

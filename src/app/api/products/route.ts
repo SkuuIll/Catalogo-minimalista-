@@ -38,6 +38,8 @@ export async function POST(request: Request) {
         name: body.name,
         description: body.description,
         price: parseFloat(body.price),
+        discountPrice: body.discountPrice ? parseFloat(body.discountPrice) : null,
+        status: body.status || 'AVAILABLE',
         categoryId: body.categoryId || null,
         categoryName: body.categoryName || null,
         images: body.images,

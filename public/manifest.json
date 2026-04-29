@@ -1,13 +1,16 @@
 {
   "name": "Aura Catálogo",
   "short_name": "Aura",
-  "description": "Catálogo minimalista de productos premium",
-  "start_url": "/",
+  "description": "Catálogo minimalista premium de productos seleccionados. Explora tecnología, audio, accesorios y más.",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#060606",
+  "theme_color": "#060606",
   "orientation": "portrait",
   "scope": "/",
+  "lang": "es-AR",
+  "categories": ["shopping", "lifestyle"],
+  "id": "aura-catalogo-pwa",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -20,6 +23,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Catálogo de productos"
     }
   ]
 }
