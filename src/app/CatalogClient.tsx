@@ -5,13 +5,7 @@ import Link from 'next/link'
 import { Search, Package, Star, Heart } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 
-export function CatalogClient({
-  products,
-  categories,
-}: {
-  products: any[]
-  categories: any[]
-}) {
+export function CatalogClient({ products, categories }: { products: any[]; categories: any[] }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -20,101 +14,95 @@ export function CatalogClient({
   const subcategories = activeCat?.children || []
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
-      let matchesCategory = true
-      if (activeSubcategory) {
-        matchesCategory = p.categoryId === activeSubcategory
-      } else if (activeCategory) {
-        const subIds = activeCat?.children?.map((c: any) => c.id) || []
-        matchesCategory = p.categoryId === activeCategory || subIds.includes(p.categoryId)
+    return products.filter(p => {
+      let matchCat = true
+      if (activeSubcategory) matchCat = p.categoryId === activeSubcategory
+      else if (activeCategory) {
+        const ids = activeCat?.children?.map((c: any) => c.id) || []
+        matchCat = p.categoryId === activeCategory || ids.includes(p.categoryId)
       }
-      const matchesSearch =
-        !search ||
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.description.toLowerCase().includes(search.toLowerCase())
-      return matchesCategory && matchesSearch
+      const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.description.toLowerCase().includes(search.toLowerCase())
+      return matchCat && matchSearch
     })
   }, [products, activeCategory, activeSubcategory, search, activeCat])
 
-  const featured = products.filter(p => p.featured).slice(0, 5)
+  const featured = products.filter(p => p.featured).slice(0, 6)
 
   return (
     <>
-      {/* Search bar sticky */}
-      <div className="sticky top-12 sm:top-14 z-40 px-4 sm:px-0 py-2 bg-background/90 backdrop-blur-xl border-b border-white/[0.04]">
+      {/* Search */}
+      <div className="sticky top-11 z-40 px-4 py-2 bg-[#060606]/95 backdrop-blur-2xl">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
           <input
             type="text"
-            placeholder="Buscar productos..."
+            placeholder="Buscar"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-surface-container border border-white/[0.06] rounded-xl py-2.5 pl-9 pr-4 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
+            onChange={e => setSearch(e.target.value)}
+            className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-10 pl-9 pr-3 text-[13px] text-white placeholder-white/20 focus:outline-none focus:border-[#bf9b4e]/30 transition-all"
           />
         </div>
       </div>
 
       {/* Featured */}
       {!search && !activeCategory && featured.length > 0 && (
-        <section className="px-4 sm:px-0 py-4 sm:py-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-on-surface flex items-center gap-1.5">
-              <Star className="w-3.5 h-3.5 text-primary" />
-              Destacados
-            </h2>
-          </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
-            {featured.map((product) => (
-              <Link key={product.id} href={`/product/${product.id}`} className="flex-shrink-0 w-36 sm:w-44 group">
-                <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-2 bg-surface ring-1 ring-white/[0.04]">
-                  <ProductImage product={product} />
-                  {product.featured && (
-                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary shadow-lg shadow-primary/50" />
-                  )}
-                  {product.status === 'OUT_OF_STOCK' && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">Agotado</span>
-                    </div>
-                  )}
-                  {product.status === 'PREORDER' && (
-                    <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-400/90 text-[9px] font-bold text-amber-950">
-                      Por pedido
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-xs font-medium text-on-surface line-clamp-1">{product.name}</h3>
-                <p className="text-xs text-primary font-semibold mt-0.5">${product.price.toFixed(2)}</p>
-              </Link>
-            ))}
+        <section className="px-4 pt-4 pb-1">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Destacados</h2>
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-2">
+            {featured.map(product => {
+              let imgs: string[] = []
+              try { if (product.images) imgs = JSON.parse(product.images) } catch {}
+              const img = imgs[0] || product.imagePath || product.imageUrl
+              return (
+                <Link key={product.id} href={`/product/${product.id}`} className="flex-shrink-0 w-32 group">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0d0d] mb-2 border border-[#1a1a1a]/50">
+                    {img && <img src={img} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />}
+                    {!img && <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-white/10" /></div>}
+                    {product.status === 'OUT_OF_STOCK' && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <span className="text-[10px] font-semibold text-white/80 uppercase tracking-wider">Agotado</span>
+                      </div>
+                    )}
+                    {product.status === 'PREORDER' && (
+                      <div className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-[#d4a030]/20 backdrop-blur-md text-[9px] font-semibold text-[#d4a030]">
+                        Pedido
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-[11px] font-medium text-white/90 line-clamp-1">{product.name}</h3>
+                  <span className="text-[11px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+                </Link>
+              )
+            })}
           </div>
         </section>
       )}
 
-      {/* Categorías */}
+      {/* Categories */}
       {!search && (
-        <section className="px-4 sm:px-0 py-3 sm:py-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-on-surface">Categorías</h2>
+        <section className="px-4 py-4">
+          <div className="flex justify-between items-end mb-3">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">Categorías</h2>
             {activeCategory && (
-              <button onClick={() => { setActiveCategory(null); setActiveSubcategory(null) }} className="text-[11px] text-primary font-medium">
+              <button onClick={() => { setActiveCategory(null); setActiveSubcategory(null) }} className="text-[11px] text-[#bf9b4e]/70 hover:text-[#bf9b4e] transition-colors">
                 Ver todo
               </button>
             )}
           </div>
-          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-            {categories.map((cat) => (
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-1">
+            {categories.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => {
                   setActiveCategory(activeCategory === cat.id ? null : cat.id)
                   setActiveSubcategory(null)
                 }}
-                className={`flex-shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 transition-all ${activeCategory === cat.id ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
+                className={`flex-shrink-0 flex flex-col items-center gap-1.5 w-14 transition-all ${activeCategory === cat.id ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
               >
-                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all ${activeCategory === cat.id ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'bg-surface-container text-on-surface-variant border border-white/[0.06]'}`}>
-                  <Package className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${activeCategory === cat.id ? 'bg-[#bf9b4e] text-black' : 'bg-[#111] text-white/40 border border-[#1a1a1a]'}`}>
+                  <Package className="w-4.5 h-4.5" />
                 </div>
-                <span className={`text-[10px] sm:text-xs font-medium text-center leading-tight ${activeCategory === cat.id ? 'text-primary' : 'text-on-surface-variant'}`}>
+                <span className={`text-[10px] font-medium text-center leading-tight ${activeCategory === cat.id ? 'text-[#bf9b4e]' : 'text-white/50'}`}>
                   {cat.name}
                 </span>
               </button>
@@ -123,113 +111,98 @@ export function CatalogClient({
         </section>
       )}
 
-      {/* Subcategorías */}
+      {/* Subcategories */}
       {subcategories.length > 0 && !search && (
-        <section className="px-4 sm:px-0 py-2">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-            <button onClick={() => setActiveSubcategory(null)} className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${!activeSubcategory ? 'bg-primary text-on-primary' : 'bg-surface-container border border-white/[0.06] text-on-surface-variant'}`}>
+        <section className="px-4 py-1">
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-hide -mr-4 pr-4">
+            <SubPill active={!activeSubcategory} onClick={() => setActiveSubcategory(null)}>
               Todo {activeCat?.name}
-            </button>
-            {subcategories.map((sub: any) => (
-              <button key={sub.id} onClick={() => setActiveSubcategory(sub.id)} className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${activeSubcategory === sub.id ? 'bg-primary text-on-primary' : 'bg-surface-container border border-white/[0.06] text-on-surface-variant'}`}>
-                {sub.name}
-              </button>
+            </SubPill>
+            {subcategories.map((s: any) => (
+              <SubPill key={s.id} active={activeSubcategory === s.id} onClick={() => setActiveSubcategory(s.id)}>
+                {s.name}
+              </SubPill>
             ))}
           </div>
         </section>
       )}
 
-      {/* Grid */}
-      <section className="px-4 sm:px-0 py-4 sm:py-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-on-surface">
-            {search ? 'Resultados' : activeSubcategory ? 'Productos' : activeCategory ? activeCat?.name : 'Todos los productos'}
+      {/* Products grid */}
+      <section className="px-4 py-4">
+        <div className="flex justify-between items-end mb-3">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25">
+            {search ? 'Resultados' : activeCategory ? activeCat?.name : 'Catálogo'}
           </h2>
-          <span className="text-[11px] text-on-surface-variant/50">{filtered.length} items</span>
+          <span className="text-[10px] text-white/20">{filtered.length} productos</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {filtered.length === 0 ? (
-            <div className="col-span-full py-16 text-center">
-              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-surface-container flex items-center justify-center border border-white/[0.04]">
-                <Package className="w-6 h-6 text-on-surface-variant/30" />
-              </div>
-              <p className="text-on-surface-variant/50 text-sm font-medium">{search ? 'No se encontraron productos' : 'No hay productos'}</p>
+        {filtered.length === 0 ? (
+          <div className="py-20 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-[#111] flex items-center justify-center border border-[#1a1a1a]">
+              <Package className="w-5 h-5 text-white/10" />
             </div>
-          ) : (
-            filtered.map((product, index) => (
-              <ScrollReveal key={product.id} delay={Math.min(index * 0.04, 0.3)} direction="up" duration={0.5}>
+            <p className="text-white/30 text-sm font-medium">{search ? 'Sin resultados' : 'Sin productos'}</p>
+            <p className="text-white/15 text-xs mt-1">{search ? 'Intenta otro término' : 'Prueba otra categoría'}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {filtered.map((product, i) => (
+              <ScrollReveal key={product.id} delay={Math.min(i * 0.04, 0.25)}>
                 <ProductCard product={product} />
               </ScrollReveal>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </>
   )
 }
 
-function ProductCard({ product }: { product: any }) {
-  const isOutOfStock = product.status === 'OUT_OF_STOCK'
-  const isPreorder = product.status === 'PREORDER'
-
+function SubPill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <Link href={`/product/${product.id}`} className="group flex flex-col">
-      <div className="relative aspect-[3/4] bg-surface overflow-hidden rounded-xl sm:rounded-2xl mb-2 ring-1 ring-white/[0.04] group-active:scale-[0.98] transition-transform duration-150">
-        <ProductImage product={product} />
-
-        {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider">Agotado</span>
-          </div>
-        )}
-
-        {isPreorder && (
-          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-400 text-[9px] font-bold text-amber-950">
-            Por pedido
-          </div>
-        )}
-
-        {product.featured && !isOutOfStock && (
-          <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary shadow-lg shadow-primary/50" />
-        )}
-
-        <button onClick={(e) => e.preventDefault()} className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <Heart className="w-3.5 h-3.5 text-white" />
-        </button>
-      </div>
-
-      <div className="flex flex-col px-0.5">
-        <h3 className="text-xs sm:text-sm font-medium text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
-          {product.name}
-        </h3>
-        <div className="flex items-center justify-between mt-0.5">
-          <span className="text-xs sm:text-sm font-bold text-primary">${product.price.toFixed(2)}</span>
-          {product.category && (
-            <span className="text-[10px] text-on-surface-variant/50">{product.category.name}</span>
-          )}
-        </div>
-        {isPreorder && (
-          <span className="text-[9px] text-amber-400 mt-0.5">Disponible bajo pedido</span>
-        )}
-      </div>
-    </Link>
+    <button
+      onClick={onClick}
+      className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-medium transition-all ${active ? 'bg-[#bf9b4e] text-black' : 'bg-[#111] text-white/50 border border-[#1a1a1a] hover:text-white/80'}`}
+    >
+      {children}
+    </button>
   )
 }
 
-function ProductImage({ product }: { product: any }) {
-  let images: string[] = []
-  try {
-    if (product.images) images = JSON.parse(product.images)
-  } catch {}
-  const imageUrl = images[0] || product.imagePath || product.imageUrl
+function ProductCard({ product }: { product: any }) {
+  let imgs: string[] = []
+  try { if (product.images) imgs = JSON.parse(product.images) } catch {}
+  const img = imgs[0] || product.imagePath || product.imageUrl
 
-  if (imageUrl) {
-    return <img src={imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-  }
   return (
-    <div className="w-full h-full flex items-center justify-center bg-surface-container">
-      <Package className="w-6 h-6 text-on-surface-variant/20" />
-    </div>
+    <Link href={`/product/${product.id}`} className="group flex flex-col active:scale-[0.98] transition-transform duration-150">
+      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0d0d] mb-2 border border-[#1a1a1a]/50 group-hover:border-[#bf9b4e]/20 transition-all duration-500">
+        {img ? (
+          <img src={img} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-white/10" /></div>
+        )}
+
+        {product.status === 'OUT_OF_STOCK' && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <span className="text-[10px] font-semibold text-white/80 uppercase tracking-wider">Agotado</span>
+          </div>
+        )}
+
+        {product.status === 'PREORDER' && (
+          <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-[#d4a030]/20 backdrop-blur-md text-[9px] font-semibold text-[#d4a030]">Pedido</div>
+        )}
+
+        {product.featured && product.status !== 'OUT_OF_STOCK' && (
+          <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#bf9b4e]" />
+        )}
+      </div>
+
+      <h3 className="text-[11px] font-medium text-white/90 leading-tight line-clamp-1">{product.name}</h3>
+      <div className="flex items-center justify-between mt-0.5">
+        <span className="text-[11px] font-semibold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+        {product.category && <span className="text-[9px] text-white/25">{product.category.name}</span>}
+      </div>
+    </Link>
   )
 }

@@ -15,10 +15,10 @@ export function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-error/70 hover:text-error transition-colors"
+      className="flex items-center gap-1.5 text-[11px] font-medium text-white/25 hover:text-[#e05555] transition-colors"
     >
       <LogOut className="w-3 h-3" />
-      <span className="hidden sm:inline">Cerrar Sesión</span>
+      <span className="hidden sm:inline">Salir</span>
     </button>
   )
 }

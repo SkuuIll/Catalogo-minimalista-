@@ -19,7 +19,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Aura | Catálogo Premium",
+  title: "Aura — Catálogo",
   description: "Catálogo minimalista de productos premium. Explora tecnología, audio, accesorios y más.",
   manifest: "/manifest.json",
   appleWebApp: {

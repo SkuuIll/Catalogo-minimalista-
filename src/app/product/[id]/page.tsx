@@ -5,8 +5,7 @@ import { ImageCarousel } from '@/components/ImageCarousel'
 import { BottomNav } from '@/components/BottomNav'
 import {
   ArrowLeft, Share2, Heart, Star, Package,
-  Check, Shield, Truck, RotateCcw, ChevronRight,
-  MessageCircle
+  ChevronRight, MessageCircle, Check, X
 } from 'lucide-react'
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -25,15 +24,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (!product) notFound()
 
   let images: string[] = []
-  try {
-    if (product.images) images = JSON.parse(product.images)
-  } catch {}
+  try { if (product.images) images = JSON.parse(product.images) } catch {}
   if (images.length === 0) {
     const legacy = product.imagePath || product.imageUrl
     if (legacy) images = [legacy]
   }
 
-  const breadcrumb = []
+  const breadcrumb: string[] = []
   if (product.category?.parent) breadcrumb.push(product.category.parent.name)
   if (product.category) breadcrumb.push(product.category.name)
 
@@ -43,158 +40,149 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     include: { category: true },
   })
 
-  // WhatsApp link
   const waNumber = settings?.whatsappNumber?.replace(/\D/g, '')
-  const waMessage = encodeURIComponent(`${settings?.whatsappMessage || 'Hola, estoy interesado en el producto:'} ${product.name} ($${product.price.toFixed(2)})`)
+  const waMessage = encodeURIComponent(`${settings?.whatsappMessage || 'Hola, quiero información sobre:'} ${product.name} ($${product.price.toFixed(2)})`)
   const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waMessage}` : null
 
-  const isAvailable = product.status === 'AVAILABLE'
-  const isPreorder = product.status === 'PREORDER'
-  const isOutOfStock = product.status === 'OUT_OF_STOCK'
+  const statusLabels = { AVAILABLE: 'Disponible', PREORDER: 'Por pedido', OUT_OF_STOCK: 'Sin stock' }
+  const statusStyles = {
+    AVAILABLE: 'bg-[#3cb371]/10 text-[#3cb371] border-[#3cb371]/20',
+    PREORDER: 'bg-[#d4a030]/10 text-[#d4a030] border-[#d4a030]/20',
+    OUT_OF_STOCK: 'bg-[#e05555]/10 text-[#e05555] border-[#e05555]/20',
+  }
 
   return (
-    <div className="min-h-screen bg-background text-on-surface sm:pb-0 pb-24">
+    <div className="min-h-screen bg-[#060606] pb-16 sm:pb-0">
+      {/* Header flotante */}
       <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="glass-strong border-b border-white/[0.06]">
-          <div className="flex items-center justify-between h-12 px-4">
-            <Link href="/" className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors">
-              <ArrowLeft className="w-4 h-4 text-white" />
+        <div className="glass border-b border-[#1a1a1a]">
+          <div className="flex items-center justify-between h-11 px-3">
+            <Link href="/" className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center hover:bg-black/40 transition-colors">
+              <ArrowLeft className="w-4 h-4 text-white/80" />
             </Link>
-            <div className="flex gap-2">
-              <button className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors">
-                <Share2 className="w-4 h-4 text-white" />
+            <div className="flex gap-1.5">
+              <button className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center hover:bg-black/40 transition-colors">
+                <Share2 className="w-3.5 h-3.5 text-white/80" />
               </button>
-              <button className="w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors">
-                <Heart className="w-4 h-4 text-white" />
+              <button className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center hover:bg-black/40 transition-colors">
+                <Heart className="w-3.5 h-3.5 text-white/80" />
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <div>
-        <ImageCarousel images={images} alt={product.name} />
-      </div>
+      <ImageCarousel images={images} alt={product.name} />
 
-      <main className="px-4 sm:px-6 max-w-3xl mx-auto -mt-4 relative z-10">
-        <div className="glass-strong rounded-2xl sm:rounded-3xl border border-white/[0.06] p-4 sm:p-6 shadow-2xl shadow-black/20">
-          {breadcrumb.length > 0 && (
-            <div className="flex items-center gap-1.5 mb-3 text-[11px] text-on-surface-variant/50">
-              {breadcrumb.map((item, i) => (
-                <span key={i} className="flex items-center gap-1.5">
-                  {i > 0 && <ChevronRight className="w-3 h-3" />}
-                  <span>{item}</span>
-                </span>
+      <main className="px-4 pt-5 pb-4 max-w-2xl mx-auto">
+        {/* Breadcrumb + Status */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1 text-[11px] text-white/25">
+            {breadcrumb.map((item, i) => (
+              <span key={i} className="flex items-center gap-1">
+                {i > 0 && <ChevronRight className="w-3 h-3" />}
+                <span className={i === breadcrumb.length - 1 ? 'text-white/50' : ''}>{item}</span>
+              </span>
+            ))}
+          </div>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${statusStyles[product.status as keyof typeof statusStyles]}`}>
+            {statusLabels[product.status as keyof typeof statusLabels]}
+          </span>
+        </div>
+
+        {/* Name + Price */}
+        <div className="mb-4">
+          <h1 className="font-serif text-[22px] font-medium text-white leading-[1.2] tracking-tight">
+            {product.name}
+          </h1>
+          <div className="flex items-center gap-3 mt-2">
+            <span className="text-xl font-bold text-[#bf9b4e]">${product.price.toFixed(2)}</span>
+            {product.featured && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-[#bf9b4e]/70">
+                <Star className="w-3 h-3 fill-[#bf9b4e] text-[#bf9b4e]" />
+                Destacado
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className="text-[13px] text-white/45 leading-relaxed mb-6">
+          {product.description}
+        </p>
+
+        {/* Info badges */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <InfoBadge label="Envío gratis" />
+          <InfoBadge label="Garantía" />
+          <InfoBadge label="30 días devolución" />
+        </div>
+
+        {/* Specifications */}
+        {product.specifications.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Especificaciones</h2>
+            <div className="rounded-2xl border border-[#1a1a1a] overflow-hidden divide-y divide-[#1a1a1a]">
+              {product.specifications.map(spec => (
+                <div key={spec.id} className="flex justify-between px-4 py-3">
+                  <span className="text-[12px] text-white/35">{spec.key}</span>
+                  <span className="text-[12px] text-white/70 text-right font-medium">{spec.value}</span>
+                </div>
               ))}
             </div>
-          )}
-
-          {/* Status badge */}
-          <div className="mb-3">
-            <StatusBadge status={product.status} />
           </div>
+        )}
 
-          <div className="flex items-start justify-between gap-4 mb-3">
-            <h1 className="font-serif text-xl sm:text-2xl font-medium text-on-surface leading-tight">
-              {product.name}
-            </h1>
-            <div className="text-right flex-shrink-0">
-              <span className="text-xl sm:text-2xl font-bold text-primary">${product.price.toFixed(2)}</span>
-              {product.featured && (
-                <div className="flex items-center justify-end gap-1 mt-1">
-                  <Star className="w-3 h-3 text-primary fill-primary" />
-                  <span className="text-[10px] text-primary font-medium">Destacado</span>
-                </div>
-              )}
+        {/* Related */}
+        {related.length > 0 && (
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-white/25 mb-3">Relacionados</h2>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-1">
+              {related.map(p => {
+                let rImgs: string[] = []
+                try { if (p.images) rImgs = JSON.parse(p.images) } catch {}
+                const rImg = rImgs[0] || p.imagePath || p.imageUrl
+                return (
+                  <Link key={p.id} href={`/product/${p.id}`} className="flex-shrink-0 w-28 group">
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0d0d] mb-2 border border-[#1a1a1a]/50 group-hover:border-[#bf9b4e]/20 transition-all">
+                      {rImg ? <img src={rImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" /> : (
+                        <div className="w-full h-full flex items-center justify-center"><Package className="w-4 h-4 text-white/10" /></div>
+                      )}
+                    </div>
+                    <h3 className="text-[10px] font-medium text-white/80 line-clamp-1">{p.name}</h3>
+                    <span className="text-[10px] font-semibold text-[#bf9b4e]">${p.price.toFixed(2)}</span>
+                  </Link>
+                )
+              })}
             </div>
           </div>
-
-          <p className="text-sm text-on-surface-variant/70 leading-relaxed mb-5">
-            {product.description}
-          </p>
-
-          <div className="flex flex-wrap gap-2 mb-6">
-            <Badge icon={<Truck className="w-3 h-3" />} text="Envío gratis" />
-            <Badge icon={<Shield className="w-3 h-3" />} text="Garantía" />
-            <Badge icon={<RotateCcw className="w-3 h-3" />} text="30 días devolución" />
-          </div>
-
-          {product.specifications.length > 0 && (
-            <div className="mb-6">
-              <h2 className="text-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
-                <Package className="w-4 h-4 text-primary" />
-                Especificaciones
-              </h2>
-              <div className="rounded-xl border border-white/[0.04] overflow-hidden divide-y divide-white/[0.04]">
-                {product.specifications.map((spec) => (
-                  <div key={spec.id} className="flex items-center justify-between px-4 py-2.5">
-                    <span className="text-xs text-on-surface-variant/60">{spec.key}</span>
-                    <span className="text-xs font-medium text-on-surface text-right">{spec.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {related.length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold text-on-surface mb-3">También te puede gustar</h2>
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
-                {related.map((p) => {
-                  let pImages: string[] = []
-                  try { if (p.images) pImages = JSON.parse(p.images) } catch {}
-                  const pImg = pImages[0] || p.imagePath || p.imageUrl
-                  return (
-                    <Link key={p.id} href={`/product/${p.id}`} className="flex-shrink-0 w-28 sm:w-32 group">
-                      <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface ring-1 ring-white/[0.04] mb-1.5">
-                        {pImg ? (
-                          <img src={pImg} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-surface-container">
-                            <Package className="w-5 h-5 text-on-surface-variant/20" />
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="text-[11px] font-medium text-on-surface line-clamp-1">{p.name}</h3>
-                      <span className="text-[11px] text-primary font-semibold">${p.price.toFixed(2)}</span>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </main>
 
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 sm:hidden">
-        <div className="glass-strong border-t border-white/[0.06] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <div className="flex items-center justify-between gap-3">
+        <div className="glass border-t border-[#1a1a1a] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <div className="flex items-center justify-between">
             <div>
-              <span className="text-[10px] text-on-surface-variant/50">Total</span>
-              <div className="text-lg font-bold text-primary">${product.price.toFixed(2)}</div>
+              <span className="text-[10px] text-white/25">Precio</span>
+              <div className="text-lg font-bold text-white">${product.price.toFixed(2)}</div>
             </div>
-            <div className="flex gap-2">
-              {isOutOfStock ? (
-                <button disabled className="flex items-center gap-2 px-5 py-3 bg-surface-container text-on-surface-variant rounded-xl text-sm font-semibold cursor-not-allowed">
-                  Agotado
-                </button>
-              ) : (
-                <>
-                  {waLink && (
-                    <a
-                      href={waLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-5 py-3 bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-emerald-500/20 active:scale-95 transition-transform"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      {isPreorder ? 'Pedir por WhatsApp' : 'Comprar'}
-                    </a>
-                  )}
-                </>
-              )}
-            </div>
+            {product.status === 'OUT_OF_STOCK' ? (
+              <button disabled className="flex items-center gap-1.5 px-5 py-3 bg-[#111] text-white/25 rounded-xl text-sm font-semibold border border-[#1a1a1a] cursor-not-allowed">
+                <X className="w-4 h-4" />
+                Agotado
+              </button>
+            ) : waLink ? (
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-5 py-3 bg-white text-[#060606] rounded-xl text-sm font-semibold active:scale-[0.97] transition-transform shadow-lg shadow-white/5"
+              >
+                <MessageCircle className="w-4 h-4" />
+                {product.status === 'PREORDER' ? 'Pedir' : 'Comprar'}
+              </a>
+            ) : null}
           </div>
         </div>
       </div>
@@ -204,30 +192,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   )
 }
 
-function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
+function InfoBadge({ label }: { label: string }) {
   return (
-    <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-container border border-white/[0.04]">
-      <span className="text-primary">{icon}</span>
-      <span className="text-[10px] font-medium text-on-surface-variant">{text}</span>
-    </div>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const styles = {
-    AVAILABLE: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20',
-    PREORDER: 'bg-amber-400/10 text-amber-400 border-amber-400/20',
-    OUT_OF_STOCK: 'bg-error/10 text-error border-error/20',
-  }
-  const labels = {
-    AVAILABLE: 'Disponible',
-    PREORDER: 'Por pedido',
-    OUT_OF_STOCK: 'Sin stock',
-  }
-  const style = styles[status as keyof typeof styles] || styles.AVAILABLE
-  const label = labels[status as keyof typeof labels] || status
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium border ${style}`}>
+    <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#111] border border-[#1a1a1a] text-[10px] text-white/40 font-medium">
+      <Check className="w-3 h-3 text-[#bf9b4e]/70" />
       {label}
     </span>
   )

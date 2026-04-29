@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Menu, X, Home, Grid3X3, User, Shield } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false)
@@ -10,8 +10,8 @@ export function MobileMenu() {
   return (
     <>
       <button
-        onClick={() => setOpen(!open)}
-        className="sm:hidden p-2 -mr-2 text-on-surface hover:text-primary transition-colors"
+        onClick={() => setOpen(true)}
+        className="sm:hidden p-1.5 -mr-1.5 text-white/50 hover:text-white transition-colors"
         aria-label="Menú"
       >
         <Menu className="w-5 h-5" />
@@ -19,23 +19,23 @@ export function MobileMenu() {
 
       {open && (
         <div className="fixed inset-0 z-[60] sm:hidden">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => setOpen(false)} />
           <div
-            className="absolute right-0 top-0 bottom-0 w-72 bg-surface/95 backdrop-blur-xl border-l border-white/[0.06] p-6 flex flex-col"
-            style={{
-              animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-            }}
-          >
-            <div className="flex justify-between items-center mb-8">
-              <span className="font-serif text-lg text-primary">Menú</span>
-              <button onClick={() => setOpen(false)} className="p-2 -mr-2 text-on-surface-variant hover:text-on-surface transition-colors">
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-[#0d0d0d]/98 backdrop-blur-2xl rounded-t-3xl border-t border-[#1a1a1a] animate-fade-up">
+            <div className="flex justify-end p-3">
+              <button onClick={() => setOpen(false)} className="p-2 -mr-1 text-white/40 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <nav className="flex flex-col gap-1">
-              <NavLink href="/" icon={<Home className="w-4 h-4" />} onClick={() => setOpen(false)}>Catálogo</NavLink>
-              <NavLink href="/admin" icon={<Shield className="w-4 h-4" />} onClick={() => setOpen(false)}>Panel Admin</NavLink>
-              <NavLink href="/login" icon={<User className="w-4 h-4" />} onClick={() => setOpen(false)} highlight>Iniciar Sesión</NavLink>
+            <nav className="px-6 pb-10 space-y-3">
+              <MenuItem href="/" onClick={() => setOpen(false)} label="Catálogo" subtitle="Todos los productos" />
+              <MenuItem href="/explore" onClick={() => setOpen(false)} label="Explorar" subtitle="Categorías" />
+              <MenuItem href="/search" onClick={() => setOpen(false)} label="Buscar" />
+              <div className="pt-3">
+                <MenuItem href="/login" onClick={() => setOpen(false)} label="Iniciar Sesión" accent />
+              </div>
             </nav>
           </div>
         </div>
@@ -44,19 +44,15 @@ export function MobileMenu() {
   )
 }
 
-function NavLink({ href, children, icon, onClick, highlight }: { href: string; children: React.ReactNode; icon: React.ReactNode; onClick?: () => void; highlight?: boolean }) {
+function MenuItem({ href, onClick, label, subtitle, accent }: { href: string; onClick: () => void; label: string; subtitle?: string; accent?: boolean }) {
   return (
     <Link
       href={href}
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-        highlight
-          ? 'bg-primary/10 text-primary hover:bg-primary/20'
-          : 'text-on-surface-variant hover:text-on-surface hover:bg-white/[0.04]'
-      }`}
+      className={`block p-3 rounded-2xl transition-colors ${accent ? 'bg-[#1a1a1a] text-[#bf9b4e] font-medium' : 'text-white/70 hover:text-white hover:bg-white/[0.04]'}`}
     >
-      {icon}
-      {children}
+      <span className="text-sm font-medium">{label}</span>
+      {subtitle && <span className="block text-[11px] text-white/30 mt-0.5">{subtitle}</span>}
     </Link>
   )
 }
