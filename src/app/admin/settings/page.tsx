@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import {
+  ArrowLeft, Settings, Palette, Type, Eye, Loader2,
+  Check, Globe, Paintbrush
+} from 'lucide-react'
 
 interface SiteSettings {
   siteName: string
@@ -15,7 +19,6 @@ interface SiteSettings {
 
 export default function SettingsPage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [settings, setSettings] = useState<SiteSettings>({
     siteName: 'Aura',
@@ -40,7 +43,6 @@ export default function SettingsPage() {
             showCategories: data.showCategories ?? true,
           })
         }
-        setLoading(false)
       })
   }, [])
 
@@ -54,7 +56,6 @@ export default function SettingsPage() {
         body: JSON.stringify(settings),
       })
       if (res.ok) {
-        alert('Configuración guardada')
         router.refresh()
       } else {
         alert('Error al guardar')
@@ -66,44 +67,58 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading) return <div className="min-h-screen bg-background flex items-center justify-center text-on-surface-variant">Cargando...</div>
-
   return (
-    <div className="min-h-screen bg-background text-on-surface py-8 sm:py-12 px-4 sm:px-6 lg:px-16">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-medium text-on-surface">Configuración</h1>
-            <p className="mt-1 text-sm text-on-surface-variant">Personaliza la apariencia y contenido del catálogo</p>
+    <div className="min-h-screen bg-background text-on-surface">
+      <header className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-white/[0.06]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+          <div className="flex items-center h-14">
+            <Link href="/admin" className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-primary transition-colors mr-4">
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </Link>
+            <h1 className="font-serif text-base sm:text-lg font-medium text-on-surface">Configuración</h1>
           </div>
-          <Link href="/admin" className="text-xs font-bold uppercase tracking-[0.15em] text-on-surface-variant hover:text-primary transition-colors">
-            ← Volver
-          </Link>
         </div>
+      </header>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="h-14" />
+
+      <main className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-16">
+        <p className="text-xs text-on-surface-variant/60 mb-6">Personaliza la apariencia y contenido del catálogo</p>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Identidad */}
-          <div className="glass p-5 sm:p-6 rounded-xl border border-white/5">
-            <h2 className="font-serif text-lg mb-4 text-primary">Identidad del Sitio</h2>
+          <div className="glass p-5 sm:p-6 rounded-xl sm:rounded-2xl border border-white/[0.06]">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center">
+                <Globe className="w-4 h-4 text-primary" />
+              </div>
+              <h2 className="font-serif text-base text-on-surface">Identidad del Sitio</h2>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-1.5">Nombre del Sitio</label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <Type className="w-3 h-3" /> Nombre del Sitio
+                </label>
                 <input
                   value={settings.siteName}
                   onChange={e => setSettings({ ...settings, siteName: e.target.value })}
-                  className="w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-sm text-on-surface"
+                  className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface focus:outline-none focus:border-primary/40 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-1.5">Tagline</label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <Type className="w-3 h-3" /> Tagline
+                </label>
                 <input
                   value={settings.siteTagline}
                   onChange={e => setSettings({ ...settings, siteTagline: e.target.value })}
-                  className="w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-sm text-on-surface"
+                  className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface focus:outline-none focus:border-primary/40 transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-1.5">Color Principal</label>
+              <div className="sm:col-span-2">
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <Palette className="w-3 h-3" /> Color Principal
+                </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -114,11 +129,11 @@ export default function SettingsPage() {
                   <input
                     value={settings.primaryColor}
                     onChange={e => setSettings({ ...settings, primaryColor: e.target.value })}
-                    className="flex-1 bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-sm text-on-surface font-mono"
+                    className="flex-1 bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface font-mono focus:outline-none focus:border-primary/40 transition-all"
                   />
                 </div>
               </div>
-              <div className="flex items-center gap-3 pt-6">
+              <div className="sm:col-span-2 flex items-center gap-3 p-3 rounded-lg bg-surface-container/50 border border-white/[0.04]">
                 <input
                   type="checkbox"
                   id="showCategories"
@@ -126,46 +141,63 @@ export default function SettingsPage() {
                   onChange={e => setSettings({ ...settings, showCategories: e.target.checked })}
                   className="w-4 h-4 rounded border-white/20 bg-transparent text-primary focus:ring-primary"
                 />
-                <label htmlFor="showCategories" className="text-sm text-on-surface">Mostrar filtros de categoría</label>
+                <label htmlFor="showCategories" className="text-sm text-on-surface flex items-center gap-2">
+                  <Eye className="w-3.5 h-3.5 text-on-surface-variant/50" />
+                  Mostrar filtros de categoría en el catálogo
+                </label>
               </div>
             </div>
           </div>
 
           {/* Hero */}
-          <div className="glass p-5 sm:p-6 rounded-xl border border-white/5">
-            <h2 className="font-serif text-lg mb-4 text-primary">Sección Hero</h2>
+          <div className="glass p-5 sm:p-6 rounded-xl sm:rounded-2xl border border-white/[0.06]">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center">
+                <Paintbrush className="w-4 h-4 text-primary" />
+              </div>
+              <h2 className="font-serif text-base text-on-surface">Sección Hero</h2>
+            </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-1.5">Título Principal</label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <Type className="w-3 h-3" /> Título Principal
+                </label>
                 <input
                   value={settings.heroTitle}
                   onChange={e => setSettings({ ...settings, heroTitle: e.target.value })}
-                  className="w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-sm text-on-surface"
+                  className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface focus:outline-none focus:border-primary/40 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-1.5">Subtítulo / Descripción</label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                  <Type className="w-3 h-3" /> Subtítulo
+                </label>
                 <textarea
                   rows={3}
                   value={settings.heroSubtitle}
                   onChange={e => setSettings({ ...settings, heroSubtitle: e.target.value })}
-                  className="w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-sm text-on-surface resize-none"
+                  className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface resize-none focus:outline-none focus:border-primary/40 transition-all"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={saving}
-              className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-primary-container to-[#8E6E37] text-on-primary rounded-xl text-sm font-semibold tracking-wide hover:opacity-90 transition-all disabled:opacity-50"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-primary-container to-[#8E6E37] text-on-primary rounded-xl text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-primary/10"
             >
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Check className="w-4 h-4" />
+              )}
               {saving ? 'Guardando...' : 'Guardar Configuración'}
             </button>
           </div>
         </form>
-      </div>
+      </main>
     </div>
   )
 }

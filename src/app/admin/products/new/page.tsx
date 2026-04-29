@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ImageUpload } from '@/components/ImageUpload'
+import {
+  ArrowLeft, Check, Loader2, Package, Star, Hash
+} from 'lucide-react'
 
 interface Category {
   id: string
   name: string
-  icon: string | null
 }
 
 export default function NewProductPage() {
@@ -77,50 +79,64 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-on-surface py-8 sm:py-12 px-4 sm:px-6 lg:px-16">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <h1 className="font-serif text-2xl sm:text-[32px] font-medium leading-[1.2] text-on-surface">Nuevo Producto</h1>
-          <Link href="/admin" className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant hover:text-primary transition-colors">
-            ← Volver
-          </Link>
+    <div className="min-h-screen bg-background text-on-surface">
+      <header className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-white/[0.06]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16">
+          <div className="flex items-center h-14">
+            <Link href="/admin" className="flex items-center gap-2 text-xs text-on-surface-variant hover:text-primary transition-colors mr-4">
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </Link>
+            <h1 className="font-serif text-base sm:text-lg font-medium text-on-surface">Nuevo Producto</h1>
+          </div>
         </div>
+      </header>
 
-        <div className="glass p-5 sm:p-8 lg:p-10 rounded-xl border border-white/5">
+      <div className="h-14" />
+
+      <main className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-16">
+        <div className="glass p-5 sm:p-8 rounded-xl sm:rounded-2xl border border-white/[0.06]">
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             {/* Imagen */}
             <div>
-              <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-3">Imagen del Producto</label>
+              <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-3">
+                <Package className="w-3 h-3" /> Imagen del Producto
+              </label>
               <ImageUpload onUpload={handleImageUpload} />
             </div>
 
             <div>
-              <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Nombre del Producto</label>
+              <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-2">
+                <Package className="w-3 h-3" /> Nombre
+              </label>
               <input
                 type="text"
                 name="name"
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base sm:text-lg text-on-surface transition-colors"
+                className="block w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 focus:outline-none focus:border-primary/40 text-sm sm:text-base text-on-surface transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Descripción</label>
+              <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-2">
+                <Package className="w-3 h-3" /> Descripción
+              </label>
               <textarea
                 name="description"
                 rows={4}
                 required
                 value={formData.description}
                 onChange={handleChange}
-                className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base text-on-surface transition-colors resize-none"
+                className="block w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 focus:outline-none focus:border-primary/40 text-sm text-on-surface transition-all resize-none"
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-y-6 sm:gap-y-8 gap-x-8 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-y-5 sm:gap-y-6 gap-x-6 sm:grid-cols-2">
               <div>
-                <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Precio (USD)</label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-2">
+                  <Hash className="w-3 h-3" /> Precio (USD)
+                </label>
                 <input
                   type="number"
                   name="price"
@@ -129,27 +145,29 @@ export default function NewProductPage() {
                   required
                   value={formData.price}
                   onChange={handleChange}
-                  className="block w-full bg-transparent border-b border-outline-variant py-2 focus:outline-none focus:border-primary text-base sm:text-lg font-serif text-on-surface transition-colors"
+                  className="block w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 focus:outline-none focus:border-primary/40 text-sm sm:text-base text-on-surface transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.15em] text-on-surface-variant mb-2">Categoría</label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-2">
+                  <Package className="w-3 h-3" /> Categoría
+                </label>
                 <select
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
-                  className="block w-full bg-surface-container border border-white/5 rounded-lg py-2.5 px-3 focus:outline-none focus:border-primary text-base text-on-surface transition-colors appearance-none"
+                  className="block w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 focus:outline-none focus:border-primary/40 text-sm text-on-surface transition-all appearance-none"
                   style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1a1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '16px' }}
                 >
                   <option value="">Sin categoría</option>
                   {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-container/50 border border-white/[0.04]">
               <input
                 type="checkbox"
                 name="featured"
@@ -158,7 +176,10 @@ export default function NewProductPage() {
                 onChange={handleChange}
                 className="w-4 h-4 rounded border-white/20 bg-transparent text-primary focus:ring-primary"
               />
-              <label htmlFor="featured" className="text-sm text-on-surface">Producto destacado</label>
+              <label htmlFor="featured" className="text-sm text-on-surface flex items-center gap-2">
+                <Star className="w-3.5 h-3.5 text-on-surface-variant/50" />
+                Producto destacado
+              </label>
             </div>
 
             <div className="pt-2 sm:pt-4">
@@ -166,15 +187,20 @@ export default function NewProductPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full sm:w-auto inline-flex justify-center py-3.5 sm:py-4 px-6 sm:px-8 border border-transparent rounded-xl bg-gradient-to-r from-primary-container to-[#8E6E37] text-sm font-semibold tracking-[0.05em] text-on-primary hover:opacity-90 transition-all disabled:opacity-50"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 sm:py-3.5 px-6 sm:px-8 rounded-xl bg-gradient-to-r from-primary-container to-[#8E6E37] text-sm font-semibold tracking-[0.05em] text-on-primary hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-primary/10"
                 >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
                   {loading ? 'Registrando...' : 'Registrar Producto'}
                 </button>
               </div>
             </div>
           </form>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

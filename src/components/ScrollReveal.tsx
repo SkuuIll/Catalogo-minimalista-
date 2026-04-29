@@ -7,11 +7,13 @@ export function ScrollReveal({
   className = '',
   delay = 0,
   direction = 'up',
+  duration = 0.7,
 }: {
   children: React.ReactNode
   className?: string
   delay?: number
   direction?: 'up' | 'down' | 'left' | 'right'
+  duration?: number
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
@@ -24,7 +26,7 @@ export function ScrollReveal({
           observer.unobserve(entry.target)
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
     )
 
     if (ref.current) observer.observe(ref.current)
@@ -32,10 +34,10 @@ export function ScrollReveal({
   }, [])
 
   const directions = {
-    up: 'translateY(40px)',
-    down: 'translateY(-40px)',
-    left: 'translateX(40px)',
-    right: 'translateX(-40px)',
+    up: 'translateY(50px)',
+    down: 'translateY(-50px)',
+    left: 'translateX(50px)',
+    right: 'translateX(-50px)',
   }
 
   return (
@@ -45,10 +47,70 @@ export function ScrollReveal({
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translate(0)' : directions[direction],
-        transition: `opacity 0.7s ease-out ${delay}s, transform 0.7s ease-out ${delay}s`,
+        transition: `opacity ${duration}s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s, transform ${duration}s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
       }}
     >
       {children}
+    </div>
+  )
+}
+
+export function ParallaxImage({
+  src,
+  alt,
+  className = '',
+}: {
+  src: string
+  alt: string
+  className?: string
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [offset, setOffset] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      const windowHeight = window.innerHeight
+      const progress = (windowHeight - rect.top) / (windowHeight + rect.height)
+      setOffset(Math.max(-20, Math.min(20, (progress - 0.5) * 30)))
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return (
+    <div ref={ref} className={`overflow-hidden ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover will-change-transform"
+        style={{ transform: `translateY(${offset}px) scale(1.1)` }}
+        loading="lazy"
+      />
+    </div>
+  )
+}
+
+export function SkeletonCard() {
+  return (
+    <div className="flex flex-col animate-pulse">
+      <div className="aspect-[4/5] bg-surface-container rounded-xl mb-4" />
+      <div className="h-5 bg-surface-container rounded w-3/4 mb-2" />
+      <div className="h-4 bg-surface-container rounded w-1/2 mb-2" />
+      <div className="h-3 bg-surface-container rounded w-1/4" />
+    </div>
+  )
+}
+
+export function SkeletonText({ lines = 3, className = '' }: { lines?: number; className?: string }) {
+  return (
+    <div className={`space-y-2 ${className}`}>
+      {Array.from({ length: lines }).map((_, i) => (
+        <div key={i} className="h-4 bg-surface-container rounded animate-pulse" style={{ width: `${85 - i * 15}%` }} />
+      ))}
     </div>
   )
 }
