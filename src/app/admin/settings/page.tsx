@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft, Settings, Palette, Type, Eye, Loader2,
-  Check, Globe, Paintbrush
+  Check, Globe, Paintbrush, KeyRound, Sparkles
 } from 'lucide-react'
 
 interface SiteSettings {
@@ -15,6 +15,7 @@ interface SiteSettings {
   heroSubtitle: string
   primaryColor: string
   showCategories: boolean
+  geminiApiKey: string
 }
 
 export default function SettingsPage() {
@@ -27,6 +28,7 @@ export default function SettingsPage() {
     heroSubtitle: 'Un catálogo minimalista con artículos de alta calidad diseñados para el estilo de vida moderno.',
     primaryColor: '#d4a853',
     showCategories: true,
+    geminiApiKey: '',
   })
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function SettingsPage() {
             heroSubtitle: data.heroSubtitle || '',
             primaryColor: data.primaryColor || '#d4a853',
             showCategories: data.showCategories ?? true,
+            geminiApiKey: data.geminiApiKey || '',
           })
         }
       })
@@ -83,8 +86,6 @@ export default function SettingsPage() {
       <div className="h-14" />
 
       <main className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-16">
-        <p className="text-xs text-on-surface-variant/60 mb-6">Personaliza la apariencia y contenido del catálogo</p>
-
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Identidad */}
           <div className="glass p-5 sm:p-6 rounded-xl sm:rounded-2xl border border-white/[0.06]">
@@ -179,6 +180,31 @@ export default function SettingsPage() {
                   className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface resize-none focus:outline-none focus:border-primary/40 transition-all"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Gemini AI */}
+          <div className="glass p-5 sm:p-6 rounded-xl sm:rounded-2xl border border-white/[0.06]">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-primary" />
+              </div>
+              <h2 className="font-serif text-base text-on-surface">Inteligencia Artificial</h2>
+            </div>
+            <div>
+              <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60 mb-2">
+                <KeyRound className="w-3 h-3" /> API Key de Google Gemini
+              </label>
+              <input
+                type="password"
+                value={settings.geminiApiKey}
+                onChange={e => setSettings({ ...settings, geminiApiKey: e.target.value })}
+                placeholder="AIzaSy..."
+                className="w-full bg-surface-container border border-white/[0.06] rounded-lg py-2.5 px-3 text-sm text-on-surface placeholder-on-surface-variant/40 focus:outline-none focus:border-primary/40 transition-all font-mono"
+              />
+              <p className="text-[11px] text-on-surface-variant/40 mt-2">
+                Obtén tu API key en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google AI Studio</a>. Se usa para generar especificaciones de productos automáticamente.
+              </p>
             </div>
           </div>
 

@@ -24,6 +24,7 @@ export async function PUT(request: Request) {
         heroSubtitle: body.heroSubtitle,
         primaryColor: body.primaryColor,
         showCategories: body.showCategories,
+        geminiApiKey: body.geminiApiKey,
       },
       create: {
         id: 'default',
@@ -33,6 +34,7 @@ export async function PUT(request: Request) {
         heroSubtitle: body.heroSubtitle,
         primaryColor: body.primaryColor,
         showCategories: body.showCategories ?? true,
+        geminiApiKey: body.geminiApiKey,
       },
     })
     return NextResponse.json(settings)

@@ -32,6 +32,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
+    
     const product = await prisma.product.create({
       data: {
         name: body.name,
@@ -39,13 +40,29 @@ export async function POST(request: Request) {
         price: parseFloat(body.price),
         categoryId: body.categoryId || null,
         categoryName: body.categoryName || null,
+        images: body.images,
         imageUrl: body.imageUrl,
         imagePath: body.imagePath,
         featured: body.featured || false,
       }
     })
+
+    // Crear especificaciones si existen
+    if (body.specifications && Array.isArray(body.specifications)) {
+      await prisma.specification.createMany({
+        data: body.specifications
+          .filter((s: any) => s.key && s.value)
+          .map((s: any) => ({
+            key: s.key,
+            value: s.value,
+            productId: product.id,
+          }))
+      })
+    }
+
     return NextResponse.json(product)
   } catch (error) {
+    console.error('Create product error:', error)
     return NextResponse.json({ error: 'Error al crear el producto' }, { status: 500 })
   }
 }

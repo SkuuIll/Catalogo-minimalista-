@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,41 +17,54 @@ model User {
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String    @unique
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
   description String?
-  icon        String?   // emoji o clase de icono
-  order       Int       @default(0)
-  active      Boolean   @default(true)
+  icon        String?    // lucide icon name
+  order       Int        @default(0)
+  active      Boolean    @default(true)
+  parentId    String?
+  parent      Category?  @relation("Subcategories", fields: [parentId], references: [id])
+  children    Category[] @relation("Subcategories")
   products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Product {
-  id          String    @id @default(cuid())
-  name        String
-  description String
-  price       Float
-  imageUrl    String?
-  imagePath   String?   // ruta local de imagen subida
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id])
-  // fallback string para compatibilidad
-  categoryName String?
-  featured    Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String          @id @default(cuid())
+  name           String
+  description    String
+  price          Float
+  images         String?         // JSON array of image URLs/paths
+  imageUrl       String?         // legacy single image
+  imagePath      String?         // legacy single image
+  categoryId     String?
+  category       Category?       @relation(fields: [categoryId], references: [id])
+  categoryName   String?
+  specifications Specification[]
+  featured       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Specification {
+  id        String  @id @default(cuid())
+  key       String
+  value     String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model SiteSettings {
-  id          String   @id @default(cuid())
-  siteName    String   @default("Aura")
-  siteTagline String   @default("Minimalist")
-  heroTitle   String   @default("Curaduría de Objetos Esenciales")
-  heroSubtitle String  @default("Un catálogo minimalista con artículos de alta calidad diseñados para el estilo de vida moderno.")
-  primaryColor String  @default("#d4a853")
+  id             String  @id @default(cuid())
+  siteName       String  @default("Aura")
+  siteTagline    String  @default("Minimalist")
+  heroTitle      String  @default("Curaduría de Objetos Esenciales")
+  heroSubtitle   String  @default("Un catálogo minimalista con artículos de alta calidad diseñados para el estilo de vida moderno.")
+  primaryColor   String  @default("#d4a853")
   showCategories Boolean @default(true)
-  updatedAt   DateTime @updatedAt
+  geminiApiKey   String?
+  updatedAt      DateTime @updatedAt
 }

@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Admin
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@catalogo.com'
   const adminPassword = process.env.ADMIN_PASSWORD || 'Catalogo2026!Seguro'
   const password = await bcrypt.hash(adminPassword, 10)
@@ -20,14 +19,13 @@ async function main() {
   })
   console.log('✅ Usuario admin:', adminEmail)
 
-  // Site Settings
   await prisma.siteSettings.upsert({
     where: { id: 'default' },
     update: {},
     create: {
       id: 'default',
       siteName: 'Aura',
-      siteTagline: 'Minimalist',
+      siteTagline: 'Catálogo Premium',
       heroTitle: 'Curaduría de Objetos Esenciales',
       heroSubtitle: 'Un catálogo minimalista con artículos de alta calidad diseñados para el estilo de vida moderno. La simplicidad es la máxima sofisticación.',
       primaryColor: '#d4a853',
@@ -36,108 +34,169 @@ async function main() {
   })
   console.log('✅ SiteSettings creado')
 
-  // Limpiar para evitar duplicados
+  // Limpiar
+  await prisma.specification.deleteMany()
   await prisma.product.deleteMany()
   await prisma.category.deleteMany()
 
-  // Categorías
-  const categories = await Promise.all([
-    prisma.category.create({ data: { name: 'Tecnología', slug: 'tecnologia', icon: '💻', order: 0 } }),
-    prisma.category.create({ data: { name: 'Audio', slug: 'audio', icon: '🎧', order: 1 } }),
-    prisma.category.create({ data: { name: 'Accesorios', slug: 'accesorios', icon: '⌚', order: 2 } }),
-    prisma.category.create({ data: { name: 'Fotografía', slug: 'fotografia', icon: '📷', order: 3 } }),
-    prisma.category.create({ data: { name: 'Calzado', slug: 'calzado', icon: '👟', order: 4 } }),
-    prisma.category.create({ data: { name: 'Ropa', slug: 'ropa', icon: '👕', order: 5 } }),
-  ])
-  console.log('✅ Categorías creadas:', categories.length)
+  // Categorías padre
+  const catTecnologia = await prisma.category.create({ data: { name: 'Tecnología', slug: 'tecnologia', icon: 'laptop', order: 0 } })
+  const catAudio = await prisma.category.create({ data: { name: 'Audio', slug: 'audio', icon: 'headphones', order: 1 } })
+  const catAccesorios = await prisma.category.create({ data: { name: 'Accesorios', slug: 'accesorios', icon: 'watch', order: 2 } })
+  const catRopa = await prisma.category.create({ data: { name: 'Ropa', slug: 'ropa', icon: 'shirt', order: 3 } })
 
-  const catMap = new Map(categories.map(c => [c.slug, c.id]))
+  // Subcategorías
+  const subCelulares = await prisma.category.create({ data: { name: 'Celulares', slug: 'celulares', icon: 'smartphone', order: 0, parentId: catTecnologia.id } })
+  const subLaptops = await prisma.category.create({ data: { name: 'Laptops', slug: 'laptops', icon: 'laptop', order: 1, parentId: catTecnologia.id } })
+  const subTablets = await prisma.category.create({ data: { name: 'Tablets', slug: 'tablets', icon: 'tablet', order: 2, parentId: catTecnologia.id } })
+  const subAuriculares = await prisma.category.create({ data: { name: 'Auriculares', slug: 'auriculares', icon: 'headphones', order: 0, parentId: catAudio.id } })
+  const subParlantes = await prisma.category.create({ data: { name: 'Parlantes', slug: 'parlantes', icon: 'speaker', order: 1, parentId: catAudio.id } })
+  const subRelojes = await prisma.category.create({ data: { name: 'Relojes', slug: 'relojes', icon: 'watch', order: 0, parentId: catAccesorios.id } })
+  const subCamisetas = await prisma.category.create({ data: { name: 'Camisetas', slug: 'camisetas', icon: 'shirt', order: 0, parentId: catRopa.id } })
+
+  console.log('✅ Categorías creadas')
 
   // Productos
-  const products = await Promise.all([
-    prisma.product.create({
-      data: {
-        name: 'Smartphone Pro',
-        description: 'Último modelo con cámara profesional de 108MP, batería de 5000mAh y pantalla OLED de 120Hz.',
-        price: 999.99,
-        categoryId: catMap.get('tecnologia')!,
-        categoryName: 'Tecnología',
-        imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Auriculares Inalámbricos',
-        description: 'Cancelación activa de ruido, sonido Hi-Res Audio y 30 horas de autonomía.',
-        price: 249.50,
-        categoryId: catMap.get('audio')!,
-        categoryName: 'Audio',
-        imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Reloj Minimalista',
-        description: 'Diseño elegante con correa de cuero genuino y caja de acero inoxidable cepillado.',
-        price: 120.00,
-        categoryId: catMap.get('accesorios')!,
-        categoryName: 'Accesorios',
-        imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Laptop Ultraligera',
-        description: 'Procesador de última generación, 16GB RAM y SSD de 512GB en un cuerpo de 1.2kg.',
-        price: 1299.00,
-        categoryId: catMap.get('tecnologia')!,
-        categoryName: 'Tecnología',
-        imageUrl: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Cámara Instantánea',
-        description: 'Captura momentos únicos con estilo retro. Incluye 10 películas de regalo.',
-        price: 89.99,
-        categoryId: catMap.get('fotografia')!,
-        categoryName: 'Fotografía',
-        imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Zapatillas Deportivas',
-        description: 'Tecnología de amortiguación avanzada, transpirables y diseño urbano moderno.',
-        price: 159.00,
-        categoryId: catMap.get('calzado')!,
-        categoryName: 'Calzado',
-        imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Camiseta Premium',
-        description: 'Algodón orgánico 100%, corte slim fit y acabados de alta calidad.',
-        price: 45.00,
-        categoryId: catMap.get('ropa')!,
-        categoryName: 'Ropa',
-        imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-    prisma.product.create({
-      data: {
-        name: 'Tablet Pro',
-        description: 'Pantalla retina de 12.9 pulgadas, compatible con stylus y teclado magnético.',
-        price: 799.00,
-        categoryId: catMap.get('tecnologia')!,
-        categoryName: 'Tecnología',
-        imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=500&auto=format&fit=crop',
-      }
-    }),
-  ])
+  const productsData = [
+    {
+      name: 'Smartphone Pro X',
+      description: 'Último modelo con cámara profesional de 108MP, batería de 5000mAh y pantalla OLED de 120Hz.',
+      price: 999.99,
+      categoryId: subCelulares.id,
+      categoryName: 'Celulares',
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Pantalla', value: '6.7" OLED 120Hz' },
+        { key: 'Procesador', value: 'Snapdragon 8 Gen 3' },
+        { key: 'RAM', value: '12GB' },
+        { key: 'Almacenamiento', value: '256GB' },
+        { key: 'Cámara', value: '108MP principal' },
+        { key: 'Batería', value: '5000mAh' },
+      ]
+    },
+    {
+      name: 'Auriculares NoiseCancel',
+      description: 'Cancelación activa de ruido, sonido Hi-Res Audio y 30 horas de autonomía.',
+      price: 249.50,
+      categoryId: subAuriculares.id,
+      categoryName: 'Auriculares',
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Tipo', value: 'Over-ear inalámbricos' },
+        { key: 'ANC', value: 'Sí, adaptativo' },
+        { key: 'Autonomía', value: '30 horas' },
+        { key: 'Bluetooth', value: '5.3' },
+        { key: 'Peso', value: '250g' },
+      ]
+    },
+    {
+      name: 'Reloj Minimalista',
+      description: 'Diseño elegante con correa de cuero genuino y caja de acero inoxidable cepillado.',
+      price: 120.00,
+      categoryId: subRelojes.id,
+      categoryName: 'Relojes',
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Material caja', value: 'Acero inoxidable' },
+        { key: 'Correa', value: 'Cuero genuino' },
+        { key: 'Movimiento', value: 'Cuarzo suizo' },
+        { key: 'Resistencia agua', value: '50m' },
+      ]
+    },
+    {
+      name: 'Laptop Ultraligera',
+      description: 'Procesador de última generación, 16GB RAM y SSD de 512GB en un cuerpo de 1.2kg.',
+      price: 1299.00,
+      categoryId: subLaptops.id,
+      categoryName: 'Laptops',
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Procesador', value: 'Intel Core i7-13700H' },
+        { key: 'RAM', value: '16GB DDR5' },
+        { key: 'Almacenamiento', value: '512GB NVMe SSD' },
+        { key: 'Pantalla', value: '14" IPS 2.8K' },
+        { key: 'Peso', value: '1.2kg' },
+      ]
+    },
+    {
+      name: 'Tablet Pro 12',
+      description: 'Pantalla retina de 12.9 pulgadas, compatible con stylus y teclado magnético.',
+      price: 799.00,
+      categoryId: subTablets.id,
+      categoryName: 'Tablets',
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Pantalla', value: '12.9" Liquid Retina' },
+        { key: 'Procesador', value: 'M2' },
+        { key: 'RAM', value: '8GB' },
+        { key: 'Almacenamiento', value: '128GB' },
+        { key: 'Stylus', value: 'Compatible' },
+      ]
+    },
+    {
+      name: 'Parlante Bluetooth',
+      description: 'Sonido 360°, resistente al agua IPX7, 20 horas de batería.',
+      price: 89.99,
+      categoryId: subParlantes.id,
+      categoryName: 'Parlantes',
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Potencia', value: '30W' },
+        { key: 'Resistencia', value: 'IPX7' },
+        { key: 'Autonomía', value: '20 horas' },
+        { key: 'Bluetooth', value: '5.2' },
+      ]
+    },
+    {
+      name: 'Camiseta Premium',
+      description: 'Algodón orgánico 100%, corte slim fit y acabados de alta calidad.',
+      price: 45.00,
+      categoryId: subCamisetas.id,
+      categoryName: 'Camisetas',
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Material', value: 'Algodón orgánico 100%' },
+        { key: 'Corte', value: 'Slim fit' },
+        { key: 'Origen', value: 'Portugal' },
+      ]
+    },
+    {
+      name: 'Smartwatch Active',
+      description: 'Monitoreo de salud, GPS integrado, resistencia al agua 5ATM.',
+      price: 199.00,
+      categoryId: subRelojes.id,
+      categoryName: 'Relojes',
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=500&auto=format&fit=crop',
+      specs: [
+        { key: 'Pantalla', value: '1.4" AMOLED' },
+        { key: 'Sensores', value: 'SpO2, HR, GPS' },
+        { key: 'Resistencia agua', value: '5ATM' },
+        { key: 'Autonomía', value: '7 días' },
+      ]
+    },
+  ]
 
-  console.log('✅ Productos creados:', products.length)
+  for (const p of productsData) {
+    const { specs, ...productData } = p as any
+    const product = await prisma.product.create({
+      data: productData
+    })
+    if (specs) {
+      await prisma.specification.createMany({
+        data: specs.map((s: any) => ({ ...s, productId: product.id }))
+      })
+    }
+  }
+
+  console.log('✅ Productos creados:', productsData.length)
 }
 
 main()

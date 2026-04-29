@@ -4,9 +4,11 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   try {
     const categories = await prisma.category.findMany({
-      orderBy: { order: 'asc' },
+      orderBy: [{ parentId: 'asc' }, { order: 'asc' }],
       include: {
-        _count: { select: { products: true } }
+        _count: { select: { products: true } },
+        children: true,
+        parent: true,
       }
     })
     return NextResponse.json(categories)
@@ -25,6 +27,7 @@ export async function POST(request: Request) {
         description: body.description,
         icon: body.icon,
         order: body.order ?? 0,
+        parentId: body.parentId || null,
       }
     })
     return NextResponse.json(category)
