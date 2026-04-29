@@ -75,3 +75,18 @@ model SiteSettings {
   whatsappMessage String?  @default("Hola, quiero información sobre:")
   updatedAt       DateTime @updatedAt
 }
+
+model LogEntry {
+  id          String   @id @default(cuid())
+  level       String   @default("error") // error | warn | info | debug
+  message     String
+  stack       String?
+  url         String?
+  userAgent   String?
+  userId      String?
+  metadata    String?  // JSON string for extra data
+  resolved    Boolean  @default(false)
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+}

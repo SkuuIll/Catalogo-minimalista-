@@ -15,7 +15,8 @@ export async function proxy(request: NextRequest) {
     const isSafeMethod = request.method === 'GET'
     const isSafePath = pathname.startsWith('/api/products') ||
       pathname.startsWith('/api/categories') ||
-      pathname.startsWith('/api/settings')
+      pathname.startsWith('/api/settings') ||
+      pathname.startsWith('/api/logs')
 
     if (isSafeMethod && isSafePath) {
       return NextResponse.next()
@@ -26,7 +27,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith('/api/uploads/') ||
       pathname.startsWith('/api/products') ||
       pathname.startsWith('/api/categories') ||
-      pathname.startsWith('/api/settings')
+      pathname.startsWith('/api/settings') ||
+      pathname.startsWith('/api/logs')
     )) {
       return NextResponse.next()
     }
@@ -65,7 +67,8 @@ export const config = {
       '/api/products/:path*',
       '/api/categories/:path*',
       '/api/settings/:path*',
-      '/api/gemini/:path*',
-      '/api/uploads/:path*',
+'/api/logs/:path*',
+    '/api/gemini/:path*',
+    '/api/uploads/:path*',
   ],
 }

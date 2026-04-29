@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import { ToastProvider } from "@/components/Toast";
+import { ErrorLogger } from "@/components/ErrorLogger";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -100,6 +101,7 @@ export default function RootLayout({
         <link rel="canonical" href={siteUrl} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface overflow-x-hidden">
+        <ErrorLogger />
         <ToastProvider>
           {children}
         </ToastProvider>

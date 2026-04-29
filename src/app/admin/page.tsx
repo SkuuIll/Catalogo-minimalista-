@@ -155,8 +155,11 @@ export default async function AdminDashboard({
           <Link href="/admin/categories" className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#111] border border-[#1a1a1a] text-xs text-white/50 hover:text-white hover:border-white/10 transition-all">
             <FolderOpen className="w-3.5 h-3.5" /> Categorías
           </Link>
-          <Link href="/admin/settings" className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#111] border border-[#1a1a1a] text-xs text-white/50 hover:text-white hover:border-white/10 transition-all">
+          <Link href="/admin/logs" className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#111] border border-[#1a1a1a] text-xs text-white/50 hover:text-white hover:border-white/10 transition-all">
             <Settings className="w-3.5 h-3.5" /> Configuración
+          </Link>
+          <Link href="/admin/logs" className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#111] border border-[#1a1a1a] text-xs text-white/50 hover:text-white hover:border-white/10 transition-all">
+            <AlertTriangle className="w-3.5 h-3.5" /> Logs
           </Link>
 
           {/* Search bar */}
