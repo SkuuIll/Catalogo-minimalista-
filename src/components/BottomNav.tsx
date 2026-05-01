@@ -12,12 +12,12 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[70] sm:hidden">
-      <div className="bg-[#161310]/95 backdrop-blur-md border-t border-[#2E2925]/60 pb-[env(safe-area-inset-bottom)]">
-        <div className="flex justify-around items-center h-12">
-          <NavItem href="/" active={isActive('/')} icon={<Home className="w-5 h-5" />} label="Inicio" />
-          <NavItem href="/explore" active={isActive('/explore')} icon={<Compass className="w-5 h-5" />} label="Explorar" />
-          <NavItem href="/search" active={isActive('/search')} icon={<Search className="w-5 h-5" />} label="Buscar" />
-          <NavItem href="/login" active={isActive('/login')} icon={<User className="w-5 h-5" />} label="Cuenta" />
+      <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-[#1a1a1a] pb-[env(safe-area-inset-bottom)]">
+        <div className="flex justify-around items-center h-16">
+          <NavItem href="/" active={isActive('/')} icon={<Home className="w-5 h-5" />} label="Home" />
+          <NavItem href="/explore" active={isActive('/explore')} icon={<Compass className="w-5 h-5" />} label="Explore" />
+          <NavItem href="/search" active={isActive('/search')} icon={<Search className="w-5 h-5" />} label="Search" />
+          <NavItem href="/login" active={isActive('/login')} icon={<User className="w-5 h-5" />} label="Account" />
         </div>
       </div>
     </nav>
@@ -28,13 +28,17 @@ function NavItem({ href, active, icon, label }: { href: string; active: boolean;
   return (
     <Link
       href={href}
-      className={`relative flex flex-col items-center justify-center gap-0.5 w-16 h-full transition-colors duration-300 ${active ? 'text-[#C9A55A]' : 'text-[#8A8278] hover:text-[#F0EAE0]'}`}
+      className={`relative flex flex-col items-center justify-center gap-1 w-16 h-full transition-all duration-300 ${active ? 'text-[#c9a55a]' : 'text-[#666] hover:text-[#888]'}`}
     >
       {active && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-[2px] rounded-full bg-[#C9A55A]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-3 bg-[#c9a55a]" />
       )}
-      {icon}
-      <span className="text-[9px] font-normal tracking-[0.15em] uppercase">{label}</span>
+      <div className={`transition-transform duration-300 ${active ? 'scale-110' : 'scale-100'}`}>
+        {icon}
+      </div>
+      <span className={`text-[8px] font-normal uppercase tracking-[0.25em] transition-all duration-300 ${active ? 'opacity-100' : 'opacity-70'}`}>
+        {label}
+      </span>
     </Link>
   )
 }

@@ -6,6 +6,7 @@ import { formatARS, discountPercent } from '@/lib/format'
 import { ImageCarousel } from '@/components/ImageCarousel'
 import { BottomNav } from '@/components/BottomNav'
 import { ImageFade } from '@/components/ImageFade'
+import { Reviews } from '@/components/Reviews'
 import {
   ArrowLeft, Share2, Heart, Star, Package,
   ChevronRight, MessageCircle, X, Check, Truck, Shield, RefreshCw
@@ -80,6 +81,30 @@ export default async function ProductPage({
   if (!product) notFound()
 
   const images = getProductImages(product)
+  
+  // Fetch reviews safely
+  let reviewData: { average: number; total: number; distribution: Record<number, number>; reviews: any[] } = { average: 0, total: 0, distribution: {}, reviews: [] }
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { productId: id, approved: true },
+      orderBy: { createdAt: 'desc' },
+    })
+    const avg = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
+    reviewData = {
+      average: Math.round(avg * 10) / 10,
+      total: reviews.length,
+      distribution: {
+        5: reviews.filter(r => r.rating === 5).length,
+        4: reviews.filter(r => r.rating === 4).length,
+        3: reviews.filter(r => r.rating === 3).length,
+        2: reviews.filter(r => r.rating === 2).length,
+        1: reviews.filter(r => r.rating === 1).length,
+      },
+      reviews,
+    }
+  } catch (error) {
+    console.error('Error loading reviews:', error)
+  }
 
   const breadcrumb: { label: string; href?: string }[] = []
   if (product.category?.parent) {
@@ -106,41 +131,86 @@ export default async function ProductPage({
   const isOutOfStock = product.status === 'OUT_OF_STOCK'
 
   const statusStyles = {
-    AVAILABLE: 'text-[#3cb371] bg-[#3cb371]/8 border-[#3cb371]/20',
-    PREORDER: 'text-[#C9A55A] bg-[#C9A55A]/8 border-[#C9A55A]/20',
-    OUT_OF_STOCK: 'text-[#C0392B] bg-[#C0392B]/8 border-[#C0392B]/20',
+    AVAILABLE: 'text-[#4a4] bg-[#4a4]/8 border-[#4a4]/20',
+    PREORDER: 'text-[#c9a55a] bg-[#c9a55a]/8 border-[#c9a55a]/20',
+    OUT_OF_STOCK: 'text-[#c44] bg-[#c44]/8 border-[#c44]/20',
   }
   const statusLabels = {
-    AVAILABLE: 'Disponible',
-    PREORDER: 'Por pedido',
-    OUT_OF_STOCK: 'Sin stock',
+    AVAILABLE: 'Available',
+    PREORDER: 'By Order',
+    OUT_OF_STOCK: 'Unavailable',
   }
 
   const hasDiscount = product.discountPrice && product.discountPrice > product.price
 
+  // Schema.org structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "description": product.description,
+    "image": images[0] || `${siteUrl}/og-image.png`,
+    "offers": {
+      "@type": "Offer",
+      "price": product.price,
+      "priceCurrency": "ARS",
+      "availability": product.status === 'AVAILABLE' 
+        ? "https://schema.org/InStock" 
+        : product.status === 'PREORDER'
+        ? "https://schema.org/PreOrder"
+        : "https://schema.org/OutOfStock",
+      "url": `${siteUrl}/product/${product.id}`,
+    },
+    "brand": {
+      "@type": "Brand",
+      "name": settings?.siteName || 'Aura',
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": reviewData.average || 0,
+      "reviewCount": reviewData.total || 0,
+    },
+    "review": reviewData.reviews?.slice(0, 5).map((r: any) => ({
+      "@type": "Review",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": r.rating,
+      },
+      "author": {
+        "@type": "Person",
+        "name": r.authorName,
+      },
+    })),
+  }
+
   return (
-    <div className="min-h-screen bg-[#1A1714] pb-28 sm:pb-0">
-      {/* Floating header */}
+    <div className="min-h-screen bg-[#0a0a0a] pb-28 sm:pb-0 selection:bg-[#c9a55a]/20">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* Floating header - Minimal luxury */}
       <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-[#161310]/95 backdrop-blur-md border-b border-[#2E2925]/60">
-          <div className="flex items-center justify-between h-11 px-3 max-w-7xl mx-auto">
+        <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
+          <div className="flex items-center justify-between h-16 px-6 max-w-7xl mx-auto">
             <Link
               href="/"
-              className="w-8 h-8 rounded-full bg-[#1A1714]/80 flex items-center justify-center hover:bg-[#2A2520] transition-colors duration-300"
+              className="w-10 h-10 flex items-center justify-center hover:bg-[#0f0f0f] transition-colors duration-300"
             >
-              <ArrowLeft className="w-4 h-4 text-[#8A8278]" strokeWidth={1.5} />
+              <ArrowLeft className="w-4 h-4 text-[#666]" strokeWidth={1} />
             </Link>
-            <div className="absolute left-1/2 -translate-x-1/2 max-w-[200px]">
-              <span className="text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/70 truncate block text-center">
+            <div className="absolute left-1/2 -translate-x-1/2 max-w-[280px]">
+              <span className="text-[9px] uppercase tracking-[0.3em] text-[#666] truncate block text-center">
                 {product.name}
               </span>
             </div>
-            <div className="flex gap-1.5">
-              <button className="w-8 h-8 rounded-full bg-[#1A1714]/80 flex items-center justify-center hover:bg-[#2A2520] transition-colors duration-300">
-                <Share2 className="w-3.5 h-3.5 text-[#8A8278]" strokeWidth={1.5} />
+            <div className="flex gap-2">
+              <button className="w-10 h-10 flex items-center justify-center hover:bg-[#0f0f0f] transition-colors duration-300">
+                <Share2 className="w-4 h-4 text-[#666]" strokeWidth={1} />
               </button>
-              <button className="w-8 h-8 rounded-full bg-[#1A1714]/80 flex items-center justify-center hover:bg-[#2A2520] transition-colors duration-300">
-                <Heart className="w-3.5 h-3.5 text-[#8A8278]" strokeWidth={1.5} />
+              <button className="w-10 h-10 flex items-center justify-center hover:bg-[#0f0f0f] transition-colors duration-300">
+                <Heart className="w-4 h-4 text-[#666]" strokeWidth={1} />
               </button>
             </div>
           </div>
@@ -154,58 +224,58 @@ export default async function ProductPage({
         </div>
 
         {/* Info section */}
-        <main className="px-5 pt-6 pb-6 sm:pt-14 sm:px-8 lg:px-12">
+        <main className="px-6 pt-20 pb-6 sm:pt-24 sm:px-10 lg:px-16">
           {/* Breadcrumb + Status */}
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-8">
             {breadcrumb.length > 0 && (
-              <div className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/60">
+              <div className="flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-[#666]">
                 {breadcrumb.map((item, i) => (
-                  <span key={i} className="flex items-center gap-1">
-                    {i > 0 && <ChevronRight className="w-3 h-3 opacity-40" />}
-                    <span className={i === breadcrumb.length - 1 ? 'text-[#8A8278]' : ''}>{item.label}</span>
+                  <span key={i} className="flex items-center gap-2">
+                    {i > 0 && <ChevronRight className="w-3 h-3 opacity-30" strokeWidth={1} />}
+                    <span className={i === breadcrumb.length - 1 ? 'text-[#888]' : ''}>{item.label}</span>
                   </span>
                 ))}
               </div>
             )}
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-sm text-[10px] font-normal uppercase tracking-[0.15em] border ${statusStyles[product.status as keyof typeof statusStyles] || statusStyles.AVAILABLE}`}>
+            <span className={`inline-flex items-center px-3 py-1.5 rounded-none text-[8px] font-normal uppercase tracking-[0.25em] border ${statusStyles[product.status as keyof typeof statusStyles] || statusStyles.AVAILABLE}`}>
               {statusLabels[product.status as keyof typeof statusLabels] || product.status}
             </span>
           </div>
 
           {/* Name */}
-          <h1 className="font-serif text-2xl sm:text-[28px] font-light text-[#F0EAE0] leading-[1.2] tracking-[0.02em] mb-4">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light text-[#e8e8e8] leading-[1.2] tracking-[0.1em] mb-6">
             {product.name}
           </h1>
 
           {/* Price */}
-          <div className="flex items-baseline gap-3 mb-6 pb-6 border-b border-[#2E2925]/60">
-            <span className="text-[26px] font-serif italic text-[#C9A55A] leading-none">{formatARS(product.price)}</span>
+          <div className="flex items-baseline gap-4 mb-8 pb-8 border-b border-[#1a1a1a]">
+            <span className="font-serif text-3xl italic text-[#c9a55a] leading-none">{formatARS(product.price)}</span>
             {hasDiscount && (
               <>
-                <span className="text-[15px] text-[#8A8278]/40 line-through">{formatARS(product.discountPrice!)}</span>
-                <span className="text-[12px] font-normal text-[#C0392B] uppercase tracking-[0.1em]">
-                  -{discountPercent(product.price, product.discountPrice!)}% OFF
+                <span className="text-[14px] text-[#444] line-through">{formatARS(product.discountPrice!)}</span>
+                <span className="text-[11px] font-bold text-[#c44] uppercase tracking-[0.2em]">
+                  -{discountPercent(product.price, product.discountPrice!)}%
                 </span>
               </>
             )}
             {product.featured && !hasDiscount && (
-              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-[#C9A55A]/50">
-                <Star className="w-3 h-3 fill-[#C9A55A] text-[#C9A55A]" />
-                Destacado
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-[#c9a55a]/10 border border-[#c9a55a]/20 text-[8px] uppercase tracking-[0.25em] text-[#c9a55a]">
+                <Star className="w-3 h-3 fill-[#c9a55a] text-[#c9a55a]" strokeWidth={1} />
+                Selected
               </span>
             )}
           </div>
 
           {/* Description */}
-          <p className="text-[15px] text-[#8A8278] leading-[1.8] mb-7 max-w-prose font-light">
+          <p className="text-[14px] text-[#888] leading-[2] mb-10 max-w-prose font-light tracking-[0.05em]">
             {product.description}
           </p>
 
           {/* Info badges */}
-          <div className="flex flex-wrap gap-2.5 mb-8">
-            <InfoBadge icon={<Truck className="w-3 h-3" />} label="Envío gratis" />
-            <InfoBadge icon={<Shield className="w-3 h-3" />} label="Garantía incluida" />
-            <InfoBadge icon={<RefreshCw className="w-3 h-3" />} label="30 días devolución" />
+          <div className="flex flex-wrap gap-4 mb-10">
+            <InfoBadge icon={<Truck className="w-4 h-4" />} label="Complimentary Shipping" />
+            <InfoBadge icon={<Shield className="w-4 h-4" />} label="Official Warranty" />
+            <InfoBadge icon={<RefreshCw className="w-4 h-4" />} label="30-Day Returns" />
           </div>
 
           {/* Desktop CTA */}
@@ -246,7 +316,7 @@ export default async function ProductPage({
           {/* Related products */}
           {related.length > 0 && (
             <div className="pb-6">
-              <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-[#8A8278] mb-4">
+              <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-tertiary mb-4">
                 También te puede interesar
               </h2>
               <div className="flex gap-4 overflow-x-auto scrollbar-hide -mr-5 pr-5 pb-2">
@@ -260,59 +330,67 @@ export default async function ProductPage({
                       href={`/product/${p.id}`}
                       className="flex-shrink-0 w-28 sm:w-32 group"
                     >
-                      <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-[#221E1A] mb-2.5 border border-[#2E2925]/40 group-hover:border-[#C9A55A]/30 transition-all duration-500">
+                      <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface mb-2.5 border border-border/40 group-hover:border-primary/30 transition-all duration-500">
                         {rImg ? (
                           <ImageFade src={rImg} alt={p.name} containerClassName="w-full h-full" className="product-img-hover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-4 h-4 text-[#8A8278]/15" strokeWidth={1} />
+                            <Package className="w-4 h-4 text-tertiary/15" strokeWidth={1} />
                           </div>
                         )}
                       </div>
-                      <h3 className="text-[12px] font-medium text-[#F0EAE0]/80 line-clamp-2 leading-snug mb-1">{p.name}</h3>
-                      <span className="text-[12px] font-serif italic text-[#C9A55A]">{formatARS(p.price)}</span>
+                      <h3 className="text-[12px] font-medium text-foreground/80 line-clamp-2 leading-snug mb-1">{p.name}</h3>
+                      <span className="text-[12px] font-serif italic text-primary">{formatARS(p.price)}</span>
                     </Link>
                   )
                 })}
               </div>
             </div>
           )}
+
+          {/* Reviews section */}
+          <Reviews
+            productId={product.id}
+            averageRating={reviewData.average}
+            totalReviews={reviewData.total}
+            distribution={reviewData.distribution || {}}
+          />
         </main>
       </div>
 
-      {/* Sticky mobile action bar */}
+      {/* Sticky mobile action bar - Minimal luxury */}
       <div className="fixed bottom-0 left-0 right-0 z-[70] sm:hidden">
-        <div className="bg-[#161310]/95 backdrop-blur-md border-t border-[#2E2925]/60 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <div className="flex items-center gap-3">
+        <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-[#1a1a1a] px-6 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div className="flex items-center gap-4">
             <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/50 mb-0.5">Precio</p>
-              <p className="text-lg font-serif italic text-[#F0EAE0] leading-none">{formatARS(product.price)}</p>
+              <p className="text-[8px] uppercase tracking-[0.25em] text-[#666] mb-1">PRICE</p>
+              <p className="text-xl font-serif italic text-[#c9a55a] leading-none">{formatARS(product.price)}</p>
               {hasDiscount && (
-                <p className="text-xs text-[#8A8278]/40 line-through mt-0.5">{formatARS(product.discountPrice!)}</p>
+                <p className="text-xs text-[#444] line-through mt-1">{formatARS(product.discountPrice!)}</p>
               )}
             </div>
 
             {isOutOfStock ? (
               <button
                 disabled
-                className="flex-1 flex items-center justify-center gap-1.5 h-[48px] px-5 bg-[#221E1A] text-[#8A8278]/30 rounded-sm text-[11px] uppercase tracking-[0.15em] border border-[#2E2925] cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 h-[52px] px-6 bg-[#0f0f0f] text-[#444] rounded-none text-[9px] uppercase tracking-[0.25em] border border-[#1a1a1a] cursor-not-allowed"
               >
-                <X className="w-4 h-4" strokeWidth={1.5} />
-                Agotado
+                <X className="w-4 h-4" strokeWidth={1} />
+                Unavailable
               </button>
             ) : waLink ? (
               <a
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 h-[48px] px-5 rounded-sm border border-[#25D366]/30 bg-[#1A3D2B] text-[#25D366] text-[11px] uppercase tracking-[0.15em] active:scale-[0.97] transition-all duration-300"
+                className="flex-1 flex items-center justify-center gap-2 h-[52px] px-6 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] active:scale-[0.99] transition-all duration-300 hover:bg-[#c9a55a] hover:text-[#0a0a0a]"
               >
-                <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
-                {isPreorder ? 'Consultar' : 'Comprar'}
+                <MessageCircle className="w-4 h-4" strokeWidth={1} />
+                {isPreorder ? 'Inquire' : 'Acquire'}
               </a>
             ) : (
-              <div className="flex-1 flex items-center justify-center gap-1.5 h-[48px] px-5 bg-[#221E1A] text-[#8A8278]/30 rounded-sm text-[11px] uppercase tracking-[0.15em] border border-[#2E2925]">
-                Sin WhatsApp
+              <div className="flex-1 flex items-center justify-center gap-2 h-[52px] px-6 bg-[#0f0f0f] text-[#444] rounded-none text-[9px] uppercase tracking-[0.25em] border border-[#1a1a1a]">
+                Unavailable
               </div>
             )}
           </div>
@@ -326,8 +404,8 @@ export default async function ProductPage({
 
 function InfoBadge({ label, icon }: { label: string; icon: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-[#221E1A] border border-[#2E2925]/60 text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/70 font-normal">
-      <span className="text-[#C9A55A]/50">{icon}</span>
+    <span className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] text-[9px] uppercase tracking-[0.25em] text-[#666] hover:border-[#2a2a2a] transition-colors duration-300">
+      <span className="text-[#c9a55a]/60">{icon}</span>
       {label}
     </span>
   )

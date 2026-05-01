@@ -50,7 +50,7 @@ export default function SettingsPage() {
           })
         }
       })
-      .catch(() => showToast('Error al cargar configuración', 'error'))
+      .catch(() => showToast('Error loading settings', 'error'))
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,13 +63,13 @@ export default function SettingsPage() {
         body: JSON.stringify(settings),
       })
       if (res.ok) {
-        showToast('Configuración guardada', 'success')
+        showToast('Settings saved', 'success')
         router.refresh()
       } else {
-        showToast('Error al guardar', 'error')
+        showToast('Error saving', 'error')
       }
     } catch {
-      showToast('Error de conexión', 'error')
+      showToast('Connection error', 'error')
     } finally {
       setSaving(false)
     }
@@ -79,54 +79,54 @@ export default function SettingsPage() {
     setSettings(s => ({ ...s, [key]: value }))
 
   return (
-    <div className="min-h-screen bg-[#1A1714]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#161310]/95 backdrop-blur-md border-b border-[#2E2925]/60">
-        <div className="flex items-center h-12 px-4 gap-3 max-w-7xl mx-auto">
-          <Link href="/admin" className="p-1.5 -ml-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 rounded-sm">
-            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+    <div className="min-h-screen bg-[#0a0a0a]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
+        <div className="flex items-center h-16 px-6 gap-4 max-w-7xl mx-auto">
+          <Link href="/admin" className="p-2 -ml-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
+            <ArrowLeft className="w-4 h-4" strokeWidth={1} />
           </Link>
-          <h1 className="font-serif text-sm font-light text-[#F0EAE0] tracking-[0.02em]">Configuración</h1>
+          <h1 className="font-serif text-lg font-light text-[#e8e8e8] tracking-[0.1em]">SETTINGS</h1>
         </div>
       </header>
 
-      <div className="h-12" />
+      <div className="h-16" />
 
-      <main className="max-w-xl mx-auto py-6 px-4 pb-12">
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <main className="max-w-xl mx-auto py-8 px-6 pb-12">
+        <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Site identity */}
-          <SettingsSection title="Identidad del sitio" icon={<Globe className="w-3.5 h-3.5" strokeWidth={1.5} />}>
-            <div className="grid sm:grid-cols-2 gap-3">
+          <SettingsSection title="SITE IDENTITY" icon={<Globe className="w-4 h-4" strokeWidth={1} />}>
+            <div className="grid sm:grid-cols-2 gap-4">
               <SettingsInput
-                label="Nombre del sitio"
+                label="SITE NAME"
                 value={settings.siteName}
                 onChange={e => set('siteName', e.target.value)}
               />
               <SettingsInput
-                label="Tagline"
+                label="TAGLINE"
                 value={settings.siteTagline}
                 onChange={e => set('siteTagline', e.target.value)}
-                placeholder="Catálogo Premium"
+                placeholder="PREMIUM CATALOG"
               />
             </div>
             <SettingsTextarea
-              label="Descripción del sitio (SEO)"
+              label="SITE DESCRIPTION (SEO)"
               value={settings.siteDescription}
               onChange={e => set('siteDescription', e.target.value)}
-              placeholder="Catálogo minimalista de productos premium…"
+              placeholder="Minimalist catalog of premium products…"
             />
           </SettingsSection>
 
           {/* Branding */}
-          <SettingsSection title="Marca y color" icon={<Palette className="w-3.5 h-3.5" strokeWidth={1.5} />}>
+          <SettingsSection title="BRANDING & COLOR" icon={<Palette className="w-4 h-4" strokeWidth={1} />}>
             <div>
-              <label className="settings-label">Color de acento</label>
+              <label className="settings-label">ACCENT COLOR</label>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
                   value={settings.primaryColor}
                   onChange={e => set('primaryColor', e.target.value)}
-                  className="w-10 h-10 rounded-sm border border-[#2E2925] bg-transparent cursor-pointer"
+                  className="w-11 h-11 rounded-none border border-[#1a1a1a] bg-[#0a0a0a] cursor-pointer"
                 />
                 <input
                   value={settings.primaryColor}
@@ -138,7 +138,7 @@ export default function SettingsPage() {
             </div>
 
             <SettingsInput
-              label="URL del Favicon"
+              label="FAVICON URL"
               value={settings.faviconUrl}
               onChange={e => set('faviconUrl', e.target.value)}
               placeholder="https://…/favicon.ico"
@@ -146,9 +146,9 @@ export default function SettingsPage() {
           </SettingsSection>
 
           {/* Logo */}
-          <SettingsSection title="Logo" icon={<ImageIcon className="w-3.5 h-3.5" strokeWidth={1.5} />}>
+          <SettingsSection title="LOGO" icon={<ImageIcon className="w-4 h-4" strokeWidth={1} />}>
             <div>
-              <label className="settings-label">Logo del sitio</label>
+              <label className="settings-label">SITE LOGO</label>
               <ImageUpload
                 onUpload={urls => set('logoUrl', urls[0] || '')}
                 defaultImages={settings.logoUrl ? [settings.logoUrl] : []}
@@ -158,49 +158,49 @@ export default function SettingsPage() {
           </SettingsSection>
 
           {/* Hero */}
-          <SettingsSection title="Hero / Portada" icon={<Globe className="w-3.5 h-3.5" strokeWidth={1.5} />}>
+          <SettingsSection title="HERO / COVER" icon={<Globe className="w-4 h-4" strokeWidth={1} />}>
             <SettingsInput
-              label="Título principal"
+              label="MAIN TITLE"
               value={settings.heroTitle}
               onChange={e => set('heroTitle', e.target.value)}
-              placeholder="Productos que importan"
+              placeholder="Products that matter"
             />
             <SettingsTextarea
-              label="Subtítulo"
+              label="SUBTITLE"
               value={settings.heroSubtitle}
               onChange={e => set('heroSubtitle', e.target.value)}
-              placeholder="Selección curada de tecnología, audio y más…"
+              placeholder="Curated selection of technology, audio and more…"
               rows={2}
             />
           </SettingsSection>
 
           {/* WhatsApp */}
-          <SettingsSection title="WhatsApp" icon={<MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />}>
+          <SettingsSection title="WHATSAPP" icon={<MessageCircle className="w-4 h-4" strokeWidth={1} />}>
             <SettingsInput
-              label="Número (con código de país)"
+              label="NUMBER (WITH COUNTRY CODE)"
               value={settings.whatsappNumber}
               onChange={e => set('whatsappNumber', e.target.value)}
               placeholder="+5491112345678"
               type="tel"
             />
             <SettingsTextarea
-              label="Mensaje predeterminado"
+              label="DEFAULT MESSAGE"
               value={settings.whatsappMessage}
               onChange={e => set('whatsappMessage', e.target.value)}
               rows={2}
             />
             {settings.whatsappNumber && (
-              <div className="flex items-center gap-2 text-xs text-[#8A8278]/50 bg-[#221E1A] rounded-sm p-3 border border-[#2E2925]">
-                <MessageCircle className="w-3 h-3 text-[#3cb371]/60 flex-shrink-0" strokeWidth={1.5} />
-                <span>WhatsApp configurado: <span className="text-[#F0EAE0]/70">{settings.whatsappNumber}</span></span>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-[#666] bg-[#0f0f0f] rounded-none p-3 border border-[#1a1a1a]">
+                <MessageCircle className="w-3.5 h-3.5 text-[#3cb371]/60 flex-shrink-0" strokeWidth={1} />
+                <span>WHATSAPP CONFIGURED: <span className="text-[#e8e8e8]/70">{settings.whatsappNumber}</span></span>
               </div>
             )}
           </SettingsSection>
 
           {/* AI */}
-          <SettingsSection title="Inteligencia Artificial" icon={<Cpu className="w-3.5 h-3.5" strokeWidth={1.5} />}>
+          <SettingsSection title="ARTIFICIAL INTELLIGENCE" icon={<Cpu className="w-4 h-4" strokeWidth={1} />}>
             <div>
-              <label className="settings-label">Google Gemini API Key</label>
+              <label className="settings-label">GOOGLE GEMINI API KEY</label>
               <div className="relative">
                 <input
                   type={showApiKey ? 'text' : 'password'}
@@ -212,20 +212,20 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowApiKey(!showApiKey)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A8278]/30 hover:text-[#8A8278] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-[#e8e8e8] transition-colors"
                 >
-                  {showApiKey ? <EyeOff className="w-4 h-4" strokeWidth={1.5} /> : <Eye className="w-4 h-4" strokeWidth={1.5} />}
+                  {showApiKey ? <EyeOff className="w-4 h-4" strokeWidth={1} /> : <Eye className="w-4 h-4" strokeWidth={1} />}
                 </button>
               </div>
-              <p className="text-xs text-[#8A8278]/30 mt-1.5">
-                Permite generar especificaciones con IA.{' '}
+              <p className="text-[10px] uppercase tracking-[0.15em] text-[#444] mt-2">
+                ENABLES AI-GENERATED SPECIFICATIONS.{' '}
                 <a
                   href="https://aistudio.google.com/app/apikey"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#C9A55A]/60 hover:text-[#C9A55A] transition-colors"
+                  className="text-[#c9a55a] hover:text-[#e8e8e8] transition-colors"
                 >
-                  Obtener key en Google AI Studio
+                  GET KEY FROM GOOGLE AI STUDIO
                 </a>
               </p>
             </div>
@@ -235,17 +235,17 @@ export default function SettingsPage() {
           <div className="flex justify-end gap-3 pt-2">
             <Link
               href="/admin"
-              className="h-11 px-6 rounded-sm bg-[#2A2520] border border-[#2E2925] text-[13px] text-[#8A8278] hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all flex items-center"
+              className="h-11 px-6 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] text-[12px] uppercase tracking-[0.15em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all flex items-center"
             >
-              Cancelar
+              CANCEL
             </Link>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[12px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] font-normal hover:bg-[#c9a55a] hover:text-[#0a0a0a] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" strokeWidth={1.5} />}
-              {saving ? 'Guardando…' : 'Guardar configuración'}
+              {saving ? 'SAVING…' : 'SAVE SETTINGS'}
             </button>
           </div>
         </form>
@@ -254,29 +254,29 @@ export default function SettingsPage() {
       <style jsx global>{`
         .settings-label {
           display: block;
-          font-size: 11px;
+          font-size: 9px;
           font-weight: 600;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: rgb(138 130 120 / 0.50);
-          margin-bottom: 6px;
+          letter-spacing: 0.25em;
+          color: rgb(102 102 102);
+          margin-bottom: 8px;
         }
         .settings-input {
-          background: #2A2520;
-          border: 1px solid #2E2925;
-          border-radius: 4px;
+          background: #0a0a0a;
+          border: 1px solid #1a1a1a;
+          border-radius: 0;
           height: 44px;
           padding: 0 12px;
-          font-size: 14px;
-          color: #F0EAE0;
+          font-size: 13px;
+          color: #e8e8e8;
           outline: none;
           transition: border-color 0.15s;
         }
         .settings-input:focus {
-          border-color: rgb(201 165 90 / 0.30);
+          border-color: rgb(102 102 102);
         }
         .settings-input::placeholder {
-          color: rgb(138 130 120 / 0.25);
+          color: rgb(68 68 68);
         }
       `}</style>
     </div>
@@ -289,10 +289,10 @@ function SettingsSection({
   title: string; icon: React.ReactNode; children: React.ReactNode
 }) {
   return (
-    <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5 space-y-3">
+    <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-6 space-y-4">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-[#C9A55A]/50">{icon}</span>
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[#8A8278]/50">{title}</h2>
+        <span className="text-[#c9a55a]/50">{icon}</span>
+        <h2 className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#666]">{title}</h2>
       </div>
       {children}
     </div>
@@ -318,7 +318,7 @@ function SettingsTextarea({
       <label className="settings-label">{label}</label>
       <textarea
         rows={rows}
-        className="w-full bg-[#2A2520] border border-[#2E2925] rounded-sm p-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/25 focus:outline-none focus:border-[#C9A55A]/30 transition-all resize-none"
+        className="w-full bg-[#0a0a0a] border border-[#1a1a1a] rounded-none p-3 text-[13px] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#2a2a2a] transition-all resize-none"
         {...props}
       />
     </div>

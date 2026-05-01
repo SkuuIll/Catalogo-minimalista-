@@ -25,46 +25,33 @@ export default async function Home() {
   ])
 
   return (
-    <div className="min-h-screen bg-[#1A1714] selection:bg-[#C9A55A]/20 pb-16 sm:pb-0">
+    <div className="min-h-screen bg-[#0a0a0a] selection:bg-[#c9a55a]/20 pb-16 sm:pb-0">
       {/* Fixed header */}
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-[#161310] border-b border-[#2E2925]">
-          <div className="flex justify-between items-center h-11 px-4 max-w-7xl mx-auto">
-            <div className="flex items-center gap-5">
-              <Link href="/" className="flex items-center gap-2">
-                {settings?.logoUrl ? (
-                  <img
-                    src={settings.logoUrl}
-                    alt={settings?.siteName || 'Aura'}
-                    className="w-6 h-6 rounded-sm object-cover"
-                  />
-                ) : (
-                  <div className="w-6 h-6 rounded-sm bg-[#C9A55A]/15 border border-[#C9A55A]/20 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-[#C9A55A]">
-                      {(settings?.siteName || 'A')[0]}
-                    </span>
-                  </div>
-                )}
-                <span className="font-serif text-sm font-light tracking-[0.02em] text-[#F0EAE0]">
-                  {settings?.siteName || 'Aura'}
+      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
+          <div className="flex justify-between items-center h-16 px-6 max-w-7xl mx-auto">
+            <Link href="/" className="flex items-center gap-4 group">
+              <div>
+                <span className="font-serif text-xl font-light tracking-[0.3em] text-[#e8e8e8] block">
+                  {settings?.siteName || 'SHOWROOM JR'}
                 </span>
                 {settings?.siteTagline && (
-                  <span className="hidden sm:inline text-[10px] font-normal uppercase tracking-[0.15em] text-[#8A8278] ml-1">
+                  <span className="text-[8px] uppercase tracking-[0.4em] text-[#666] block mt-0.5">
                     {settings.siteTagline}
                   </span>
                 )}
-              </Link>
+              </div>
+            </Link>
 
-              <nav className="hidden md:flex items-center gap-5">
-                <Link href="/" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#C9A55A] transition-colors duration-300">Inicio</Link>
-                <Link href="/explore" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#C9A55A] transition-colors duration-300">Explorar</Link>
-                <Link href="/search" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#C9A55A] transition-colors duration-300">Buscar</Link>
-              </nav>
-            </div>
+            <nav className="hidden md:flex items-center gap-8">
+              <Link href="/" className="text-[10px] uppercase tracking-[0.2em] text-[#666] hover:text-[#c9a55a] transition-colors duration-300">Collection</Link>
+              <Link href="/explore" className="text-[10px] uppercase tracking-[0.2em] text-[#666] hover:text-[#c9a55a] transition-colors duration-300">Categories</Link>
+              <Link href="/search" className="text-[10px] uppercase tracking-[0.2em] text-[#666] hover:text-[#c9a55a] transition-colors duration-300">Search</Link>
+            </nav>
 
-            <div className="flex items-center gap-1">
-              <Link href="/search" className="p-2 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 rounded-sm">
-                <Search className="w-4 h-4" />
+            <div className="flex items-center gap-2">
+              <Link href="/search" className="p-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
+                <Search className="w-4 h-4" strokeWidth={1} />
               </Link>
               <MobileMenu />
             </div>
@@ -72,40 +59,37 @@ export default async function Home() {
         </div>
       </header>
 
-      <div className="h-11" />
+      <div className="h-16" />
 
       <main>
-        {/* Hero */}
-        <section className="px-4 pt-10 pb-6 border-b border-[#2E2925]/50 max-w-7xl mx-auto">
-          <p className="text-[11px] font-normal uppercase tracking-[0.15em] text-[#C9A55A]/70 mb-3">
-            {settings?.siteTagline || 'Catálogo Premium'}
-          </p>
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-[1.08] font-light text-[#F0EAE0] tracking-[0.02em] max-w-2xl">
-            {settings?.heroTitle || 'Productos que importan'}
-          </h1>
-          <p className="mt-4 text-base text-[#8A8278] leading-[1.8] max-w-lg font-light">
-            {settings?.heroSubtitle || 'Selección curada de tecnología, audio, accesorios y moda. Calidad sobre cantidad.'}
-          </p>
-          <div className="flex items-center gap-5 mt-6">
-            <div className="h-px flex-1 bg-[#2E2925]" />
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-[#8A8278] font-normal">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3cb371] inline-block" />
-              Envío gratis
+        {/* Hero - Luxury style */}
+        <section className="relative px-6 pt-20 pb-16 border-b border-[#1a1a1a] max-w-7xl mx-auto">
+          <div className="text-center">
+            <p className="text-[9px] font-normal uppercase tracking-[0.4em] text-[#c9a55a]/80 mb-6">
+              {settings?.siteTagline || 'Catálogo Premium'}
+            </p>
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-[#e8e8e8] tracking-[0.2em] max-w-4xl mx-auto leading-[1.1]">
+              {settings?.heroTitle || 'CURATED OBJECTS'}
+            </h1>
+            <p className="mt-6 text-sm text-[#888] leading-[2] max-w-xl mx-auto font-light tracking-[0.05em]">
+              {settings?.heroSubtitle || 'Selección curada de piezas excepcionales para el estilo de vida moderno.'}
+            </p>
+            
+            {/* Divider */}
+            <div className="flex items-center justify-center gap-8 mt-10">
+              <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#1a1a1a]" />
+              <div className="text-[8px] uppercase tracking-[0.3em] text-[#444]">EST. 2026</div>
+              <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#1a1a1a]" />
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-[#8A8278] font-normal">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A55A] inline-block" />
-              Curaduría experta
-            </div>
-            <div className="h-px flex-1 bg-[#2E2925]" />
           </div>
         </section>
 
         <Suspense
           fallback={
-            <div className="px-4 pt-6 max-w-7xl mx-auto">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="px-6 pt-12 max-w-7xl mx-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="aspect-[3/4] rounded-2xl bg-[#221E1A] animate-pulse" />
+                  <div key={i} className="aspect-[3/4] bg-[#0f0f0f] animate-pulse" />
                 ))}
               </div>
             </div>

@@ -37,9 +37,12 @@ const nextConfig: NextConfig = {
 
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "**" },
-      { protocol: "http", hostname: "**" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "**.unsplash.com" },
+      { protocol: "https", hostname: "showjr.store" },
+      { protocol: "https", hostname: "showjr.store" },
     ],
+    unoptimized: true,
   },
 
   experimental: {

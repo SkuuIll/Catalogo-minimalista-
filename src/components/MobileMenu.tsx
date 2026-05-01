@@ -11,30 +11,30 @@ export function MobileMenu() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="sm:hidden p-1.5 -mr-1.5 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300"
-        aria-label="Menú"
+        className="sm:hidden p-2 -mr-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300"
+        aria-label="Menu"
       >
-        <Menu className="w-5 h-5" />
+        <Menu className="w-5 h-5" strokeWidth={1} />
       </button>
 
       {open && (
         <div className="fixed inset-0 z-[90] sm:hidden">
           <div
-            className="absolute inset-0 bg-[#1A1714]/80 backdrop-blur-md"
+            className="absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-xl"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-[#221E1A]/98 backdrop-blur-2xl rounded-t-3xl border-t border-[#2E2925] animate-fade-up">
-            <div className="flex justify-end p-3">
-              <button onClick={() => setOpen(false)} className="p-2 -mr-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300">
-                <X className="w-5 h-5" />
+          <div className="absolute bottom-0 left-0 right-0 bg-[#0a0a0a]/98 backdrop-blur-2xl border-t border-[#1a1a1a] animate-fade-up">
+            <div className="flex justify-end p-4">
+              <button onClick={() => setOpen(false)} className="p-2 -mr-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
+                <X className="w-5 h-5" strokeWidth={1} />
               </button>
             </div>
-            <nav className="px-6 pb-10 space-y-3">
-              <MenuItem href="/" onClick={() => setOpen(false)} label="Catálogo" subtitle="Todos los productos" />
-              <MenuItem href="/explore" onClick={() => setOpen(false)} label="Explorar" subtitle="Categorías" />
-              <MenuItem href="/search" onClick={() => setOpen(false)} label="Buscar" />
-              <div className="pt-3">
-                <MenuItem href="/login" onClick={() => setOpen(false)} label="Iniciar Sesión" accent />
+            <nav className="px-8 pb-12 space-y-4">
+              <MenuItem href="/" onClick={() => setOpen(false)} label="Collection" subtitle="All pieces" />
+              <MenuItem href="/explore" onClick={() => setOpen(false)} label="Categories" />
+              <MenuItem href="/search" onClick={() => setOpen(false)} label="Search" />
+              <div className="pt-4 border-t border-[#1a1a1a]">
+                <MenuItem href="/login" onClick={() => setOpen(false)} label="Administrative Access" accent />
               </div>
             </nav>
           </div>
@@ -49,10 +49,10 @@ function MenuItem({ href, onClick, label, subtitle, accent }: { href: string; on
     <Link
       href={href}
       onClick={onClick}
-      className={`block p-3 rounded-sm transition-colors duration-300 ${accent ? 'bg-[#2A2520] text-[#C9A55A]' : 'text-[#F0EAE0]/70 hover:text-[#F0EAE0] hover:bg-white/[0.02]'}`}
+      className={`block p-4 rounded-none transition-colors duration-300 ${accent ? 'bg-[#0f0f0f] text-[#c9a55a]' : 'text-[#888] hover:text-[#e8e8e8] hover:bg-[#0f0f0f]/30'}`}
     >
-      <span className="text-sm font-medium">{label}</span>
-      {subtitle && <span className="block text-[11px] uppercase tracking-[0.15em] text-[#8A8278] mt-0.5">{subtitle}</span>}
+      <span className="text-sm font-light tracking-[0.1em]">{label}</span>
+      {subtitle && <span className="block text-[9px] uppercase tracking-[0.3em] text-[#666] mt-1">{subtitle}</span>}
     </Link>
   )
 }

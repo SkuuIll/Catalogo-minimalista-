@@ -46,6 +46,7 @@ model Product {
   category       Category?       @relation(fields: [categoryId], references: [id])
   categoryName   String?
   specifications Specification[]
+  reviews        Review[]
   featured       Boolean         @default(false)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -89,4 +90,24 @@ model LogEntry {
   resolvedBy  String?
   resolvedAt  DateTime?
   createdAt   DateTime @default(now())
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  rating      Int      // 1-5 stars
+  title       String?
+  comment     String?
+  authorName  String   // nombre del reviewer (puede ser anónimo)
+  authorEmail String?  // opcional, para verificación
+  verified    Boolean  @default(false) // compra verificada
+  approved    Boolean  @default(false) // moderado por admin
+  helpful     Int      @default(0) // votos útiles
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([approved])
+  @@index([createdAt])
 }

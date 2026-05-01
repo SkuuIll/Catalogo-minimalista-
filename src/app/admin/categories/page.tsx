@@ -36,7 +36,7 @@ export default function CategoriesPage() {
       const data = await fetch('/api/categories').then(r => r.json())
       setCategories(data)
     } catch {
-      showToast('Error al cargar categorías', 'error')
+      showToast('Error loading categories', 'error')
     }
     setLoading(false)
   }
@@ -54,15 +54,15 @@ export default function CategoriesPage() {
         body: JSON.stringify({ ...formData, slug }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Error al guardar')
+      if (!res.ok) throw new Error(data.error || 'Error saving')
       setFormOpen(false)
       setEditing(null)
       setFormData(defaultForm)
-      showToast(editing ? 'Categoría actualizada' : 'Categoría creada', 'success')
+      showToast(editing ? 'Category updated' : 'Category created', 'success')
       fetchCategories()
       router.refresh()
     } catch (err: any) {
-      showToast(err.message || 'Error al guardar', 'error')
+      showToast(err.message || 'Error saving', 'error')
     } finally {
       setSaving(false)
     }
@@ -74,15 +74,15 @@ export default function CategoriesPage() {
     try {
       const res = await fetch(`/api/categories/${deleteTarget.id}`, { method: 'DELETE' })
       if (res.ok) {
-        showToast('Categoría eliminada', 'success')
+        showToast('Category deleted', 'success')
         fetchCategories()
         router.refresh()
       } else {
         const data = await res.json()
-        showToast(data.error || 'Error al eliminar', 'error')
+        showToast(data.error || 'Error deleting', 'error')
       }
     } catch {
-      showToast('Error de conexión', 'error')
+      showToast('Connection error', 'error')
     } finally {
       setDeleting(false)
       setDeleteTarget(null)
@@ -113,82 +113,82 @@ export default function CategoriesPage() {
   const parentCategories = categories.filter(c => !c.parentId)
 
   return (
-    <div className="min-h-screen bg-[#1A1714]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#161310]/95 backdrop-blur-md border-b border-[#2E2925]/60">
-        <div className="flex items-center h-12 px-4 gap-3 max-w-7xl mx-auto">
-          <Link href="/admin" className="p-1.5 -ml-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 rounded-sm">
-            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+    <div className="min-h-screen bg-[#0a0a0a]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
+        <div className="flex items-center h-16 px-6 gap-4 max-w-7xl mx-auto">
+          <Link href="/admin" className="p-2 -ml-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
+            <ArrowLeft className="w-4 h-4" strokeWidth={1} />
           </Link>
-          <h1 className="font-serif text-sm font-light text-[#F0EAE0] tracking-[0.02em]">Categorías</h1>
-          <span className="ml-auto text-[11px] uppercase tracking-[0.15em] text-[#8A8278]">{categories.length} categorías</span>
+          <h1 className="font-serif text-lg font-light text-[#e8e8e8] tracking-[0.1em]">CATEGORIES</h1>
+          <span className="ml-auto text-[9px] uppercase tracking-[0.25em] text-[#666]">{categories.length} CATEGORIES</span>
         </div>
       </header>
 
-      <div className="h-12" />
+      <div className="h-16" />
 
-      <main className="max-w-3xl mx-auto py-6 px-4">
-        <div className="flex items-center justify-between mb-5">
+      <main className="max-w-3xl mx-auto py-8 px-6">
+        <div className="flex items-center justify-between mb-6">
           <button
             onClick={formOpen && !editing ? () => setFormOpen(false) : openNew}
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[11px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300"
+            className="inline-flex items-center gap-2 h-11 px-5 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] font-normal hover:bg-[#c9a55a] hover:text-[#0a0a0a] active:scale-[0.98] transition-all duration-300"
           >
-            {formOpen && !editing ? <X className="w-3.5 h-3.5" strokeWidth={1.5} /> : <Plus className="w-3.5 h-3.5" strokeWidth={1.5} />}
-            {formOpen && !editing ? 'Cancelar' : 'Nueva categoría'}
+            {formOpen && !editing ? <X className="w-4 h-4" strokeWidth={1} /> : <Plus className="w-4 h-4" strokeWidth={1} />}
+            {formOpen && !editing ? 'CANCEL' : 'NEW CATEGORY'}
           </button>
         </div>
 
         {formOpen && (
-          <form onSubmit={handleSubmit} className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5 mb-5 space-y-4">
+          <form onSubmit={handleSubmit} className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-6 mb-6 space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-[#F0EAE0] flex items-center gap-2">
-                <FolderOpen className="w-4 h-4 text-[#C9A55A]" strokeWidth={1.5} />
-                {editing ? `Editando: ${editing.name}` : 'Nueva categoría'}
+              <h3 className="text-[13px] font-serif font-light text-[#e8e8e8] flex items-center gap-2 tracking-[0.1em]">
+                <FolderOpen className="w-4 h-4 text-[#c9a55a]" strokeWidth={1} />
+                {editing ? `EDITING: ${editing.name}` : 'NEW CATEGORY'}
               </h3>
               <button
                 type="button"
                 onClick={() => { setFormOpen(false); setEditing(null) }}
-                className="p-1 text-[#8A8278]/40 hover:text-[#8A8278] transition-colors"
+                className="p-1 text-[#666] hover:text-[#e8e8e8] transition-colors"
               >
-                <X className="w-4 h-4" strokeWidth={1.5} />
+                <X className="w-4 h-4" strokeWidth={1} />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormInput
-                label="Nombre *"
+                label="NAME *"
                 required
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
               />
               <FormInput
-                label="Slug"
+                label="SLUG"
                 value={formData.slug}
                 onChange={e => setFormData({ ...formData, slug: e.target.value })}
-                placeholder="auto-generado"
+                placeholder="auto-generated"
               />
               <FormInput
-                label="Orden"
+                label="ORDER"
                 type="number"
                 value={String(formData.order)}
                 onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
               />
               <FormInput
-                label="Icono (nombre Lucide)"
+                label="ICON (Lucide name)"
                 value={formData.icon}
                 onChange={e => setFormData({ ...formData, icon: e.target.value })}
                 placeholder="laptop, watch, shirt…"
               />
 
               <div className="sm:col-span-2">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A8278]/50 mb-1.5 block">
-                  Categoría padre
+                <label className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666] mb-2 block">
+                  PARENT CATEGORY
                 </label>
                 <select
                   value={formData.parentId}
                   onChange={e => setFormData({ ...formData, parentId: e.target.value })}
-                  className="w-full bg-[#2A2520] border border-[#2E2925] rounded-sm h-11 px-3 text-[13px] text-[#F0EAE0] focus:outline-none focus:border-[#3D3830] transition-all appearance-none"
+                  className="w-full bg-[#0a0a0a] border border-[#1a1a1a] rounded-none h-11 px-3 text-[13px] uppercase tracking-[0.15em] text-[#e8e8e8] focus:outline-none focus:border-[#2a2a2a] transition-all appearance-none"
                 >
-                  <option value="">Ninguna (categoría principal)</option>
+                  <option value="">NONE (MAIN CATEGORY)</option>
                   {parentCategories
                     .filter(c => c.id !== editing?.id)
                     .map(c => (
@@ -198,14 +198,14 @@ export default function CategoriesPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="flex items-center gap-2.5 p-3 rounded-sm bg-[#2A2520] border border-[#2E2925] cursor-pointer hover:border-[#3D3830] transition-all">
+                <label className="flex items-center gap-3 p-3 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] cursor-pointer hover:border-[#2a2a2a] transition-all">
                   <input
                     type="checkbox"
                     checked={formData.active}
                     onChange={e => setFormData({ ...formData, active: e.target.checked })}
-                    className="w-4 h-4 rounded accent-[#C9A55A]"
+                    className="w-4 h-4 rounded-none accent-[#c9a55a]"
                   />
-                  <span className="text-sm text-[#8A8278]">Categoría activa (visible en la tienda)</span>
+                  <span className="text-[12px] uppercase tracking-[0.15em] text-[#666]">ACTIVE (VISIBLE IN STORE)</span>
                 </label>
               </div>
 
@@ -213,17 +213,17 @@ export default function CategoriesPage() {
                 <button
                   type="button"
                   onClick={() => { setFormOpen(false); setEditing(null) }}
-                  className="h-10 px-4 rounded-sm border border-[#2E2925] bg-transparent text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all duration-300"
+                  className="h-10 px-5 rounded-none border border-[#1a1a1a] bg-transparent text-[8px] uppercase tracking-[0.25em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all duration-300"
                 >
-                  Cancelar
+                  CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[11px] uppercase tracking-[0.15em] font-normal disabled:opacity-50 hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[8px] uppercase tracking-[0.25em] font-normal disabled:opacity-50 hover:bg-[#c9a55a] hover:text-[#0a0a0a] active:scale-[0.98] transition-all duration-300"
                 >
-                  {saving && <Loader2 className="w-3 h-3 animate-spin" />}
-                  {editing ? 'Guardar cambios' : 'Crear categoría'}
+                  {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  {editing ? 'SAVE CHANGES' : 'CREATE CATEGORY'}
                 </button>
               </div>
             </div>
@@ -233,51 +233,51 @@ export default function CategoriesPage() {
         {loading ? (
           <div className="space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 rounded-sm bg-[#221E1A] border border-[#2E2925] animate-pulse" />
+              <div key={i} className="h-16 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] animate-pulse" />
             ))}
           </div>
         ) : categories.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-14 h-14 rounded-sm bg-[#2A2520] border border-[#2E2925] flex items-center justify-center mx-auto mb-4">
-              <FolderOpen className="w-6 h-6 text-[#8A8278]/20" strokeWidth={1} />
+            <div className="w-16 h-16 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] flex items-center justify-center mx-auto mb-5">
+              <FolderOpen className="w-7 h-7 text-[#222]" strokeWidth={1} />
             </div>
-            <p className="text-[#8A8278] text-[15px] font-medium mb-1">No hay categorías</p>
-            <p className="text-[#8A8278]/40 text-[13px]">Creá tu primera categoría para organizar productos</p>
+            <p className="text-[#666] text-[13px] uppercase tracking-[0.2em] mb-1">NO CATEGORIES</p>
+            <p className="text-[#444] text-[11px] uppercase tracking-[0.15em]">CREATE YOUR FIRST CATEGORY TO ORGANIZE PIECES</p>
           </div>
         ) : (
-          <div className="border border-[#2E2925] rounded-sm overflow-hidden divide-y divide-[#2E2925]">
+          <div className="border border-[#1a1a1a] rounded-none overflow-hidden divide-y divide-[#1a1a1a]">
             {parentCategories.map(cat => (
               <div key={cat.id}>
                 {/* Parent category row */}
-                <div className="flex items-center justify-between px-4 py-3 hover:bg-[#F0EAE0]/[0.02] transition-colors">
+                <div className="flex items-center justify-between px-5 py-4 hover:bg-[#141414] transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-sm bg-[#2A2520] flex items-center justify-center flex-shrink-0 border border-[#2E2925]">
-                      <FolderOpen className="w-4 h-4 text-[#C9A55A]/60" strokeWidth={1.5} />
+                    <div className="w-10 h-10 rounded-none bg-[#0a0a0a] flex items-center justify-center flex-shrink-0 border border-[#1a1a1a]">
+                      <FolderOpen className="w-4 h-4 text-[#c9a55a]/60" strokeWidth={1} />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[#F0EAE0]">{cat.name}</span>
+                        <span className="text-[13px] font-serif font-light text-[#e8e8e8] tracking-[0.05em]">{cat.name}</span>
                         {!cat.active && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-[#F0EAE0]/5 text-[#8A8278]/50">Inactiva</span>
+                          <span className="text-[8px] px-2 py-0.5 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] text-[#666] uppercase tracking-[0.2em]">INACTIVE</span>
                         )}
                       </div>
-                      <div className="text-xs text-[#8A8278]/40">/{cat.slug} · {cat._count?.products ?? 0} productos</div>
+                      <div className="text-[10px] uppercase tracking-[0.15em] text-[#666] mt-0.5">/{cat.slug} · {cat._count?.products ?? 0} PIECES</div>
                     </div>
                   </div>
                   <div className="flex gap-1">
                     <button
                       onClick={() => startEdit(cat)}
-                      className="p-1.5 rounded-sm text-[#8A8278]/40 hover:text-[#F0EAE0] hover:bg-[#F0EAE0]/[0.04] transition-all"
-                      title="Editar"
+                      className="p-2 rounded-none text-[#666] hover:text-[#e8e8e8] hover:bg-[#141414] transition-all"
+                      title="Edit"
                     >
-                      <Pencil className="w-3.5 h-3.5" strokeWidth={1.5} />
+                      <Pencil className="w-4 h-4" strokeWidth={1} />
                     </button>
                     <button
                       onClick={() => setDeleteTarget(cat)}
-                      className="p-1.5 rounded-sm text-[#8A8278]/30 hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all"
-                      title="Eliminar"
+                      className="p-2 rounded-none text-[#666] hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all"
+                      title="Delete"
                     >
-                      <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                      <Trash2 className="w-4 h-4" strokeWidth={1} />
                     </button>
                   </div>
                 </div>
@@ -286,29 +286,29 @@ export default function CategoriesPage() {
                 {categories
                   .filter(c => c.parentId === cat.id)
                   .map(sub => (
-                    <div key={sub.id} className="flex items-center justify-between pl-10 pr-4 py-2.5 bg-[#161310] border-t border-[#2E2925]/60">
+                    <div key={sub.id} className="flex items-center justify-between pl-12 pr-5 py-3 bg-[#0a0a0a] border-t border-[#1a1a1a]">
                       <div className="flex items-center gap-2 min-w-0">
-                        <ChevronRight className="w-3 h-3 text-[#8A8278]/15 flex-shrink-0" strokeWidth={1.5} />
-                        <span className="text-sm text-[#F0EAE0]/50">{sub.name}</span>
+                        <ChevronRight className="w-3 h-3 text-[#444] flex-shrink-0" strokeWidth={1} />
+                        <span className="text-[12px] font-serif font-light text-[#e8e8e8]/60 tracking-[0.05em]">{sub.name}</span>
                         {!sub.active && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-[#F0EAE0]/5 text-[#8A8278]/50">Inactiva</span>
+                          <span className="text-[8px] px-2 py-0.5 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] text-[#666] uppercase tracking-[0.2em]">INACTIVE</span>
                         )}
-                        <span className="text-xs text-[#8A8278]/20">({sub._count?.products ?? 0})</span>
+                        <span className="text-[10px] uppercase tracking-[0.15em] text-[#444]">({sub._count?.products ?? 0})</span>
                       </div>
                       <div className="flex gap-1">
                         <button
                           onClick={() => startEdit(sub)}
-                          className="p-1.5 rounded-sm text-[#8A8278]/40 hover:text-[#F0EAE0] hover:bg-[#F0EAE0]/[0.04] transition-all"
-                          title="Editar"
+                          className="p-2 rounded-none text-[#666] hover:text-[#e8e8e8] hover:bg-[#141414] transition-all"
+                          title="Edit"
                         >
-                          <Pencil className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          <Pencil className="w-4 h-4" strokeWidth={1} />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(sub)}
-                          className="p-1.5 rounded-sm text-[#8A8278]/30 hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all"
-                          title="Eliminar"
+                          className="p-2 rounded-none text-[#666] hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all"
+                          title="Delete"
                         >
-                          <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          <Trash2 className="w-4 h-4" strokeWidth={1} />
                         </button>
                       </div>
                     </div>
@@ -335,10 +335,10 @@ function FormInput({
 }: { label: string; required?: boolean } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div>
-      <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A8278]/50 mb-1.5 block">{label}</label>
+      <label className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666] mb-2 block">{label}</label>
       <input
         required={required}
-        className="w-full bg-[#2A2520] border border-[#2E2925] rounded-sm h-11 px-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/25 focus:outline-none focus:border-[#3D3830] transition-all"
+        className="w-full bg-[#0a0a0a] border border-[#1a1a1a] rounded-none h-11 px-3 text-[13px] uppercase tracking-[0.15em] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#2a2a2a] transition-all"
         {...props}
         value={props.value ?? ''}
       />
