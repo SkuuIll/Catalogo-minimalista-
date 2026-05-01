@@ -20,7 +20,7 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const siteUrl = process.env.SITE_URL || "https://catalogo-aura.vercel.app";
+const siteUrl = process.env.SITE_URL || "https://showjr.store";
 const siteName = "Aura — Catálogo Premium";
 const siteDescription = "Catálogo minimalista de productos premium. Explora tecnología, audio, accesorios y más. 100% app móvil, diseño profesional.";
 

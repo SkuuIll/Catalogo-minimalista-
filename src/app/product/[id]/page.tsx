@@ -11,7 +11,7 @@ import {
   ChevronRight, MessageCircle, X, Check, Truck, Shield, RefreshCw
 } from 'lucide-react'
 
-const siteUrl = process.env.SITE_URL || 'https://catalogo-aura.vercel.app'
+const siteUrl = process.env.SITE_URL || 'https://showjr.store'
 
 function getProductImages(product: any): string[] {
   let images: string[] = []
