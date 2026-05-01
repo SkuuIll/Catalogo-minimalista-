@@ -26,27 +26,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#060606] flex">
+    <div className="min-h-screen bg-[#1A1714] flex">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#161310] border-r border-[#2E2925] flex flex-col transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Logo */}
-        <div className="flex items-center justify-between h-14 px-4 border-b border-[#1a1a1a]">
+        <div className="flex items-center justify-between h-14 px-4 border-b border-[#2E2925]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#bf9b4e] flex items-center justify-center">
-              <span className="font-serif text-sm font-bold text-black">A</span>
+            <div className="w-8 h-8 rounded-sm bg-[#C9A55A] flex items-center justify-center">
+              <span className="font-serif text-sm font-light text-[#1A1714]">A</span>
             </div>
             <div>
-              <span className="font-serif text-sm font-medium text-white">Admin</span>
-              <p className="text-[10px] text-white/25">Panel de gestión</p>
+              <span className="font-serif text-sm font-light text-[#F0EAE0] tracking-[0.02em]">Admin</span>
+              <p className="text-[10px] uppercase tracking-[0.15em] text-[#8A8278]">Panel de gestión</p>
             </div>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/5 transition-all">
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1.5 rounded-sm text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-0 py-4 space-y-0.5 overflow-y-auto">
           {navItems.map(item => {
             const active = isActive(item.href)
             const Icon = item.icon
@@ -55,10 +55,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-5 py-2.5 text-[11px] uppercase tracking-[0.15em] font-normal transition-all duration-300 border-l-2 ${
                   active
-                    ? 'bg-[#bf9b4e]/10 text-[#bf9b4e] border border-[#bf9b4e]/15'
-                    : 'text-white/35 hover:text-white/70 hover:bg-white/[0.03]'
+                    ? 'bg-[#C9A55A]/10 border-[#C9A55A] text-[#C9A55A]'
+                    : 'border-transparent text-[#8A8278] hover:text-[#F0EAE0]'
                 }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
@@ -69,13 +69,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* Footer */}
-        <div className="px-3 py-4 border-t border-[#1a1a1a] space-y-0.5">
-          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/35 hover:text-white/70 hover:bg-white/[0.03] transition-all">
+        <div className="px-0 py-4 border-t border-[#2E2925] space-y-0.5">
+          <Link href="/" className="flex items-center gap-3 px-5 py-2.5 text-[11px] uppercase tracking-[0.15em] font-normal text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 border-l-2 border-transparent">
             <Eye className="w-4 h-4" />
             Ver tienda
           </Link>
           <form action="/api/auth/logout" method="post">
-            <button type="submit" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/35 hover:text-white/70 hover:bg-white/[0.03] transition-all">
+            <button type="submit" className="w-full flex items-center gap-3 px-5 py-2.5 text-[11px] uppercase tracking-[0.15em] font-normal text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 border-l-2 border-transparent">
               <LogOut className="w-4 h-4" />
               Cerrar sesión
             </button>
@@ -91,17 +91,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main content */}
       <div className="flex-1 lg:ml-64">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 h-14 bg-[#060606]/95 backdrop-blur-xl border-b border-[#1a1a1a]/50 flex items-center px-4 lg:px-6">
+        <header className="sticky top-0 z-30 h-14 bg-[#161310] border-b border-[#2E2925] flex items-center px-4 lg:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 -ml-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-all"
+            className="lg:hidden p-2 -ml-2 rounded-sm text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300"
           >
             <Menu className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-1.5 text-xs text-white/25 ml-2 lg:ml-0">
+          <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-[#8A8278] ml-2 lg:ml-0">
             <span>Aura</span>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-white/60">
+            <span className="text-[#F0EAE0]/60">
               {navItems.find(n => isActive(n.href))?.label || 'Admin'}
             </span>
           </div>

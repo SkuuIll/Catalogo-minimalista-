@@ -38,65 +38,65 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060606] flex flex-col">
-      <div className="px-4 pt-4">
-        <Link href="/" className="inline-flex items-center gap-1.5 text-[12px] text-white/30 hover:text-white/60 transition-colors">
+    <div className="min-h-screen bg-[#1A1714] flex flex-col noise-bg">
+      <div className="px-4 pt-4 relative z-10">
+        <Link href="/" className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300">
           <ArrowLeft className="w-3.5 h-3.5" />
           Volver a la tienda
         </Link>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8 relative z-10">
         <div className="w-full max-w-xs">
-          <div className="text-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-[#111] border border-[#1a1a1a] flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-6 h-6 text-[#bf9b4e]" />
+          <div className="text-center mb-10">
+            <div className="w-14 h-14 rounded-sm bg-[#2A2520] border border-[#2E2925] flex items-center justify-center mx-auto mb-5">
+              <Lock className="w-6 h-6 text-[#C9A55A]" />
             </div>
-            <h1 className="font-serif text-xl font-medium text-white">Panel de Administración</h1>
-            <p className="mt-1.5 text-[13px] text-white/30">Ingresá tus credenciales para continuar</p>
+            <h1 className="font-serif text-2xl font-light text-[#F0EAE0] tracking-[0.02em]">Panel de Administración</h1>
+            <p className="mt-3 text-[11px] uppercase tracking-[0.15em] text-[#8A8278]">Secure Administrative Access</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-3">
-            <div className="space-y-2.5">
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-5">
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/15" />
+                <label className="block text-[11px] uppercase tracking-[0.12em] text-[#C9A55A] mb-2">Correo electrónico</label>
                 <input
                   type="email"
                   required
-                  placeholder="Correo electrónico"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-12 pl-10 pr-4 text-[13px] text-white placeholder-white/25 focus:outline-none focus:border-[#bf9b4e]/30 transition-all"
+                  className="w-full bg-transparent border-b border-[#3D3830] h-11 pl-0 pr-4 text-[13px] text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors"
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/15" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  placeholder="Contraseña"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl h-12 pl-10 pr-10 text-[13px] text-white placeholder-white/15 focus:outline-none focus:border-[#bf9b4e]/30 transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/15 hover:text-white/40 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
+                <label className="block text-[11px] uppercase tracking-[0.12em] text-[#C9A55A] mb-2">Contraseña</label>
+                <div className="flex items-center border-b border-[#3D3830] focus-within:border-[#C9A55A] transition-colors">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full bg-transparent h-11 pr-10 text-[13px] text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="p-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-white text-[#060606] text-[13px] font-semibold hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 h-12 border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[12px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
             >
               {loading ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-[#060606]/20 border-t-[#060606] rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-[#C9A55A]/20 border-t-[#C9A55A] rounded-full animate-spin" />
                   Iniciando sesión...
                 </>
               ) : (
@@ -105,8 +105,8 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-[#1a1a1a] text-center">
-            <Link href="/" className="text-[11px] text-white/25 hover:text-white/40 transition-colors">
+          <div className="mt-10 pt-6 border-t border-[#2E2925] text-center">
+            <Link href="/" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300">
               ← Volver al catálogo
             </Link>
           </div>

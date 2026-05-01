@@ -25,10 +25,10 @@ export default async function Home() {
   ])
 
   return (
-    <div className="min-h-screen bg-[#060606] selection:bg-[#bf9b4e]/20 pb-16 sm:pb-0">
+    <div className="min-h-screen bg-[#1A1714] selection:bg-[#C9A55A]/20 pb-16 sm:pb-0">
       {/* Fixed header */}
       <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="glass border-b border-[#1a1a1a]">
+        <div className="bg-[#161310] border-b border-[#2E2925]">
           <div className="flex justify-between items-center h-11 px-4 max-w-7xl mx-auto">
             <div className="flex items-center gap-5">
               <Link href="/" className="flex items-center gap-2">
@@ -36,34 +36,34 @@ export default async function Home() {
                   <img
                     src={settings.logoUrl}
                     alt={settings?.siteName || 'Aura'}
-                    className="w-6 h-6 rounded-md object-cover"
+                    className="w-6 h-6 rounded-sm object-cover"
                   />
                 ) : (
-                  <div className="w-6 h-6 rounded-md bg-[#bf9b4e]/15 border border-[#bf9b4e]/20 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-[#bf9b4e]">
+                  <div className="w-6 h-6 rounded-sm bg-[#C9A55A]/15 border border-[#C9A55A]/20 flex items-center justify-center">
+                    <span className="text-[10px] font-bold text-[#C9A55A]">
                       {(settings?.siteName || 'A')[0]}
                     </span>
                   </div>
                 )}
-                <span className="font-serif text-sm font-medium tracking-tight text-white">
+                <span className="font-serif text-sm font-light tracking-[0.02em] text-[#F0EAE0]">
                   {settings?.siteName || 'Aura'}
                 </span>
                 {settings?.siteTagline && (
-                  <span className="hidden sm:inline text-[10px] font-medium uppercase tracking-[0.2em] text-white/30 ml-1">
+                  <span className="hidden sm:inline text-[10px] font-normal uppercase tracking-[0.15em] text-[#8A8278] ml-1">
                     {settings.siteTagline}
                   </span>
                 )}
               </Link>
 
               <nav className="hidden md:flex items-center gap-5">
-                <Link href="/" className="text-xs text-white/50 hover:text-white transition-colors">Inicio</Link>
-                <Link href="/explore" className="text-xs text-white/50 hover:text-white transition-colors">Explorar</Link>
-                <Link href="/search" className="text-xs text-white/50 hover:text-white transition-colors">Buscar</Link>
+                <Link href="/" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#C9A55A] transition-colors duration-300">Inicio</Link>
+                <Link href="/explore" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#C9A55A] transition-colors duration-300">Explorar</Link>
+                <Link href="/search" className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#C9A55A] transition-colors duration-300">Buscar</Link>
               </nav>
             </div>
 
             <div className="flex items-center gap-1">
-              <Link href="/search" className="p-2 text-white/40 hover:text-white/80 transition-colors rounded-lg">
+              <Link href="/search" className="p-2 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 rounded-sm">
                 <Search className="w-4 h-4" />
               </Link>
               <MobileMenu />
@@ -76,27 +76,27 @@ export default async function Home() {
 
       <main>
         {/* Hero */}
-        <section className="px-4 pt-7 pb-5 border-b border-[#1a1a1a]/50 max-w-7xl mx-auto">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#bf9b4e]/70 mb-2">
+        <section className="px-4 pt-10 pb-6 border-b border-[#2E2925]/50 max-w-7xl mx-auto">
+          <p className="text-[11px] font-normal uppercase tracking-[0.15em] text-[#C9A55A]/70 mb-3">
             {settings?.siteTagline || 'Catálogo Premium'}
           </p>
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-[1.08] font-medium text-white tracking-tight max-w-2xl">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-[1.08] font-light text-[#F0EAE0] tracking-[0.02em] max-w-2xl">
             {settings?.heroTitle || 'Productos que importan'}
           </h1>
-          <p className="mt-3 text-base text-white/45 leading-relaxed max-w-lg">
+          <p className="mt-4 text-base text-[#8A8278] leading-[1.8] max-w-lg font-light">
             {settings?.heroSubtitle || 'Selección curada de tecnología, audio, accesorios y moda. Calidad sobre cantidad.'}
           </p>
-          <div className="flex items-center gap-5 mt-4">
-            <div className="h-px flex-1 bg-[#1a1a1a]" />
-            <div className="flex items-center gap-1.5 text-xs text-white/35 font-medium">
+          <div className="flex items-center gap-5 mt-6">
+            <div className="h-px flex-1 bg-[#2E2925]" />
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-[#8A8278] font-normal">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3cb371] inline-block" />
               Envío gratis
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-white/35 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#bf9b4e] inline-block" />
+            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.15em] text-[#8A8278] font-normal">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A55A] inline-block" />
               Curaduría experta
             </div>
-            <div className="h-px flex-1 bg-[#1a1a1a]" />
+            <div className="h-px flex-1 bg-[#2E2925]" />
           </div>
         </section>
 
@@ -105,7 +105,7 @@ export default async function Home() {
             <div className="px-4 pt-6 max-w-7xl mx-auto">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="aspect-[3/4] rounded-2xl bg-[#0d0d0d] animate-pulse" />
+                  <div key={i} className="aspect-[3/4] rounded-2xl bg-[#221E1A] animate-pulse" />
                 ))}
               </div>
             </div>

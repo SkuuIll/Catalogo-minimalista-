@@ -22,7 +22,7 @@ export function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="flex items-center gap-1.5 text-[11px] font-medium text-white/25 hover:text-[#e05555] transition-colors"
+      className="flex items-center gap-1.5 text-[11px] font-medium text-white/25 hover:text-[#C0392B] transition-colors"
     >
       <LogOut className="w-3 h-3" />
       <span className="hidden sm:inline">Salir</span>

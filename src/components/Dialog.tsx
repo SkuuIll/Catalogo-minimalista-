@@ -38,9 +38,9 @@ export function ConfirmDialog({
   if (!open) return null
 
   const variantStyles = {
-    danger: { bg: 'bg-[#e05555]/10', border: 'border-[#e05555]/30', text: 'text-[#e05555]', btn: 'bg-[#e05555] hover:bg-[#e05555]/90' },
-    warning: { bg: 'bg-[#d4a030]/10', border: 'border-[#d4a030]/30', text: 'text-[#d4a030]', btn: 'bg-[#d4a030] hover:bg-[#d4a030]/90' },
-    info: { bg: 'bg-[#bf9b4e]/10', border: 'border-[#bf9b4e]/30', text: 'text-[#bf9b4e]', btn: 'bg-[#bf9b4e] hover:bg-[#bf9b4e]/90' },
+    danger: { bg: 'bg-[#C0392B]/10', border: 'border-[#C0392B]/30', text: 'text-[#C0392B]', btn: 'bg-[#C0392B] hover:bg-[#C0392B]/90' },
+    warning: { bg: 'bg-[#C9A55A]/10', border: 'border-[#C9A55A]/30', text: 'text-[#C9A55A]', btn: 'bg-[#C9A55A] hover:bg-[#C9A55A]/90' },
+    info: { bg: 'bg-[#C9A55A]/10', border: 'border-[#C9A55A]/30', text: 'text-[#C9A55A]', btn: 'bg-[#C9A55A] hover:bg-[#C9A55A]/90' },
   }
 
   const styles = variantStyles[variant]
@@ -50,7 +50,7 @@ export function ConfirmDialog({
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
       <div
         ref={dialogRef}
-        className="relative w-full max-w-sm bg-[#0d0d0d] border border-[#1a1a1a] rounded-3xl p-6 shadow-2xl shadow-black/50 animate-fade-up"
+        className="relative w-full max-w-sm bg-[#221E1A] border border-[#2E2925] rounded-3xl p-6 shadow-2xl shadow-black/50 animate-fade-up"
       >
         <button
           onClick={onCancel}
@@ -71,7 +71,7 @@ export function ConfirmDialog({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 h-11 rounded-xl bg-[#111] border border-[#1a1a1a] text-[13px] font-medium text-white/60 hover:text-white hover:border-white/10 transition-all"
+            className="flex-1 h-11 rounded-xl bg-[#2A2520] border border-[#2E2925] text-[13px] font-medium text-white/60 hover:text-white hover:border-white/10 transition-all"
           >
             {cancelText}
           </button>

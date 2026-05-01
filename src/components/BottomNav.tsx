@@ -8,12 +8,11 @@ export function BottomNav() {
   const pathname = usePathname()
   const isActive = (path: string) => pathname === path || (path === '/' && pathname === '/')
 
-  // No mostrar en páginas de detalle de producto (tienen su propia action bar)
   if (pathname.startsWith('/product/')) return null
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-[70] sm:hidden">
-      <div className="glass border-t border-[#1a1a1a] pb-[env(safe-area-inset-bottom)]">
+      <div className="bg-[#161310]/95 backdrop-blur-md border-t border-[#2E2925]/60 pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-around items-center h-12">
           <NavItem href="/" active={isActive('/')} icon={<Home className="w-5 h-5" />} label="Inicio" />
           <NavItem href="/explore" active={isActive('/explore')} icon={<Compass className="w-5 h-5" />} label="Explorar" />
@@ -29,13 +28,13 @@ function NavItem({ href, active, icon, label }: { href: string; active: boolean;
   return (
     <Link
       href={href}
-      className={`relative flex flex-col items-center justify-center gap-0.5 w-16 h-full transition-all duration-200 ${active ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
+      className={`relative flex flex-col items-center justify-center gap-0.5 w-16 h-full transition-colors duration-300 ${active ? 'text-[#C9A55A]' : 'text-[#8A8278] hover:text-[#F0EAE0]'}`}
     >
       {active && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-0.5 rounded-full bg-accent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-[2px] rounded-full bg-[#C9A55A]" />
       )}
       {icon}
-      <span className="text-[9px] font-medium tracking-tight">{label}</span>
+      <span className="text-[9px] font-normal tracking-[0.15em] uppercase">{label}</span>
     </Link>
   )
 }

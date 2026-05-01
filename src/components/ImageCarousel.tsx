@@ -33,7 +33,7 @@ export function ImageCarousel({ images, alt }: { images: string[]; alt: string }
   if (images.length === 0) return null
 
   return (
-    <div className="relative w-full aspect-[4/5] sm:aspect-square bg-[#0d0d0d] overflow-hidden">
+    <div className="relative w-full aspect-[4/5] sm:aspect-square bg-[#221E1A] overflow-hidden">
       {images.length === 1 ? (
         <img src={images[0]} alt={alt} className="w-full h-full object-cover" loading="lazy" />
       ) : (

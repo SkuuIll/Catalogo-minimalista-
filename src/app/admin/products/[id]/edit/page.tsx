@@ -141,8 +141,8 @@ export default function EditProductPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060606] flex items-center justify-center">
-        <div className="flex items-center gap-3 text-white/30">
+      <div className="min-h-screen bg-[#1A1714] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-[#8A8278]">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">Cargando producto…</span>
         </div>
@@ -151,23 +151,23 @@ export default function EditProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060606]">
-      <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-[#1a1a1a]">
-        <div className="flex items-center h-12 px-4 gap-3">
-          <Link href="/admin" className="p-1.5 -ml-1 text-white/30 hover:text-white/60 transition-colors rounded-lg">
-            <ArrowLeft className="w-4 h-4" />
+    <div className="min-h-screen bg-[#1A1714]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#161310]/95 backdrop-blur-md border-b border-[#2E2925]/60">
+        <div className="flex items-center h-12 px-4 gap-3 max-w-7xl mx-auto">
+          <Link href="/admin" className="p-1.5 -ml-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 rounded-sm">
+            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
           </Link>
           <div className="min-w-0">
-            <h1 className="font-serif text-sm font-medium text-white truncate">
+            <h1 className="font-serif text-sm font-light text-[#F0EAE0] tracking-[0.02em] truncate">
               {productName || 'Editar producto'}
             </h1>
           </div>
           <Link
             href={`/product/${id}`}
             target="_blank"
-            className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-[#111] border border-[#1a1a1a] text-[11px] text-white/40 hover:text-white/70 hover:border-white/10 transition-all"
+            className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-sm bg-[#2A2520] border border-[#2E2925] text-[11px] uppercase tracking-[0.12em] text-[#8A8278] hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all duration-300"
           >
-            <Eye className="w-3 h-3" /> Ver
+            <Eye className="w-3 h-3" strokeWidth={1.5} /> Ver
           </Link>
         </div>
       </header>
@@ -178,16 +178,16 @@ export default function EditProductPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Images */}
-          <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-2xl p-5">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/30 mb-3 block">
+          <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5">
+            <label className="text-[11px] font-normal uppercase tracking-[0.12em] text-[#C9A55A] mb-3 block">
               Imágenes del producto
             </label>
             <ImageUpload onUpload={urls => setImages(urls)} defaultImages={images} multiple />
           </div>
 
           {/* Core fields */}
-          <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-2xl p-5 space-y-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/30">Información básica</p>
+          <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5 space-y-5">
+            <p className="text-[11px] font-normal uppercase tracking-[0.12em] text-[#C9A55A]">Información básica</p>
 
             <div>
               <label className="field-label">Nombre del producto *</label>
@@ -203,7 +203,7 @@ export default function EditProductPage() {
               <textarea
                 name="description" rows={4} required
                 value={formData.description} onChange={handleChange}
-                className="w-full bg-[#111] border border-[#1a1a1a] rounded-xl p-3 text-sm text-white placeholder-white/15 focus:outline-none focus:border-[#bf9b4e]/30 transition-all resize-none leading-relaxed"
+                className="w-full bg-transparent border-b border-[#3D3830] p-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors resize-none leading-relaxed"
               />
             </div>
 
@@ -217,7 +217,7 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="field-label">Precio original <span className="text-white/20 normal-case font-normal">(si hay oferta)</span></label>
+                <label className="field-label">Precio original <span className="text-[#8A8278]/40 normal-case font-normal">(si hay oferta)</span></label>
                 <input
                   type="number" name="discountPrice" step="0.01" min="0"
                   value={formData.discountPrice} onChange={handleChange}
@@ -248,7 +248,7 @@ export default function EditProductPage() {
                   <option value="">Sin categoría</option>
                   {categories.filter(c => !c.parentId).map(cat => (
                     <optgroup key={cat.id} label={cat.name}>
-                      <option value={cat.id}>{cat.name} (principal)</option>
+                       <option value={cat.id}>{cat.name} (principal)</option>
                       {categories.filter(c => c.parentId === cat.id).map(sub => (
                         <option key={sub.id} value={sub.id}>└ {sub.name}</option>
                       ))}
@@ -258,29 +258,29 @@ export default function EditProductPage() {
               </div>
             </div>
 
-            <label className="flex items-center gap-2.5 p-3 rounded-xl bg-[#111] border border-[#1a1a1a] cursor-pointer hover:border-white/10 transition-all">
+            <label className="flex items-center gap-2.5 p-3 rounded-sm bg-[#2A2520] border border-[#2E2925] cursor-pointer hover:border-[#3D3830] transition-colors duration-300">
               <input
                 type="checkbox" name="featured"
                 checked={formData.featured} onChange={handleChange}
-                className="w-4 h-4 rounded accent-[#bf9b4e]"
+                className="w-4 h-4 rounded accent-[#C9A55A]"
               />
               <div>
-                <span className="text-sm text-white/70 font-medium">Producto destacado</span>
-                <p className="text-xs text-white/30">Aparece en la sección destacados del catálogo</p>
+                <span className="text-sm text-[#F0EAE0]/70 font-medium">Producto destacado</span>
+                <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278]">Aparece en la sección destacados del catálogo</p>
               </div>
             </label>
           </div>
 
           {/* Specifications */}
-          <div className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-2xl p-5">
+          <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/30">Especificaciones técnicas</p>
-                <p className="text-xs text-white/25 mt-0.5">{specs.length > 0 ? `${specs.length} especificaciones` : 'Sin especificaciones aún'}</p>
+                <p className="text-[11px] font-normal uppercase tracking-[0.12em] text-[#C9A55A]">Especificaciones técnicas</p>
+                <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] mt-0.5">{specs.length > 0 ? `${specs.length} especificaciones` : 'Sin especificaciones aún'}</p>
               </div>
               <button
                 type="button" onClick={generateSpecs} disabled={generating}
-                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-[#bf9b4e]/10 border border-[#bf9b4e]/20 text-xs text-[#bf9b4e] hover:bg-[#bf9b4e]/20 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-sm bg-[#C9A55A]/10 border border-[#C9A55A]/20 text-[11px] uppercase tracking-[0.12em] text-[#C9A55A] hover:bg-[#C9A55A]/20 transition-all duration-300 disabled:opacity-50"
               >
                 {generating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
                 {generating ? 'Generando…' : 'Generar con IA'}
@@ -294,16 +294,16 @@ export default function EditProductPage() {
                     <input
                       value={s.key} onChange={e => updateSpec(i, 'key', e.target.value)}
                       placeholder="Característica"
-                      className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-10 px-3 text-sm text-white placeholder-white/15 focus:outline-none focus:border-white/15 transition-all"
+                      className="flex-1 bg-transparent border-b border-[#3D3830] h-10 px-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors"
                     />
                     <input
                       value={s.value} onChange={e => updateSpec(i, 'value', e.target.value)}
                       placeholder="Valor"
-                      className="flex-1 bg-[#111] border border-[#1a1a1a] rounded-xl h-10 px-3 text-sm text-white placeholder-white/15 focus:outline-none focus:border-white/15 transition-all"
+                      className="flex-1 bg-transparent border-b border-[#3D3830] h-10 px-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors"
                     />
                     <button
                       type="button" onClick={() => removeSpec(i)}
-                      className="p-2 text-white/20 hover:text-[#e05555] hover:bg-[#e05555]/5 rounded-lg transition-all flex-shrink-0"
+                      className="p-2 text-[#8A8278] hover:text-[#C0392B] hover:bg-[#C0392B]/5 rounded-sm transition-all duration-300 flex-shrink-0"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -314,7 +314,7 @@ export default function EditProductPage() {
 
             <button
               type="button" onClick={addSpec}
-              className="inline-flex items-center gap-1.5 text-xs text-[#bf9b4e]/60 hover:text-[#bf9b4e] transition-colors"
+              className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.12em] text-[#C9A55A]/60 hover:text-[#C9A55A] transition-colors duration-300"
             >
               <Plus className="w-3.5 h-3.5" />
               Agregar especificación
@@ -325,13 +325,13 @@ export default function EditProductPage() {
           <div className="flex justify-end gap-3 pb-8">
             <Link
               href="/admin"
-              className="h-11 px-6 rounded-xl bg-[#111] border border-[#1a1a1a] text-sm text-white/60 hover:text-white hover:border-white/10 transition-all flex items-center"
+              className="h-11 px-6 rounded-sm border border-[#2E2925] bg-transparent text-[12px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all duration-300 flex items-center"
             >
               Cancelar
             </Link>
             <button
               type="submit" disabled={saving}
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-white text-black text-sm font-semibold hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[12px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               {saving ? 'Guardando…' : 'Guardar cambios'}
@@ -344,29 +344,30 @@ export default function EditProductPage() {
         .field-label {
           display: block;
           font-size: 11px;
-          font-weight: 600;
+          font-weight: 400;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: rgb(255 255 255 / 0.30);
+          letter-spacing: 0.12em;
+          color: #C9A55A;
           margin-bottom: 6px;
         }
         .field-input {
           width: 100%;
-          background: #111;
-          border: 1px solid #1a1a1a;
-          border-radius: 12px;
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid #3D3830;
+          border-radius: 0;
           height: 44px;
-          padding: 0 12px;
+          padding: 0 0 0 0;
           font-size: 14px;
-          color: white;
+          color: #F0EAE0;
           outline: none;
-          transition: border-color 0.15s;
+          transition: border-color 0.3s ease;
         }
         .field-input:focus {
-          border-color: rgb(191 155 78 / 0.30);
+          border-bottom-color: #C9A55A;
         }
         .field-input::placeholder {
-          color: rgb(255 255 255 / 0.15);
+          color: rgb(138 130 120 / 0.30);
         }
       `}</style>
     </div>

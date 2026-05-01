@@ -36,18 +36,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map(toast => (
           <div
             key={toast.id}
-            className="pointer-events-auto flex items-center gap-3 p-4 rounded-2xl border backdrop-blur-xl shadow-2xl shadow-black/50 animate-fade-up"
+            className="pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-sm border backdrop-blur-xl shadow-2xl shadow-black/40 animate-fade-up"
             style={{
-              backgroundColor: toast.type === 'error' ? 'rgba(224, 85, 85, 0.15)' : toast.type === 'success' ? 'rgba(60, 179, 113, 0.15)' : 'rgba(191, 155, 78, 0.15)',
-              borderColor: toast.type === 'error' ? 'rgba(224, 85, 85, 0.3)' : toast.type === 'success' ? 'rgba(60, 179, 113, 0.3)' : 'rgba(191, 155, 78, 0.3)',
+              backgroundColor: toast.type === 'error' ? 'rgba(192, 57, 43, 0.12)' : toast.type === 'success' ? 'rgba(60, 179, 113, 0.12)' : 'rgba(201, 165, 90, 0.12)',
+              borderColor: toast.type === 'error' ? 'rgba(192, 57, 43, 0.25)' : toast.type === 'success' ? 'rgba(60, 179, 113, 0.25)' : 'rgba(201, 165, 90, 0.25)',
             }}
           >
-            {toast.type === 'success' && <CheckCircle className="w-4 h-4 text-[#3cb371] flex-shrink-0" />}
-            {toast.type === 'error' && <XCircle className="w-4 h-4 text-[#e05555] flex-shrink-0" />}
-            {toast.type === 'info' && <AlertCircle className="w-4 h-4 text-[#bf9b4e] flex-shrink-0" />}
-            <span className="text-[13px] text-white font-medium flex-1">{toast.message}</span>
-            <button onClick={() => removeToast(toast.id)} className="p-0.5 text-white/30 hover:text-white/60 transition-colors">
-              <X className="w-3.5 h-3.5" />
+            {toast.type === 'success' && <CheckCircle className="w-4 h-4 text-[#3cb371] flex-shrink-0" strokeWidth={1.5} />}
+            {toast.type === 'error' && <XCircle className="w-4 h-4 text-[#C0392B] flex-shrink-0" strokeWidth={1.5} />}
+            {toast.type === 'info' && <AlertCircle className="w-4 h-4 text-[#C9A55A] flex-shrink-0" strokeWidth={1.5} />}
+            <span className="text-[13px] text-[#F0EAE0]/90 font-medium flex-1 leading-snug">{toast.message}</span>
+            <button onClick={() => removeToast(toast.id)} className="p-0.5 text-[#8A8278]/40 hover:text-[#8A8278] transition-colors duration-200">
+              <X className="w-3.5 h-3.5" strokeWidth={1.5} />
             </button>
           </div>
         ))}

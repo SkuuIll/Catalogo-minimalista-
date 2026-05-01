@@ -23,10 +23,10 @@ interface LogEntry {
 }
 
 const levelConfig: Record<string, { label: string; color: string; bg: string; border: string; icon: any }> = {
-  error: { label: 'Error', color: 'text-[#e05555]', bg: 'bg-[#e05555]/8', border: 'border-[#e05555]/20', icon: AlertTriangle },
-  warn: { label: 'Warning', color: 'text-[#d4a030]', bg: 'bg-[#d4a030]/8', border: 'border-[#d4a030]/20', icon: AlertTriangle },
+  error: { label: 'Error', color: 'text-[#C0392B]', bg: 'bg-[#C0392B]/8', border: 'border-[#C0392B]/20', icon: AlertTriangle },
+  warn: { label: 'Warning', color: 'text-[#C9A55A]', bg: 'bg-[#C9A55A]/8', border: 'border-[#C9A55A]/20', icon: AlertTriangle },
   info: { label: 'Info', color: 'text-[#3cb371]', bg: 'bg-[#3cb371]/8', border: 'border-[#3cb371]/20', icon: Info },
-  debug: { label: 'Debug', color: 'text-white/40', bg: 'bg-white/5', border: 'border-white/10', icon: Bug },
+  debug: { label: 'Debug', color: 'text-[#8A8278]', bg: 'bg-[#8A8278]/5', border: 'border-[#8A8278]/10', icon: Bug },
 }
 
 function timeAgo(dateStr: string): string {
@@ -120,22 +120,22 @@ export default function LogsPage() {
     <div className="max-w-[1200px] mx-auto space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="font-serif text-2xl font-medium text-white">Logs del sistema</h1>
-        <p className="text-sm text-white/30 mt-1">Errores y eventos registrados en tiempo real</p>
+        <h1 className="font-serif text-2xl font-light text-[#F0EAE0] tracking-[0.02em]">Logs del sistema</h1>
+        <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] mt-1">Errores y eventos registrados en tiempo real</p>
       </div>
 
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Total logs', value: stats.total, icon: <Clock className="w-4 h-4" />, color: 'text-white' },
-          { label: 'Errores', value: stats.errors, icon: <AlertTriangle className="w-4 h-4" />, color: 'text-[#e05555]' },
-          { label: 'Warnings', value: stats.warnings, icon: <AlertTriangle className="w-4 h-4" />, color: 'text-[#d4a030]' },
-          { label: 'Sin resolver', value: stats.unresolved, icon: <CheckCircle className="w-4 h-4" />, color: 'text-[#bf9b4e]' },
+          { label: 'Total logs', value: stats.total, icon: <Clock className="w-4 h-4" strokeWidth={1.5} />, color: 'text-[#F0EAE0]' },
+          { label: 'Errores', value: stats.errors, icon: <AlertTriangle className="w-4 h-4" strokeWidth={1.5} />, color: 'text-[#C0392B]' },
+          { label: 'Warnings', value: stats.warnings, icon: <AlertTriangle className="w-4 h-4" strokeWidth={1.5} />, color: 'text-[#C9A55A]' },
+          { label: 'Sin resolver', value: stats.unresolved, icon: <CheckCircle className="w-4 h-4" strokeWidth={1.5} />, color: 'text-[#C9A55A]' },
         ].map(stat => (
-          <div key={stat.label} className="bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl px-4 py-3">
+          <div key={stat.label} className="bg-[#221E1A] border border-[#2E2925] rounded-sm px-4 py-3">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-white/25">{stat.icon}</span>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-white/25">{stat.label}</span>
+              <span className="text-[#8A8278]/25">{stat.icon}</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider text-[#8A8278]/40">{stat.label}</span>
             </div>
             <span className={`text-xl font-bold ${stat.color}`}>{stat.value}</span>
           </div>
@@ -144,13 +144,13 @@ export default function LogsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1.5 bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-1">
+        <div className="flex items-center gap-1.5 bg-[#221E1A] border border-[#2E2925] rounded-sm p-1">
           {(['all', 'error', 'warn', 'info', 'debug'] as LogLevel[]).map(l => (
             <button
               key={l}
               onClick={() => { setLevel(l); setPage(1); fetchLogs(1) }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                level === l ? 'bg-white text-black' : 'text-white/40 hover:text-white/70'
+              className={`px-3 py-1.5 rounded-sm text-[11px] font-normal uppercase tracking-[0.12em] transition-all ${
+                level === l ? 'bg-[#C9A55A] text-[#1A1714]' : 'text-[#8A8278] hover:text-[#F0EAE0]'
               }`}
             >
               {l === 'all' ? 'Todos' : levelConfig[l]?.label || l}
@@ -158,7 +158,7 @@ export default function LogsPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-1.5 bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl p-1">
+        <div className="flex items-center gap-1.5 bg-[#221E1A] border border-[#2E2925] rounded-sm p-1">
           {([
             { value: 'all', label: 'Todos' },
             { value: 'false', label: 'Sin resolver' },
@@ -167,8 +167,8 @@ export default function LogsPage() {
             <button
               key={opt.value}
               onClick={() => { setResolved(opt.value); setPage(1); fetchLogs(1) }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                resolved === opt.value ? 'bg-white text-black' : 'text-white/40 hover:text-white/70'
+              className={`px-3 py-1.5 rounded-sm text-[11px] font-normal uppercase tracking-[0.12em] transition-all ${
+                resolved === opt.value ? 'bg-[#C9A55A] text-[#1A1714]' : 'text-[#8A8278] hover:text-[#F0EAE0]'
               }`}
             >
               {opt.label}
@@ -177,17 +177,17 @@ export default function LogsPage() {
         </div>
 
         <div className="flex-1 min-w-[180px] max-w-sm relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8278]/25 pointer-events-none" />
           <input
             type="text"
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="Buscar errores..."
-            className="w-full bg-[#0d0d0d] border border-[#1a1a1a] rounded-xl h-10 pl-10 pr-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/15 transition-all"
+            className="w-full bg-[#221E1A] border border-[#2E2925] rounded-sm h-10 pl-10 pr-4 text-sm text-[#F0EAE0] placeholder-[#8A8278]/20 focus:outline-none focus:border-[#3D3830] transition-all"
           />
           {searchInput && (
-            <button onClick={() => { setSearchInput(''); setSearch(''); fetchLogs(1) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
-              <X className="w-4 h-4" />
+            <button onClick={() => { setSearchInput(''); setSearch(''); fetchLogs(1) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A8278]/30 hover:text-[#8A8278] transition-colors">
+              <X className="w-4 h-4" strokeWidth={1.5} />
             </button>
           )}
         </div>
@@ -195,8 +195,8 @@ export default function LogsPage() {
 
       {/* Results count */}
       <div className="flex items-center justify-between">
-        <span className="text-sm text-white/30">{total} entradas</span>
-        {search && <span className="text-xs text-[#bf9b4e]/70">Buscando: "{search}"</span>}
+        <span className="text-sm text-[#8A8278]/30">{total} entradas</span>
+        {search && <span className="text-xs text-[#C9A55A]/70">Buscando: "{search}"</span>}
       </div>
 
       {/* Logs list */}
@@ -204,16 +204,16 @@ export default function LogsPage() {
         {loading ? (
           <div className="space-y-2">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-20 rounded-2xl bg-[#0d0d0d] border border-[#1a1a1a] animate-pulse" />
+              <div key={i} className="h-20 rounded-sm bg-[#221E1A] border border-[#2E2925] animate-pulse" />
             ))}
           </div>
         ) : logs.length === 0 ? (
           <div className="py-20 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-[#0d0d0d] flex items-center justify-center mx-auto mb-4 border border-[#1a1a1a]">
-              <CheckCircle className="w-6 h-6 text-[#3cb371]/40" />
+            <div className="w-14 h-14 rounded-sm bg-[#221E1A] flex items-center justify-center mx-auto mb-4 border border-[#2E2925]">
+              <CheckCircle className="w-6 h-6 text-[#3cb371]/40" strokeWidth={1.5} />
             </div>
-            <p className="text-base font-medium text-white/40 mb-1">Sin errores registrados</p>
-            <p className="text-sm text-white/25">Todo funciona correctamente</p>
+            <p className="text-[15px] font-medium text-[#8A8278] mb-1">Sin errores registrados</p>
+            <p className="text-[13px] text-[#8A8278]/40">Todo funciona correctamente</p>
           </div>
         ) : (
           logs.map(log => {
@@ -224,41 +224,41 @@ export default function LogsPage() {
             return (
               <div
                 key={log.id}
-                className={`bg-[#0d0d0d] border rounded-2xl transition-all ${
-                  isExpanded ? `border-[#bf9b4e]/30` : 'border-[#1a1a1a] hover:border-white/8'
+                className={`bg-[#221E1A] border rounded-sm transition-all ${
+                  isExpanded ? `border-[#C9A55A]/30` : 'border-[#2E2925] hover:border-[#F0EAE0]/[0.08]'
                 }`}
               >
                 <div className="flex items-start gap-4 p-4">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${cfg.bg} border ${cfg.border}`}>
-                    <Icon className={`w-4 h-4 ${cfg.color}`} />
+                  <div className={`w-9 h-9 rounded-sm flex items-center justify-center flex-shrink-0 ${cfg.bg} border ${cfg.border}`}>
+                    <Icon className={`w-4 h-4 ${cfg.color}`} strokeWidth={1.5} />
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
-                      <p className="text-sm font-medium text-white/80 leading-relaxed line-clamp-2">{log.message}</p>
+                      <p className="text-sm font-medium text-[#F0EAE0]/80 leading-relaxed line-clamp-2">{log.message}</p>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         {log.resolved && (
-                          <span className="text-[10px] font-medium text-[#3cb371] bg-[#3cb371]/8 px-2 py-0.5 rounded-md border border-[#3cb371]/20">Resuelto</span>
+                          <span className="text-[10px] font-medium text-[#3cb371] bg-[#3cb371]/8 px-2 py-0.5 rounded-sm border border-[#3cb371]/20">Resuelto</span>
                         )}
                         <button
                           onClick={() => handleResolve(log.id, log.resolved)}
-                          className="p-1.5 rounded-lg text-white/20 hover:text-[#3cb371] hover:bg-[#3cb371]/5 transition-all"
+                          className="p-1.5 rounded-sm text-[#8A8278]/30 hover:text-[#3cb371] hover:bg-[#3cb371]/5 transition-all"
                           title={log.resolved ? 'Desmarcar' : 'Marcar resuelto'}
                         >
-                          <CheckCircle className="w-4 h-4" />
+                          <CheckCircle className="w-4 h-4" strokeWidth={1.5} />
                         </button>
                         <button
                           onClick={() => handleDelete(log.id)}
                           disabled={deletingId === log.id}
-                          className="p-1.5 rounded-lg text-white/20 hover:text-[#e05555] hover:bg-[#e05555]/5 transition-all disabled:opacity-30"
+                          className="p-1.5 rounded-sm text-[#8A8278]/30 hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all disabled:opacity-30"
                           title="Eliminar"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                         </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 mt-2 text-xs text-white/25">
+                    <div className="flex items-center gap-4 mt-2 text-xs text-[#8A8278]/30">
                       {log.url && (
                         <span className="truncate max-w-[180px]" title={log.url}>
                           {new URL(log.url).pathname}
@@ -267,9 +267,9 @@ export default function LogsPage() {
                       <span>{timeAgo(log.createdAt)}</span>
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : log.id)}
-                        className="flex items-center gap-1 text-white/30 hover:text-white/60 transition-colors"
+                        className="flex items-center gap-1 text-[#8A8278]/40 hover:text-[#8A8278] transition-colors"
                       >
-                        <Filter className="w-3 h-3" /> info
+                        <Filter className="w-3 h-3" strokeWidth={1.5} /> info
                       </button>
                     </div>
 
@@ -277,24 +277,24 @@ export default function LogsPage() {
                       <div className="mt-4 space-y-3">
                         {log.stack && (
                           <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-white/20 mb-2">Stack trace</p>
-                            <pre className="text-xs text-white/35 bg-black/30 rounded-xl p-3.5 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed max-h-40">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#8A8278]/30 mb-2">Stack trace</p>
+                            <pre className="text-xs text-[#8A8278]/40 bg-[#161310] rounded-sm p-3.5 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed max-h-40">
                               {log.stack}
                             </pre>
                           </div>
                         )}
                         {log.metadata && (
                           <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-white/20 mb-2">Metadata</p>
-                            <pre className="text-xs text-white/35 bg-black/30 rounded-xl p-3.5 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#8A8278]/30 mb-2">Metadata</p>
+                            <pre className="text-xs text-[#8A8278]/40 bg-[#161310] rounded-sm p-3.5 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed">
                               {JSON.stringify(JSON.parse(log.metadata), null, 2)}
                             </pre>
                           </div>
                         )}
                         {log.userAgent && (
                           <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-white/20 mb-1">User Agent</p>
-                            <p className="text-xs text-white/30 font-mono">{log.userAgent}</p>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#8A8278]/30 mb-1">User Agent</p>
+                            <p className="text-xs text-[#8A8278]/30 font-mono">{log.userAgent}</p>
                           </div>
                         )}
                       </div>
@@ -313,17 +313,17 @@ export default function LogsPage() {
           <button
             onClick={() => { const p = Math.max(1, page - 1); setPage(p); fetchLogs(p) }}
             disabled={page <= 1}
-            className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-[#0d0d0d] border border-[#1a1a1a] text-sm text-white/50 hover:text-white hover:border-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 h-10 px-4 rounded-sm bg-[#221E1A] border border-[#2E2925] text-sm text-[#8A8278]/50 hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <ChevronLeft className="w-4 h-4" /> Anterior
+            <ChevronLeft className="w-4 h-4" strokeWidth={1.5} /> Anterior
           </button>
-          <span className="text-sm text-white/30 px-4">{page} / {pages}</span>
+          <span className="text-sm text-[#8A8278]/30 px-4">{page} / {pages}</span>
           <button
             onClick={() => { const p = Math.min(pages, page + 1); setPage(p); fetchLogs(p) }}
             disabled={page >= pages}
-            className="flex items-center gap-1.5 h-10 px-4 rounded-xl bg-[#0d0d0d] border border-[#1a1a1a] text-sm text-white/50 hover:text-white hover:border-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 h-10 px-4 rounded-sm bg-[#221E1A] border border-[#2E2925] text-sm text-[#8A8278]/50 hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Siguiente <ChevronRight className="w-4 h-4" />
+            Siguiente <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
           </button>
         </div>
       )}

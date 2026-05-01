@@ -6,7 +6,7 @@ import { Trash2, Loader2 } from 'lucide-react'
 import { DeleteDialog } from '@/components/Dialog'
 import { useToast } from '@/components/Toast'
 
-export function DeleteProductButton({ id, name }: { id: string; name: string }) {
+export function DeleteProductButton({ id, name, onDelete }: { id: string; name: string; onDelete?: () => void }) {
   const router = useRouter()
   const { showToast } = useToast()
   const [isDeleting, setIsDeleting] = useState(false)
@@ -20,6 +20,7 @@ export function DeleteProductButton({ id, name }: { id: string; name: string }) 
       if (res.ok) {
         showToast('Producto eliminado', 'success')
         setShowConfirm(false)
+        onDelete?.()
         router.refresh()
       } else {
         showToast(data.error || 'Error al eliminar', 'error')
@@ -38,7 +39,7 @@ export function DeleteProductButton({ id, name }: { id: string; name: string }) 
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isDeleting}
-        className="p-2 rounded-lg text-white/15 hover:text-[#e05555] hover:bg-[#e05555]/5 transition-all disabled:opacity-50"
+        className="p-2 rounded-lg text-white/15 hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all disabled:opacity-50"
         title="Eliminar producto"
       >
         {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -83,7 +84,7 @@ export function ToggleFeaturedButton({ id, featured, onToggle }: { id: string; f
     <button
       onClick={handleToggle}
       disabled={loading}
-      className={`p-2 rounded-lg transition-all ${featured ? 'text-[#bf9b4e] bg-[#bf9b4e]/10 hover:bg-[#bf9b4e]/20' : 'text-white/25 hover:text-[#bf9b4e] hover:bg-[#bf9b4e]/5'} disabled:opacity-50`}
+      className={`p-2 rounded-lg transition-all ${featured ? 'text-[#C9A55A] bg-[#C9A55A]/10 hover:bg-[#C9A55A]/20' : 'text-white/25 hover:text-[#C9A55A] hover:bg-[#C9A55A]/5'} disabled:opacity-50`}
       title={featured ? 'Quitar de destacados' : 'Marcar como destacado'}
     >
       <Loader2 className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />

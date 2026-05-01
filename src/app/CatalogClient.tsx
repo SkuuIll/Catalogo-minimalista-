@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Search, Package, X } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { ImageFade } from '@/components/ImageFade'
 import { formatARS, discountPercent } from '@/lib/format'
 
 export function CatalogClient({
@@ -45,20 +46,20 @@ export function CatalogClient({
   return (
     <>
       {/* Sticky search bar */}
-      <div className="sticky top-11 z-40 px-4 py-3 bg-[#060606]/97 backdrop-blur-xl border-b border-[#1a1a1a]/50">
+      <div className="sticky top-11 z-40 px-4 py-3 bg-[#1A1714]/97 backdrop-blur-xl border-b border-[#2E2925]/50">
         <div className="relative max-w-7xl mx-auto">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8278]/50 pointer-events-none" />
           <input
             type="text"
             placeholder="Buscar productos…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-2xl h-12 pl-12 pr-10 text-base text-white placeholder-white/20 focus:outline-none focus:border-[#bf9b4e]/40 transition-all"
+            className="w-full bg-transparent border-b border-[#3D3830] h-12 pl-11 pr-10 text-[15px] text-[#F0EAE0] placeholder-[#8A8278]/40 focus:outline-none focus:border-[#C9A55A] transition-colors duration-300"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-white/30 hover:text-white/70 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300"
             >
               <X className="w-4 h-4" />
             </button>
@@ -69,8 +70,11 @@ export function CatalogClient({
       <div className="max-w-7xl mx-auto">
         {/* Featured horizontal scroll */}
         {!search && !activeCategory && featured.length > 0 && (
-          <section className="px-4 pt-6 pb-3">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/40 mb-4">Destacados</h2>
+          <section className="px-4 pt-8 pb-4">
+            <div className="flex items-baseline justify-between mb-5">
+              <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-[#8A8278]">Destacados</h2>
+              <span className="text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/40">{featured.length} artículos</span>
+            </div>
             <div className="flex gap-4 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-3">
               {featured.map(product => {
                 const img = getFirstImage(product)
@@ -80,34 +84,30 @@ export function CatalogClient({
                     href={`/product/${product.id}`}
                     className="flex-shrink-0 w-40 sm:w-44 md:w-48 group"
                   >
-                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0d0d] mb-3 border border-[#1a1a1a]/60 group-hover:border-[#bf9b4e]/30 transition-all duration-500">
+                    <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-[#221E1A] mb-3 border border-[#2E2925]/40 group-hover:border-[#C9A55A]/40 transition-all duration-500">
                       {img ? (
-                        <img
-                          src={img} alt={product.name}
-                          className="w-full h-full object-cover product-img-hover"
-                          loading="lazy"
-                        />
+                        <ImageFade src={img} alt={product.name} containerClassName="w-full h-full" className="product-img-hover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-8 h-8 text-white/10" />
+                          <Package className="w-7 h-7 text-[#8A8278]/15" />
                         </div>
                       )}
                       {product.status === 'OUT_OF_STOCK' && (
-                        <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                          <span className="text-sm font-semibold text-white/80 uppercase tracking-wider">Agotado</span>
+                        <div className="absolute inset-0 bg-[#1A1714]/80 flex items-center justify-center backdrop-blur-[2px]">
+                          <span className="text-[10px] font-normal text-[#8A8278] uppercase tracking-[0.2em]">Agotado</span>
                         </div>
                       )}
                       {product.status === 'PREORDER' && (
-                        <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded-md bg-[#d4a030]/30 backdrop-blur-md text-xs font-semibold text-[#d4a030]">
+                        <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-sm bg-[#C9A55A]/10 border border-[#C9A55A]/20 text-[10px] font-normal uppercase tracking-[0.15em] text-[#C9A55A]">
                           Por pedido
                         </div>
                       )}
                     </div>
-                    <h3 className="text-base font-medium text-white/90 line-clamp-2 leading-snug mb-1">{product.name}</h3>
+                    <h3 className="text-[15px] font-medium text-[#F0EAE0]/90 line-clamp-2 leading-snug mb-1.5 tracking-tight">{product.name}</h3>
                     <div className="flex items-center gap-2">
-                      <span className="text-base font-bold text-[#bf9b4e]">{formatARS(product.price)}</span>
+                      <span className="text-[15px] font-serif italic text-[#C9A55A]">{formatARS(product.price)}</span>
                       {product.discountPrice && (
-                        <span className="text-sm text-white/30 line-through">{formatARS(product.discountPrice)}</span>
+                        <span className="text-[13px] text-[#8A8278]/40 line-through">{formatARS(product.discountPrice)}</span>
                       )}
                     </div>
                   </Link>
@@ -119,19 +119,19 @@ export function CatalogClient({
 
         {/* Categories */}
         {!search && (
-          <section className="px-4 py-5">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/40">Categorías</h2>
+          <section className="px-4 py-6">
+            <div className="flex items-baseline justify-between mb-5">
+              <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-[#8A8278]">Categorías</h2>
               {activeCategory && (
                 <button
                   onClick={() => { setActiveCategory(null); setActiveSubcategory(null) }}
-                  className="text-sm text-[#bf9b4e]/80 hover:text-[#bf9b4e] transition-colors font-medium"
+                  className="text-[11px] uppercase tracking-[0.15em] text-[#C9A55A]/70 hover:text-[#C9A55A] transition-colors duration-300"
                 >
                   Ver todo
                 </button>
               )}
             </div>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-1 lg:overflow-visible lg:flex-wrap lg:justify-start">
+            <div className="flex gap-5 overflow-x-auto scrollbar-hide -mr-4 pr-4 pb-1 lg:overflow-visible lg:flex-wrap lg:justify-start">
               {categories.map(cat => {
                 const isActive = activeCategory === cat.id
                 return (
@@ -141,12 +141,12 @@ export function CatalogClient({
                       setActiveCategory(isActive ? null : cat.id)
                       setActiveSubcategory(null)
                     }}
-                    className={`flex-shrink-0 flex flex-col items-center gap-2 transition-all ${isActive ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
+                    className="flex-shrink-0 flex flex-col items-center gap-2.5 transition-all duration-300 group"
                   >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-[#bf9b4e] text-black' : 'bg-[#0d0d0d] border border-[#2a2a2a] text-white/50'}`}>
-                      <Package className="w-6 h-6" />
+                    <div className={`w-14 h-14 rounded-sm flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-[#C9A55A] text-[#1A1714]' : 'bg-[#221E1A] border border-[#2E2925] text-[#8A8278] group-hover:border-[#3D3830] group-hover:text-[#F0EAE0]'}`}>
+                      <Package className="w-5 h-5" strokeWidth={1.5} />
                     </div>
-                    <span className={`text-sm font-medium text-center leading-tight ${isActive ? 'text-[#bf9b4e]' : 'text-white/50'}`}>
+                    <span className={`text-[10px] uppercase tracking-[0.15em] text-center leading-tight transition-colors duration-300 ${isActive ? 'text-[#C9A55A]' : 'text-[#8A8278] group-hover:text-[#F0EAE0]'}`}>
                       {cat.name}
                     </span>
                   </button>
@@ -158,7 +158,7 @@ export function CatalogClient({
 
         {/* Subcategories */}
         {subcategories.length > 0 && !search && (
-          <section className="px-4 pb-3">
+          <section className="px-4 pb-4">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide -mr-4 pr-4">
               <SubPill active={!activeSubcategory} onClick={() => setActiveSubcategory(null)}>
                 Todo {activeCat?.name}
@@ -173,30 +173,18 @@ export function CatalogClient({
         )}
 
         {/* Products grid */}
-        <section className="px-4 pb-8 pt-4">
-          <div className="flex justify-between items-center mb-5">
-            <h2 className="text-base font-semibold text-white/60">
-              {search
-                ? `Resultados`
-                : activeCategory ? activeCat?.name : 'Catálogo'}
+        <section className="px-4 pb-12 pt-4">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-[#8A8278]">
+              {search ? `Resultados para "${search}"` : activeCategory ? activeCat?.name : 'Catálogo'}
             </h2>
-            <span className="text-sm text-white/30">{filtered.length} productos</span>
+            <span className="text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/40">{filtered.length} productos</span>
           </div>
 
           {filtered.length === 0 ? (
-            <div className="py-24 text-center">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[#0d0d0d] flex items-center justify-center border border-[#1a1a1a]">
-                <Package className="w-7 h-7 text-white/10" />
-              </div>
-              <p className="text-lg font-medium text-white/50 mb-2">
-                {search ? 'Sin resultados' : 'Sin productos'}
-              </p>
-              <p className="text-base text-white/30">
-                {search ? 'Probá con otro término' : 'Elegí otra categoría'}
-              </p>
-            </div>
+            <EmptyState search={search} />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 lg:gap-6">
               {filtered.map((product, i) => (
                 <ScrollReveal key={product.id} delay={Math.min(i * 0.04, 0.2)}>
                   <ProductCard product={product} />
@@ -222,14 +210,32 @@ function SubPill({
   return (
     <button
       onClick={onClick}
-      className={`flex-shrink-0 px-5 py-2 rounded-full text-base font-medium transition-all ${
+      className={`flex-shrink-0 px-4 py-1.5 rounded-sm text-[11px] font-normal uppercase tracking-[0.15em] transition-all duration-300 ${
         active
-          ? 'bg-[#bf9b4e] text-black'
-          : 'bg-[#0d0d0d] border border-[#2a2a2a] text-white/50 hover:text-white/80'
+          ? 'bg-[#C9A55A] text-[#1A1714]'
+          : 'bg-[#221E1A] border border-[#2E2925] text-[#8A8278] hover:border-[#3D3830] hover:text-[#F0EAE0]'
       }`}
     >
       {children}
     </button>
+  )
+}
+
+function EmptyState({ search }: { search: string }) {
+  return (
+    <div className="py-28 text-center">
+      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#221E1A] border border-[#2E2925] flex items-center justify-center">
+        <Package className="w-8 h-8 text-[#8A8278]/20" strokeWidth={1} />
+      </div>
+      <p className="font-serif text-lg font-light text-[#F0EAE0]/80 tracking-[0.02em] mb-2">
+        {search ? 'Sin resultados' : 'Sin productos'}
+      </p>
+      <p className="text-[13px] text-[#8A8278]/50 leading-relaxed max-w-xs mx-auto">
+        {search
+          ? 'No encontramos productos que coincidan con tu búsqueda. Probá con otros términos.'
+          : 'Esta categoría no tiene productos disponibles en este momento.'}
+      </p>
+    </div>
   )
 }
 
@@ -250,54 +256,54 @@ function ProductCard({ product }: { product: any }) {
   return (
     <Link
       href={`/product/${product.id}`}
-      className="group flex flex-col active:scale-[0.97] transition-transform duration-150"
+      className="group flex flex-col"
     >
-      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#0d0d0d] mb-3 border border-[#1a1a1a]/50 group-hover:border-[#bf9b4e]/25 transition-all duration-500">
+      <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-[#221E1A] mb-3.5 border border-[#2E2925]/30 transition-all duration-500 group-hover:border-[#C9A55A]/30">
         {img ? (
-          <img
-            src={img} alt={product.name}
-            className="w-full h-full object-cover product-img-hover"
-            loading="lazy"
-          />
+          <ImageFade src={img} alt={product.name} containerClassName="w-full h-full" className="product-img-hover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-8 h-8 text-white/8" />
+            <Package className="w-7 h-7 text-[#8A8278]/15" strokeWidth={1} />
           </div>
         )}
 
         {product.status === 'OUT_OF_STOCK' && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-            <span className="text-sm font-semibold text-white/80 uppercase tracking-wider">Agotado</span>
+          <div className="absolute inset-0 bg-[#1A1714]/80 flex items-center justify-center backdrop-blur-[2px]">
+            <span className="text-[10px] font-normal text-[#8A8278] uppercase tracking-[0.2em]">Agotado</span>
           </div>
         )}
 
         {product.status === 'PREORDER' && (
-          <div className="absolute top-2 left-2 px-2.5 py-1 rounded-md bg-[#d4a030]/25 backdrop-blur-md text-xs font-semibold text-[#d4a030]">
+          <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-sm bg-[#C9A55A]/10 border border-[#C9A55A]/20 text-[10px] font-normal uppercase tracking-[0.15em] text-[#C9A55A]">
             Pedido
           </div>
         )}
 
         {hasDiscount && product.status !== 'OUT_OF_STOCK' && (
-          <div className="absolute top-2 right-2 px-2.5 py-1 rounded-md bg-[#e05555]/25 backdrop-blur-md text-xs font-bold text-[#e05555]">
+          <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-sm bg-[#C0392B]/10 border border-[#C0392B]/20 text-[10px] font-normal uppercase tracking-[0.15em] text-[#C0392B]">
             -{discountPercent(product.price, product.discountPrice)}%
           </div>
         )}
 
         {product.featured && !hasDiscount && product.status !== 'OUT_OF_STOCK' && (
-          <div className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#bf9b4e]" />
+          <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-[#C9A55A]" />
         )}
       </div>
 
-      <h3 className="text-base font-medium text-white/90 line-clamp-2 leading-snug mb-1.5">{product.name}</h3>
-      <div className="flex items-center justify-between">
+      <h3 className="text-[15px] font-medium text-[#F0EAE0]/90 line-clamp-2 leading-snug mb-1.5 tracking-tight group-hover:text-[#F0EAE0] transition-colors duration-300">
+        {product.name}
+      </h3>
+      <div className="flex items-center justify-between mt-auto">
         <div className="flex items-center gap-2">
-          <span className="text-base font-bold text-[#bf9b4e]">{formatARS(product.price)}</span>
+          <span className="text-[15px] font-serif italic text-[#C9A55A]">{formatARS(product.price)}</span>
           {hasDiscount && (
-            <span className="text-sm text-white/25 line-through">{formatARS(product.discountPrice)}</span>
+            <span className="text-[13px] text-[#8A8278]/40 line-through">{formatARS(product.discountPrice)}</span>
           )}
         </div>
         {product.category && (
-          <span className="text-sm text-white/30 hidden sm:block">{product.category.name}</span>
+          <span className="text-[9px] uppercase tracking-[0.15em] text-[#8A8278]/60 hidden sm:inline-block">
+            {product.category.name}
+          </span>
         )}
       </div>
     </Link>

@@ -6,11 +6,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
-    const search = searchParams.get('search')
+    const search = searchParams.get('search') || searchParams.get('q')
+    const status = searchParams.get('status')
+    const sort = searchParams.get('sort')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const skip = (page - 1) * limit
 
     const where: any = {}
     if (category && category !== 'all') {
       where.categoryId = category
+    }
+    if (status && status !== 'all') {
+      where.status = status
     }
     if (search) {
       where.OR = [
@@ -19,13 +27,31 @@ export async function GET(request: Request) {
       ]
     }
 
-    const products = await prisma.product.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: { category: true }
+    let orderBy: any = { createdAt: 'desc' }
+    if (sort === 'oldest') orderBy = { createdAt: 'asc' }
+    else if (sort === 'price-asc') orderBy = { price: 'asc' }
+    else if (sort === 'price-desc') orderBy = { price: 'desc' }
+    else if (sort === 'name') orderBy = { name: 'asc' }
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        include: { category: true }
+      }),
+      prisma.product.count({ where }),
+    ])
+
+    return NextResponse.json({
+      products,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
     })
-    return NextResponse.json(products)
   } catch (error) {
+    console.error('GET products error:', error)
     return NextResponse.json({ error: 'Error al obtener los productos' }, { status: 500 })
   }
 }
