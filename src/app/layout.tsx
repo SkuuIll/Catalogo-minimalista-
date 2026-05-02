@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
+import { Geist, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
 import { ToastProvider } from "@/components/Toast";
 import { ErrorLogger } from "@/components/ErrorLogger";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,15 +15,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
 const siteUrl = process.env.SITE_URL || "https://showjr.store";
 const siteName = "Aura — Catálogo Premium";
-const siteDescription = "Catálogo minimalista de productos premium. Explora tecnología, audio, accesorios y más. 100% app móvil, diseño profesional.";
+const siteDescription = "Catálogo premium de productos tecnológicos, moda y accesorios. Diseño moderno con experiencia optimizada para móvil y escritorio.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -77,10 +78,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: "#1A1714",
-  viewportFit: "cover",
+  themeColor: "#111111", // Darker background to match the design
 };
 
 export default function RootLayout({
@@ -91,7 +89,8 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
     >
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -101,10 +100,21 @@ export default function RootLayout({
         <link rel="canonical" href={siteUrl} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-surface overflow-x-hidden">
-        <ErrorLogger />
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          forcedTheme="dark"
+          disableTransitionOnChange
+        >
+          <ErrorLogger />
+          <ToastProvider>
+            <div className="app-shell">
+              <div className="app-content">
+                {children}
+              </div>
+            </div>
+          </ToastProvider>
+        </ThemeProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `

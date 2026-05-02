@@ -79,13 +79,13 @@ export default function SettingsPage() {
     setSettings(s => ({ ...s, [key]: value }))
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
+    <div className="min-h-screen bg-[--bg]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[--bg]/95 backdrop-blur-xl border-b border-[--border]">
         <div className="flex items-center h-16 px-6 gap-4 max-w-7xl mx-auto">
-          <Link href="/admin" className="p-2 -ml-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
+          <Link href="/admin" className="p-2 -ml-2 text-[--text-secondary] hover:text-[--text] transition-colors duration-300">
             <ArrowLeft className="w-4 h-4" strokeWidth={1} />
           </Link>
-          <h1 className="font-serif text-lg font-light text-[#e8e8e8] tracking-[0.1em]">SETTINGS</h1>
+          <h1 className="font-serif text-lg font-light text-[--text] tracking-[0.1em]">SETTINGS</h1>
         </div>
       </header>
 
@@ -126,7 +126,7 @@ export default function SettingsPage() {
                   type="color"
                   value={settings.primaryColor}
                   onChange={e => set('primaryColor', e.target.value)}
-                  className="w-11 h-11 rounded-none border border-[#1a1a1a] bg-[#0a0a0a] cursor-pointer"
+                  className="w-11 h-11 rounded-none border border-[--border] bg-[--bg] cursor-pointer"
                 />
                 <input
                   value={settings.primaryColor}
@@ -190,9 +190,9 @@ export default function SettingsPage() {
               rows={2}
             />
             {settings.whatsappNumber && (
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-[#666] bg-[#0f0f0f] rounded-none p-3 border border-[#1a1a1a]">
-                <MessageCircle className="w-3.5 h-3.5 text-[#3cb371]/60 flex-shrink-0" strokeWidth={1} />
-                <span>WHATSAPP CONFIGURED: <span className="text-[#e8e8e8]/70">{settings.whatsappNumber}</span></span>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-[--text-secondary] bg-[--bg-surface] rounded-none p-3 border border-[--border]">
+                <MessageCircle className="w-3.5 h-3.5 text-[--green]/60 flex-shrink-0" strokeWidth={1} />
+                <span>WHATSAPP CONFIGURED: <span className="text-[--text]/70">{settings.whatsappNumber}</span></span>
               </div>
             )}
           </SettingsSection>
@@ -212,18 +212,18 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowApiKey(!showApiKey)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-[#e8e8e8] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[--text-secondary] hover:text-[--text] transition-colors"
                 >
                   {showApiKey ? <EyeOff className="w-4 h-4" strokeWidth={1} /> : <Eye className="w-4 h-4" strokeWidth={1} />}
                 </button>
               </div>
-              <p className="text-[10px] uppercase tracking-[0.15em] text-[#444] mt-2">
+              <p className="text-[10px] uppercase tracking-[0.15em] text-[--text-tertiary] mt-2">
                 ENABLES AI-GENERATED SPECIFICATIONS.{' '}
                 <a
                   href="https://aistudio.google.com/app/apikey"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#c9a55a] hover:text-[#e8e8e8] transition-colors"
+                  className="text-[--accent] hover:text-[--text] transition-colors"
                 >
                   GET KEY FROM GOOGLE AI STUDIO
                 </a>
@@ -235,14 +235,14 @@ export default function SettingsPage() {
           <div className="flex justify-end gap-3 pt-2">
             <Link
               href="/admin"
-              className="h-11 px-6 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] text-[12px] uppercase tracking-[0.15em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all flex items-center"
+              className="h-11 px-6 rounded-none bg-[--bg] border border-[--border] text-[12px] uppercase tracking-[0.15em] text-[--text-secondary] hover:text-[--text] hover:border-[--border] transition-all flex items-center"
             >
               CANCEL
             </Link>
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] font-normal hover:bg-[#c9a55a] hover:text-[#0a0a0a] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-none border border-[--accent] bg-transparent text-[--accent] text-[9px] uppercase tracking-[0.25em] font-normal hover:bg-[--accent] hover:text-[--bg] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" strokeWidth={1.5} />}
               {saving ? 'SAVING…' : 'SAVE SETTINGS'}
@@ -289,10 +289,10 @@ function SettingsSection({
   title: string; icon: React.ReactNode; children: React.ReactNode
 }) {
   return (
-    <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-6 space-y-4">
+    <div className="bg-[--bg-surface] border border-[--border] rounded-none p-6 space-y-4">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-[#c9a55a]/50">{icon}</span>
-        <h2 className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#666]">{title}</h2>
+        <span className="text-[--accent]/50">{icon}</span>
+        <h2 className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[--text-secondary]">{title}</h2>
       </div>
       {children}
     </div>
@@ -318,7 +318,7 @@ function SettingsTextarea({
       <label className="settings-label">{label}</label>
       <textarea
         rows={rows}
-        className="w-full bg-[#0a0a0a] border border-[#1a1a1a] rounded-none p-3 text-[13px] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#2a2a2a] transition-all resize-none"
+        className="w-full bg-[--bg] border border-[--border] rounded-none p-3 text-[13px] text-[--text] placeholder-[#444] focus:outline-none focus:border-[--border] transition-all resize-none"
         {...props}
       />
     </div>

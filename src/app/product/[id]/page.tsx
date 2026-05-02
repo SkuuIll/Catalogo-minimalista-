@@ -4,12 +4,11 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { formatARS, discountPercent } from '@/lib/format'
 import { ImageCarousel } from '@/components/ImageCarousel'
-import { BottomNav } from '@/components/BottomNav'
 import { ImageFade } from '@/components/ImageFade'
 import { Reviews } from '@/components/Reviews'
 import {
   ArrowLeft, Share2, Heart, Star, Package,
-  ChevronRight, MessageCircle, X, Check, Truck, Shield, RefreshCw
+  ChevronRight, MessageCircle, X, Truck, Shield, RefreshCw, Zap, Tag
 } from 'lucide-react'
 
 const siteUrl = process.env.SITE_URL || 'https://showjr.store'
@@ -81,9 +80,10 @@ export default async function ProductPage({
   if (!product) notFound()
 
   const images = getProductImages(product)
-  
-  // Fetch reviews safely
-  let reviewData: { average: number; total: number; distribution: Record<number, number>; reviews: any[] } = { average: 0, total: 0, distribution: {}, reviews: [] }
+
+  let reviewData: { average: number; total: number; distribution: Record<number, number>; reviews: any[] } = {
+    average: 0, total: 0, distribution: {}, reviews: []
+  }
   try {
     const reviews = await prisma.review.findMany({
       where: { productId: id, approved: true },
@@ -126,24 +126,17 @@ export default async function ProductPage({
   )
   const waLink = waNumber ? `https://wa.me/${waNumber}?text=${waMessage}` : null
 
-  const isAvailable = product.status === 'AVAILABLE'
-  const isPreorder = product.status === 'PREORDER'
+  const isPreorder  = product.status === 'PREORDER'
   const isOutOfStock = product.status === 'OUT_OF_STOCK'
-
-  const statusStyles = {
-    AVAILABLE: 'text-[#4a4] bg-[#4a4]/8 border-[#4a4]/20',
-    PREORDER: 'text-[#c9a55a] bg-[#c9a55a]/8 border-[#c9a55a]/20',
-    OUT_OF_STOCK: 'text-[#c44] bg-[#c44]/8 border-[#c44]/20',
-  }
-  const statusLabels = {
-    AVAILABLE: 'Available',
-    PREORDER: 'By Order',
-    OUT_OF_STOCK: 'Unavailable',
-  }
-
   const hasDiscount = product.discountPrice && product.discountPrice > product.price
 
-  // Schema.org structured data
+  const statusConfig = {
+    AVAILABLE:    { label: 'Disponible',  cls: 'status-available', dot: 'bg-[--green]' },
+    PREORDER:     { label: 'Por encargo', cls: 'status-preorder',  dot: 'bg-[--amber]' },
+    OUT_OF_STOCK: { label: 'Sin stock',   cls: 'status-oos',       dot: 'bg-[--red]'   },
+  }
+  const status = statusConfig[product.status as keyof typeof statusConfig] || statusConfig.AVAILABLE
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -154,259 +147,339 @@ export default async function ProductPage({
       "@type": "Offer",
       "price": product.price,
       "priceCurrency": "ARS",
-      "availability": product.status === 'AVAILABLE' 
-        ? "https://schema.org/InStock" 
+      "availability": product.status === 'AVAILABLE'
+        ? "https://schema.org/InStock"
         : product.status === 'PREORDER'
         ? "https://schema.org/PreOrder"
         : "https://schema.org/OutOfStock",
       "url": `${siteUrl}/product/${product.id}`,
     },
-    "brand": {
-      "@type": "Brand",
-      "name": settings?.siteName || 'Aura',
-    },
+    "brand": { "@type": "Brand", "name": settings?.siteName || 'Aura' },
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": reviewData.average || 0,
       "reviewCount": reviewData.total || 0,
     },
-    "review": reviewData.reviews?.slice(0, 5).map((r: any) => ({
-      "@type": "Review",
-      "reviewRating": {
-        "@type": "Rating",
-        "ratingValue": r.rating,
-      },
-      "author": {
-        "@type": "Person",
-        "name": r.authorName,
-      },
-    })),
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-28 sm:pb-0 selection:bg-[#c9a55a]/20">
-      {/* JSON-LD Structured Data */}
+    <div className="flex flex-col min-h-full pb-28 md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* Floating header - Minimal luxury */}
-      <header className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
-          <div className="flex items-center justify-between h-16 px-6 max-w-7xl mx-auto">
-            <Link
-              href="/"
-              className="w-10 h-10 flex items-center justify-center hover:bg-[#0f0f0f] transition-colors duration-300"
-            >
-              <ArrowLeft className="w-4 h-4 text-[#666]" strokeWidth={1} />
-            </Link>
-            <div className="absolute left-1/2 -translate-x-1/2 max-w-[280px]">
-              <span className="text-[9px] uppercase tracking-[0.3em] text-[#666] truncate block text-center">
-                {product.name}
+
+      {/* ── Header ──────────────────────────────── */}
+      <header className="sticky top-0 z-50 nav-glass border-b border-[--border]">
+        <div className="flex items-center justify-between h-14 md:h-16 px-3 md:px-8 container-desktop mx-auto">
+
+          {/* Back */}
+          <Link
+            href="/"
+            aria-label="Volver"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-[--text-secondary] hover:text-[--text] hover:bg-[--bg-elevated] border border-transparent hover:border-[--border] transition-all duration-200"
+          >
+            <ArrowLeft className="w-4 h-4" strokeWidth={2} />
+          </Link>
+
+          {/* Breadcrumb */}
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] tracking-[0.06em] text-[--text-secondary]">
+            <Link href="/" className="hover:text-[--accent] transition-colors">Inicio</Link>
+            {breadcrumb.map((item, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                <ChevronRight className="w-3 h-3 opacity-40" strokeWidth={1.5} />
+                <span className={i === breadcrumb.length - 1 ? 'text-[--text] font-semibold' : ''}>
+                  {item.label}
+                </span>
               </span>
-            </div>
-            <div className="flex gap-2">
-              <button className="w-10 h-10 flex items-center justify-center hover:bg-[#0f0f0f] transition-colors duration-300">
-                <Share2 className="w-4 h-4 text-[#666]" strokeWidth={1} />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center hover:bg-[#0f0f0f] transition-colors duration-300">
-                <Heart className="w-4 h-4 text-[#666]" strokeWidth={1} />
-              </button>
-            </div>
+            ))}
+          </div>
+
+          {/* Mobile: product name center */}
+          <div className="absolute left-1/2 -translate-x-1/2 max-w-[180px] md:hidden">
+            <p className="text-[11px] font-semibold text-[--text] truncate text-center">{product.name}</p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-0.5">
+            <button
+              aria-label="Compartir"
+              className="w-9 h-9 flex items-center justify-center rounded-full text-[--text-secondary] hover:text-[--text] hover:bg-[--bg-elevated] border border-transparent hover:border-[--border] transition-all duration-200"
+            >
+              <Share2 className="w-4 h-4" strokeWidth={1.75} />
+            </button>
+            <button
+              aria-label="Guardar"
+              className="w-9 h-9 flex items-center justify-center rounded-full text-[--text-secondary] hover:text-[--red] hover:bg-[--red]/5 border border-transparent hover:border-[--red]/20 transition-all duration-200"
+            >
+              <Heart className="w-4 h-4" strokeWidth={1.75} />
+            </button>
           </div>
         </div>
       </header>
 
-      <div className="pt-11 max-w-7xl mx-auto sm:pt-0 sm:grid sm:grid-cols-2 lg:grid-cols-[55%_1fr] sm:gap-0 sm:min-h-screen">
-        {/* Image section */}
-        <div className="sm:sticky sm:top-0 sm:h-screen">
-          <ImageCarousel images={images} alt={product.name} />
-        </div>
+      {/* ── Body: image + info ─────────────────── */}
+      <div className="container-desktop mx-auto w-full">
+        <div className="flex flex-col lg:flex-row lg:gap-12 lg:px-8 lg:pt-8">
 
-        {/* Info section */}
-        <main className="px-6 pt-20 pb-6 sm:pt-24 sm:px-10 lg:px-16">
-          {/* Breadcrumb + Status */}
-          <div className="flex items-center justify-between mb-8">
-            {breadcrumb.length > 0 && (
-              <div className="flex items-center gap-2 text-[9px] uppercase tracking-[0.3em] text-[#666]">
-                {breadcrumb.map((item, i) => (
-                  <span key={i} className="flex items-center gap-2">
-                    {i > 0 && <ChevronRight className="w-3 h-3 opacity-30" strokeWidth={1} />}
-                    <span className={i === breadcrumb.length - 1 ? 'text-[#888]' : ''}>{item.label}</span>
-                  </span>
-                ))}
-              </div>
-            )}
-            <span className={`inline-flex items-center px-3 py-1.5 rounded-none text-[8px] font-normal uppercase tracking-[0.25em] border ${statusStyles[product.status as keyof typeof statusStyles] || statusStyles.AVAILABLE}`}>
-              {statusLabels[product.status as keyof typeof statusLabels] || product.status}
-            </span>
+          {/* ── Left: Image carousel ───────────── */}
+          <div className="lg:w-[55%] lg:sticky lg:top-16 lg:self-start">
+            <ImageCarousel images={images} alt={product.name} />
           </div>
 
-          {/* Name */}
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light text-[#e8e8e8] leading-[1.2] tracking-[0.1em] mb-6">
-            {product.name}
-          </h1>
+          {/* ── Right: Info panel ─────────────── */}
+          <main className="px-4 md:px-6 lg:px-0 pt-6 pb-6 lg:pt-2 flex-1 lg:w-[45%]">
 
-          {/* Price */}
-          <div className="flex items-baseline gap-4 mb-8 pb-8 border-b border-[#1a1a1a]">
-            <span className="font-serif text-3xl italic text-[#c9a55a] leading-none">{formatARS(product.price)}</span>
-            {hasDiscount && (
-              <>
-                <span className="text-[14px] text-[#444] line-through">{formatARS(product.discountPrice!)}</span>
-                <span className="text-[11px] font-bold text-[#c44] uppercase tracking-[0.2em]">
-                  -{discountPercent(product.price, product.discountPrice!)}%
-                </span>
-              </>
-            )}
-            {product.featured && !hasDiscount && (
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-[#c9a55a]/10 border border-[#c9a55a]/20 text-[8px] uppercase tracking-[0.25em] text-[#c9a55a]">
-                <Star className="w-3 h-3 fill-[#c9a55a] text-[#c9a55a]" strokeWidth={1} />
-                Selected
+            {/* Status + category breadcrumb */}
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-[0.08em] ${status.cls}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                {status.label}
               </span>
-            )}
-          </div>
-
-          {/* Description */}
-          <p className="text-[14px] text-[#888] leading-[2] mb-10 max-w-prose font-light tracking-[0.05em]">
-            {product.description}
-          </p>
-
-          {/* Info badges */}
-          <div className="flex flex-wrap gap-4 mb-10">
-            <InfoBadge icon={<Truck className="w-4 h-4" />} label="Complimentary Shipping" />
-            <InfoBadge icon={<Shield className="w-4 h-4" />} label="Official Warranty" />
-            <InfoBadge icon={<RefreshCw className="w-4 h-4" />} label="30-Day Returns" />
-          </div>
-
-          {/* Desktop CTA */}
-          {!isOutOfStock && waLink && (
-            <div className="hidden sm:block mb-10">
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 h-[52px] px-8 rounded-sm border border-[#25D366]/30 bg-[#1A3D2B] text-[#25D366] text-[12px] font-normal uppercase tracking-[0.15em] hover:bg-[#25D366]/10 active:scale-[0.98] transition-all duration-300 w-full max-w-sm"
-              >
-                <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
-                {isPreorder ? 'Consultar disponibilidad' : 'Comprar por WhatsApp'}
-              </a>
-            </div>
-          )}
-
-          {/* Specifications */}
-          {product.specifications.length > 0 && (
-            <div className="mb-10">
-              <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-[#8A8278] mb-4">
-                Especificaciones técnicas
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#2E2925] rounded-sm overflow-hidden">
-                {product.specifications.map((spec) => (
-                  <div
-                    key={spec.id}
-                    className="flex flex-col px-4 py-3.5 bg-[#1A1714]"
-                  >
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-[#8A8278]/60 mb-1">{spec.key}</span>
-                    <span className="text-[13px] text-[#F0EAE0]/90 font-medium">{spec.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Related products */}
-          {related.length > 0 && (
-            <div className="pb-6">
-              <h2 className="text-[11px] font-normal uppercase tracking-[0.2em] text-tertiary mb-4">
-                También te puede interesar
-              </h2>
-              <div className="flex gap-4 overflow-x-auto scrollbar-hide -mr-5 pr-5 pb-2">
-                {related.map(p => {
-                  let rImgs: string[] = []
-                  try { if (p.images) rImgs = JSON.parse(p.images) } catch {}
-                  const rImg = rImgs[0] || p.imagePath || p.imageUrl
-                  return (
-                    <Link
-                      key={p.id}
-                      href={`/product/${p.id}`}
-                      className="flex-shrink-0 w-28 sm:w-32 group"
-                    >
-                      <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface mb-2.5 border border-border/40 group-hover:border-primary/30 transition-all duration-500">
-                        {rImg ? (
-                          <ImageFade src={rImg} alt={p.name} containerClassName="w-full h-full" className="product-img-hover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-4 h-4 text-tertiary/15" strokeWidth={1} />
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="text-[12px] font-medium text-foreground/80 line-clamp-2 leading-snug mb-1">{p.name}</h3>
-                      <span className="text-[12px] font-serif italic text-primary">{formatARS(p.price)}</span>
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Reviews section */}
-          <Reviews
-            productId={product.id}
-            averageRating={reviewData.average}
-            totalReviews={reviewData.total}
-            distribution={reviewData.distribution || {}}
-          />
-        </main>
-      </div>
-
-      {/* Sticky mobile action bar - Minimal luxury */}
-      <div className="fixed bottom-0 left-0 right-0 z-[70] sm:hidden">
-        <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-[#1a1a1a] px-6 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <p className="text-[8px] uppercase tracking-[0.25em] text-[#666] mb-1">PRICE</p>
-              <p className="text-xl font-serif italic text-[#c9a55a] leading-none">{formatARS(product.price)}</p>
-              {hasDiscount && (
-                <p className="text-xs text-[#444] line-through mt-1">{formatARS(product.discountPrice!)}</p>
+              {product.category && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[--bg-elevated] text-[--text-tertiary] border border-[--border]">
+                  <Tag className="w-2.5 h-2.5" strokeWidth={2} />
+                  {product.category.name}
+                </span>
+              )}
+              {product.featured && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold text-[--accent] bg-[--accent-soft] border border-[--accent]/20">
+                  <Star className="w-2.5 h-2.5 fill-[--accent]" strokeWidth={0} />
+                  Destacado
+                </span>
               )}
             </div>
 
-            {isOutOfStock ? (
-              <button
-                disabled
-                className="flex-1 flex items-center justify-center gap-2 h-[52px] px-6 bg-[#0f0f0f] text-[#444] rounded-none text-[9px] uppercase tracking-[0.25em] border border-[#1a1a1a] cursor-not-allowed"
-              >
-                <X className="w-4 h-4" strokeWidth={1} />
-                Unavailable
-              </button>
-            ) : waLink ? (
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 h-[52px] px-6 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] active:scale-[0.99] transition-all duration-300 hover:bg-[#c9a55a] hover:text-[#0a0a0a]"
-              >
-                <MessageCircle className="w-4 h-4" strokeWidth={1} />
-                {isPreorder ? 'Inquire' : 'Acquire'}
-              </a>
-            ) : (
-              <div className="flex-1 flex items-center justify-center gap-2 h-[52px] px-6 bg-[#0f0f0f] text-[#444] rounded-none text-[9px] uppercase tracking-[0.25em] border border-[#1a1a1a]">
-                Unavailable
+            {/* Name */}
+            <h1 className="font-display font-extrabold text-[clamp(22px,3.5vw,34px)] text-[--text] leading-[1.12] tracking-[-0.025em] mb-4">
+              {product.name}
+            </h1>
+
+            {/* Price block */}
+            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-[--border]">
+              <div className="flex items-baseline gap-3">
+                <span className="font-display font-extrabold text-[clamp(26px,4vw,38px)] gradient-text tabular-nums leading-none">
+                  {formatARS(product.price)}
+                </span>
+                {hasDiscount && (
+                  <span className="text-[14px] text-[--text-tertiary] line-through tabular-nums">
+                    {formatARS(product.discountPrice!)}
+                  </span>
+                )}
+              </div>
+              {hasDiscount && (
+                <span className="inline-flex items-center h-7 px-2.5 rounded-lg bg-gradient-to-r from-[--red] to-[oklch(53%_0.20_25)] text-white text-[11px] font-extrabold tracking-wide shadow-sm">
+                  -{discountPercent(product.price, product.discountPrice!)}% OFF
+                </span>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-[14px] text-[--text-secondary] leading-[1.85] mb-8">
+              {product.description}
+            </p>
+
+            {/* Trust badges */}
+            <div className="grid grid-cols-3 gap-2.5 mb-8">
+              {[
+                { icon: Truck,     label: 'Envío disponible',   sub: 'Consultar costo' },
+                { icon: Shield,    label: 'Garantía oficial',   sub: '100% original' },
+                { icon: RefreshCw, label: 'Devolución',         sub: '30 días' },
+              ].map(({ icon: Icon, label, sub }) => (
+                <div
+                  key={label}
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-[--bg-surface] border border-[--border] text-center"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-[--accent-soft] flex items-center justify-center">
+                    <Icon className="w-3.5 h-3.5 text-[--accent]" strokeWidth={2} />
+                  </div>
+                  <span className="text-[10px] font-bold text-[--text] leading-tight">{label}</span>
+                  <span className="text-[9px] text-[--text-tertiary]">{sub}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop CTA */}
+            {!isOutOfStock && waLink && (
+              <div className="hidden sm:flex flex-col gap-3 mb-10">
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2.5 h-13 px-6 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#1ebe5d] text-white text-[14px] font-bold tracking-tight hover:opacity-92 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-[#25D366]/25 press"
+                  style={{ height: '52px' }}
+                >
+                  <MessageCircle className="w-5 h-5" strokeWidth={2} />
+                  {isPreorder ? 'Consultar disponibilidad' : 'Comprar por WhatsApp'}
+                </a>
+                <p className="text-center text-[10px] text-[--text-tertiary]">
+                  Respuesta inmediata · Pago seguro · Envío a todo el país
+                </p>
               </div>
             )}
-          </div>
+
+            {isOutOfStock && (
+              <div className="hidden sm:flex items-center gap-3 px-4 py-3 rounded-2xl bg-[--bg-elevated] border border-[--border] mb-10">
+                <X className="w-4 h-4 text-[--red] shrink-0" strokeWidth={2} />
+                <div>
+                  <p className="text-[12px] font-bold text-[--text]">Sin stock disponible</p>
+                  <p className="text-[11px] text-[--text-tertiary]">Contactanos para consultar disponibilidad futura.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Specifications */}
+            {product.specifications.length > 0 && (
+              <div className="mb-10">
+                <h2 className="font-display font-bold text-[14px] text-[--text] mb-3 flex items-center gap-2">
+                  <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[--accent] to-[oklch(63%_0.18_42)]" />
+                  Especificaciones
+                </h2>
+                <div className="rounded-2xl overflow-hidden border border-[--border] divide-y divide-[--border]">
+                  {product.specifications.map((spec) => (
+                    <div key={spec.id} className="flex items-start justify-between gap-4 px-4 py-3 bg-[--bg-surface] hover:bg-[--bg-elevated] transition-colors duration-150">
+                      <span className="text-[11px] font-bold text-[--text-tertiary] uppercase tracking-[0.08em] shrink-0 mt-0.5">
+                        {spec.key}
+                      </span>
+                      <span className="text-[13px] text-[--text] font-semibold text-right">
+                        {spec.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Related products */}
+            {related.length > 0 && (
+              <div className="mb-10">
+                <h2 className="font-display font-bold text-[14px] text-[--text] mb-4 flex items-center gap-2">
+                  <div className="w-1 h-4 rounded-full bg-gradient-to-b from-[--accent] to-[oklch(63%_0.18_42)]" />
+                  También te puede interesar
+                </h2>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                  {related.map(p => {
+                    let rImgs: string[] = []
+                    try { if (p.images) rImgs = JSON.parse(p.images) } catch {}
+                    const rImg = rImgs[0] || p.imagePath || p.imageUrl
+                    return (
+                      <Link
+                        key={p.id}
+                        href={`/product/${p.id}`}
+                        className="group press"
+                      >
+                        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-[--bg-elevated] border border-[--border] mb-2 card-hover">
+                          {rImg ? (
+                            <ImageFade src={rImg} alt={p.name} containerClassName="w-full h-full" className="img-zoom" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Package className="w-4 h-4 text-[--text-tertiary]" strokeWidth={1} />
+                            </div>
+                          )}
+                        </div>
+                        <h3 className="text-[11px] font-semibold text-[--text] line-clamp-2 leading-snug mb-0.5 group-hover:text-[--accent] transition-colors duration-200">
+                          {p.name}
+                        </h3>
+                        <span className="text-[12px] font-extrabold gradient-text tabular-nums">
+                          {formatARS(p.price)}
+                        </span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Reviews */}
+            <Reviews
+              productId={product.id}
+              averageRating={reviewData.average}
+              totalReviews={reviewData.total}
+              distribution={reviewData.distribution || {}}
+            />
+          </main>
         </div>
       </div>
 
-      <BottomNav />
-    </div>
-  )
-}
+      {/* ── Mobile sticky CTA ─────────────────── */}
+      <div
+        className="sticky bottom-0 z-[80] nav-glass border-t border-[--border] md:hidden"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          {/* Price */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[--text-tertiary] mb-0.5">Precio</p>
+            <div className="flex items-baseline gap-1.5">
+              <p className="font-display font-extrabold text-[18px] gradient-text leading-none tabular-nums">
+                {formatARS(product.price)}
+              </p>
+              {hasDiscount && (
+                <p className="text-[10px] text-[--text-tertiary] line-through tabular-nums">
+                  {formatARS(product.discountPrice!)}
+                </p>
+              )}
+            </div>
+          </div>
 
-function InfoBadge({ label, icon }: { label: string; icon: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] text-[9px] uppercase tracking-[0.25em] text-[#666] hover:border-[#2a2a2a] transition-colors duration-300">
-      <span className="text-[#c9a55a]/60">{icon}</span>
-      {label}
-    </span>
+          {/* CTA button */}
+          {isOutOfStock ? (
+            <button
+              disabled
+              className="flex items-center justify-center gap-2 h-11 px-5 rounded-2xl bg-[--bg-elevated] text-[--text-tertiary] text-[11px] font-bold cursor-not-allowed border border-[--border]"
+            >
+              <X className="w-4 h-4" strokeWidth={1.5} />
+              Sin stock
+            </button>
+          ) : waLink ? (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 h-11 px-5 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#1ebe5d] text-white text-[12px] font-bold shadow-lg shadow-[#25D366]/20 active:scale-[0.97] transition-all duration-200 press"
+            >
+              <MessageCircle className="w-4 h-4" strokeWidth={2} />
+              {isPreorder ? 'Consultar' : 'Comprar'}
+            </a>
+          ) : (
+            <div className="flex items-center justify-center h-11 px-5 rounded-2xl bg-[--bg-elevated] text-[--text-tertiary] text-[11px]">
+              No disponible
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Desktop sticky CTA ────────────────── */}
+      {!isOutOfStock && waLink && (
+        <div className="hidden md:block sticky bottom-0 z-[80] nav-glass border-t border-[--border]">
+          <div className="container-desktop mx-auto flex items-center justify-between px-8 py-3">
+            <div className="flex items-center gap-4">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[--text-tertiary]">Precio final</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="font-display font-extrabold text-[22px] gradient-text tabular-nums leading-none">
+                    {formatARS(product.price)}
+                  </p>
+                  {hasDiscount && (
+                    <span className="text-[12px] text-[--text-tertiary] line-through tabular-nums">
+                      {formatARS(product.discountPrice!)}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 h-11 px-7 rounded-2xl bg-gradient-to-r from-[#25D366] to-[#1ebe5d] text-white text-[13px] font-bold hover:opacity-92 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-[#25D366]/25 press"
+            >
+              <MessageCircle className="w-4 h-4" strokeWidth={2} />
+              {isPreorder ? 'Consultar disponibilidad' : 'Comprar por WhatsApp'}
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

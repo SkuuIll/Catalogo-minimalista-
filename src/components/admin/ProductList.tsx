@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
-  Package, Plus, Pencil, Trash2, Eye, Search, X, Star,
-  ChevronLeft, ChevronRight, Filter, ArrowUpDown
+  Package, Plus, Pencil, Eye, Search, X, Star,
+  ChevronLeft, ChevronRight
 } from 'lucide-react'
 import { formatARS, discountPercent } from '@/lib/format'
 import { DeleteProductButton } from '@/app/admin/DeleteProductButton'
@@ -15,17 +15,17 @@ interface Category { id: string; name: string; parentId: string | null }
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    AVAILABLE: 'text-[#3cb371] bg-[#3cb371]/5 border-[#3cb371]/20',
-    PREORDER: 'text-[#c9a55a] bg-[#c9a55a]/5 border-[#c9a55a]/20',
-    OUT_OF_STOCK: 'text-[#C0392B] bg-[#C0392B]/5 border-[#C0392B]/20',
+    AVAILABLE: 'status-available text-[9px] px-2 py-0.5 rounded-sm font-bold tracking-wide uppercase',
+    PREORDER: 'status-preorder text-[9px] px-2 py-0.5 rounded-sm font-bold tracking-wide uppercase',
+    OUT_OF_STOCK: 'status-oos text-[9px] px-2 py-0.5 rounded-sm font-bold tracking-wide uppercase',
   }
   const labels: Record<string, string> = {
-    AVAILABLE: 'AVAILABLE',
-    PREORDER: 'PRE-ORDER',
-    OUT_OF_STOCK: 'OUT OF STOCK',
+    AVAILABLE: 'DISPONIBLE',
+    PREORDER: 'POR ENCARGO',
+    OUT_OF_STOCK: 'AGOTADO',
   }
   return (
-    <span className={`inline-flex items-center px-3 py-1 rounded-none text-[8px] font-medium border uppercase tracking-[0.2em] ${styles[status] || styles.AVAILABLE}`}>
+    <span className={`inline-flex items-center ${styles[status] || styles.AVAILABLE}`}>
       {labels[status] || status}
     </span>
   )
@@ -42,26 +42,25 @@ function getProductThumbnail(product: any): string | null {
 }
 
 const STATUS_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'AVAILABLE', label: 'Available' },
-  { value: 'PREORDER', label: 'Pre-order' },
-  { value: 'OUT_OF_STOCK', label: 'Out of Stock' },
+  { value: 'all', label: 'Todos' },
+  { value: 'AVAILABLE', label: 'Disponibles' },
+  { value: 'PREORDER', label: 'Encargos' },
+  { value: 'OUT_OF_STOCK', label: 'Agotados' },
 ]
 
 const SORT_OPTIONS = [
-  { value: 'newest', label: 'Newest' },
-  { value: 'oldest', label: 'Oldest' },
-  { value: 'price-asc', label: 'Price ↑' },
-  { value: 'price-desc', label: 'Price ↓' },
-  { value: 'name', label: 'Name A-Z' },
+  { value: 'newest', label: 'Más nuevos' },
+  { value: 'oldest', label: 'Más viejos' },
+  { value: 'price-asc', label: 'Menor precio' },
+  { value: 'price-desc', label: 'Mayor precio' },
+  { value: 'name', label: 'Nombre A-Z' },
 ]
 
 export function ProductList({ initialCategories }: { initialCategories: Category[] }) {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const [products, setProducts] = useState<any[]>([])
-  const [categories, setCategories] = useState<Category[]>(initialCategories)
+  const [categories] = useState<Category[]>(initialCategories)
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -104,112 +103,104 @@ export function ProductList({ initialCategories }: { initialCategories: Category
     }
   }, [search]) // eslint-disable-line
 
-  const buildUrl = (extra: Record<string, string>) => {
-    const p = new URLSearchParams()
-    if (status !== 'all') p.set('status', status)
-    if (sort !== 'newest') p.set('sort', sort)
-    if (search) p.set('q', search)
-    if (category !== 'all') p.set('category', category)
-    Object.entries(extra).forEach(([k, v]) => v ? p.set(k, v) : p.delete(k))
-    return `/admin?${p.toString()}`
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif text-2xl font-light text-[#e8e8e8] tracking-[0.05em]">PRODUCTS</h2>
-          <p className="text-[9px] uppercase tracking-[0.25em] text-[#666] mt-1">{total} PIECES IN COLLECTION</p>
+          <h2 className="font-display text-2xl font-bold text-[--text] tracking-tight">Productos</h2>
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[--text-tertiary] mt-1">{total} productos en catálogo</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex items-center gap-2 h-11 px-5 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] font-normal hover:bg-[#c9a55a] hover:text-[#0a0a0a] active:scale-[0.98] transition-all duration-300"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 h-11 sm:h-10 px-5 rounded-xl bg-[--accent] text-[--bg] text-[12px] sm:text-[11px] font-bold tracking-wide hover:opacity-90 active:scale-[0.98] transition-all duration-200"
         >
-          <Plus className="w-4 h-4" strokeWidth={1} /> NEW PIECE
+          <Plus className="w-[16px] h-[16px] sm:w-[15px] sm:h-[15px]" strokeWidth={2} /> Nuevo Producto
         </Link>
       </div>
 
       {/* Filters bar */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
         {/* Search */}
-        <div className="flex-1 min-w-[200px] max-w-sm relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444] pointer-events-none" />
+        <div className="w-full sm:flex-1 sm:min-w-[200px] sm:max-w-sm relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[--text-tertiary] pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="SEARCH PIECES"
-            className="w-full bg-transparent border-b border-[#1a1a1a] h-11 pl-11 pr-4 text-[13px] uppercase tracking-[0.15em] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#c9a55a] transition-colors"
+            placeholder="Buscar productos..."
+            className="w-full bg-[--bg-surface] border border-[--border] rounded-xl h-10 pl-10 pr-4 text-[13px] font-medium text-[--text] placeholder:text-[--text-tertiary] focus:outline-none focus:border-[--accent] focus:ring-1 focus:ring-[--accent]/30 transition-all"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
-              <X className="w-4 h-4" strokeWidth={1} />
+            <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-[--text-tertiary] hover:text-[--text] hover:bg-[--bg-elevated] transition-colors duration-200">
+              <X className="w-3.5 h-3.5" strokeWidth={1.5} />
             </button>
           )}
         </div>
 
-        {/* Status filter */}
-        <div className="flex items-center gap-1 bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-0.5">
-          {STATUS_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => { setStatus(opt.value); setPage(1); fetchProducts(1) }}
-              className={`px-4 py-2 rounded-none text-[8px] uppercase tracking-[0.2em] font-normal transition-all duration-300 ${
-                status === opt.value
-                  ? 'bg-[#c9a55a] text-[#0a0a0a]'
-                  : 'text-[#666] hover:text-[#e8e8e8]'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0">
+          {/* Status filter */}
+          <div className="flex items-center bg-[--bg-surface] border border-[--border] rounded-xl p-1 h-10 flex-shrink-0">
+            {STATUS_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => { setStatus(opt.value); setPage(1); fetchProducts(1) }}
+                className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wide transition-all duration-200 ${
+                  status === opt.value
+                    ? 'bg-[--bg-elevated] text-[--text] shadow-sm'
+                    : 'text-[--text-tertiary] hover:text-[--text-secondary]'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort */}
+          <select
+            value={sort}
+            onChange={e => { setSort(e.target.value); setPage(1); fetchProducts(1) }}
+            className="bg-[--bg-surface] border border-[--border] rounded-xl h-10 px-3 text-[11px] font-semibold tracking-wide text-[--text-secondary] focus:outline-none focus:border-[--accent] transition-all cursor-pointer appearance-none flex-shrink-0"
+          >
+            {SORT_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+
+          {/* Category filter */}
+          <select
+            value={category}
+            onChange={e => { setCategory(e.target.value); setPage(1); fetchProducts(1) }}
+            className="bg-[--bg-surface] border border-[--border] rounded-xl h-10 px-3 text-[11px] font-semibold tracking-wide text-[--text-secondary] focus:outline-none focus:border-[--accent] transition-all cursor-pointer appearance-none flex-shrink-0"
+          >
+            <option value="all">Todas las categorías</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
-
-        {/* Sort */}
-        <select
-          value={sort}
-          onChange={e => { setSort(e.target.value); setPage(1); fetchProducts(1) }}
-          className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none h-11 px-4 text-[12px] uppercase tracking-[0.15em] text-[#666] focus:outline-none focus:border-[#2a2a2a] transition-all cursor-pointer appearance-none"
-        >
-          {SORT_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
-
-        {/* Category filter */}
-        <select
-          value={category}
-          onChange={e => { setCategory(e.target.value); setPage(1); fetchProducts(1) }}
-          className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none h-11 px-4 text-[12px] uppercase tracking-[0.15em] text-[#666] focus:outline-none focus:border-[#2a2a2a] transition-all cursor-pointer appearance-none"
-        >
-          <option value="all">All Categories</option>
-          {categories.map(c => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
       </div>
 
       {/* Table */}
-      <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none overflow-hidden">
+      <div className="bg-[--bg-surface] border border-[--border] rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="divide-y divide-[#1a1a1a]">
+          <div className="divide-y divide-[--border]">
             {Array.from({ length: 6 }).map((_, i) => <TableRowSkeleton key={i} />)}
           </div>
         ) : products.length === 0 ? (
-          <div className="py-20 text-center">
-            <div className="w-16 h-16 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] flex items-center justify-center mx-auto mb-5">
-              <Package className="w-7 h-7 text-[#222]" strokeWidth={1} />
+          <div className="py-24 text-center">
+            <div className="w-16 h-16 rounded-full bg-[--bg-elevated] flex items-center justify-center mx-auto mb-4">
+              <Package className="w-6 h-6 text-[--text-tertiary]" strokeWidth={1.5} />
             </div>
-            <p className="text-[14px] uppercase tracking-[0.2em] text-[#666] mb-1">
-              {search ? 'NO RESULTS' : 'NO PIECES'}
+            <p className="text-[14px] font-semibold text-[--text] mb-1">
+              {search ? 'Sin resultados' : 'Sin productos'}
             </p>
-            <p className="text-[12px] uppercase tracking-[0.15em] text-[#444] mb-6">
-              {search ? `No pieces for "${search}"` : 'Create your first piece'}
+            <p className="text-[12px] text-[--text-tertiary] mb-6">
+              {search ? `No hay coincidencias para "${search}"` : 'Empezá a agregar productos al catálogo.'}
             </p>
             {!search && (
-              <Link href="/admin/products/new" className="inline-flex items-center gap-2 h-10 px-5 rounded-none border border-[#c9a55a] bg-transparent text-[#c9a55a] text-[9px] uppercase tracking-[0.25em] font-normal hover:bg-[#c9a55a] hover:text-[#0a0a0a] transition-all duration-300">
-                <Plus className="w-3.5 h-3.5" strokeWidth={1} /> CREATE PIECE
+              <Link href="/admin/products/new" className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl bg-[--accent-soft] text-[--accent] text-[11px] font-bold tracking-wide hover:opacity-80 transition-all duration-200">
+                <Plus className="w-3.5 h-3.5" strokeWidth={2} /> Crear producto
               </Link>
             )}
           </div>
@@ -218,84 +209,98 @@ export function ProductList({ initialCategories }: { initialCategories: Category
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px]">
                 <thead>
-                  <tr className="border-b border-[#1a1a1a]">
-                    <th className="text-left px-5 py-4 text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666]">PIECE</th>
-                    <th className="text-left px-5 py-4 text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666] hidden md:table-cell">CATEGORY</th>
-                    <th className="text-left px-5 py-4 text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666]">PRICE</th>
-                    <th className="text-left px-5 py-4 text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666]">STATUS</th>
-                    <th className="text-center px-5 py-4 text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666]">AVAILABILITY</th>
-                    <th className="text-right px-5 py-4 text-[8px] font-semibold uppercase tracking-[0.25em] text-[#666]">ACTIONS</th>
+                  <tr className="border-b border-[--border] hidden sm:table-row">
+                    <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[--text-tertiary]">Producto</th>
+                    <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[--text-tertiary] hidden md:table-cell">Categoría</th>
+                    <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[--text-tertiary]">Precio</th>
+                    <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[--text-tertiary] hidden sm:table-cell">Estado</th>
+                    <th className="text-right px-4 sm:px-5 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[--text-tertiary]">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1a1a1a]">
+                <tbody className="divide-y divide-[--border]">
                   {products.map(product => {
                     const thumb = getProductThumbnail(product)
                     const hasDiscount = product.discountPrice && product.discountPrice > 0
                     return (
-                      <tr key={product.id} className="hover:bg-[#141414] transition-colors group">
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] overflow-hidden flex-shrink-0">
+                      <tr key={product.id} className="hover:bg-[--bg-elevated] transition-colors group flex flex-col sm:table-row">
+                        {/* Mobile & Desktop Main Info */}
+                        <td className="px-4 sm:px-5 py-4 sm:py-3 flex flex-col sm:table-cell gap-3">
+                          <div className="flex items-start sm:items-center gap-3">
+                            <div className="w-16 h-16 sm:w-11 sm:h-11 rounded-lg bg-[--bg-elevated] overflow-hidden flex-shrink-0">
                               {thumb ? (
                                 <img src={thumb} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Package className="w-5 h-5 text-[#222]" strokeWidth={1} />
+                                  <Package className="w-6 h-6 sm:w-4 sm:h-4 text-[--text-tertiary]" strokeWidth={1} />
                                 </div>
                               )}
                             </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[13px] font-serif font-light text-[#e8e8e8] truncate max-w-[220px] tracking-[0.05em]">{product.name}</span>
-                                {product.featured && <Star className="w-4 h-4 text-[#c9a55a] fill-[#c9a55a] flex-shrink-0" strokeWidth={1} />}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between sm:justify-start gap-2">
+                                <div>
+                                  <div className="flex items-center gap-1.5 mb-1 sm:mb-0">
+                                    <span className="font-display font-semibold text-[14px] sm:text-[13px] text-[--text] line-clamp-2 sm:truncate sm:max-w-[220px] leading-tight">{product.name}</span>
+                                    {product.featured && <Star className="w-3.5 h-3.5 text-[--accent] fill-[--accent] flex-shrink-0" strokeWidth={1} />}
+                                  </div>
+                                  <div className="sm:hidden flex items-center gap-2 mb-2">
+                                    <span className="font-display font-bold text-[14px] text-[--accent] tabular-nums">{formatARS(product.price)}</span>
+                                    {hasDiscount && (
+                                      <span className="text-[11px] text-[--text-tertiary] line-through tabular-nums">{formatARS(product.discountPrice)}</span>
+                                    )}
+                                  </div>
+                                  <div className="sm:hidden">
+                                    <StatusBadge status={product.status} />
+                                  </div>
+                                </div>
                               </div>
-                              {hasDiscount && (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-none bg-[#C0392B]/10 text-[8px] font-bold text-[#C0392B] uppercase tracking-[0.2em] mt-1">
-                                  -{discountPercent(product.price, product.discountPrice)}% OFF
-                                </span>
-                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Mobile Actions - only visible on small screens */}
+                          <div className="sm:hidden flex items-center gap-2 pt-3 mt-1 border-t border-[--border-mid]">
+                            <Link href={`/product/${product.id}`} target="_blank" className="flex-1 flex justify-center items-center gap-2 h-9 rounded-lg bg-[--bg-surface] border border-[--border] text-[11px] font-bold text-[--text-secondary] hover:text-[--text] active:bg-[--bg-elevated]">
+                              <Eye className="w-3.5 h-3.5" /> Ver
+                            </Link>
+                            <Link href={`/admin/products/${product.id}/edit`} className="flex-1 flex justify-center items-center gap-2 h-9 rounded-lg bg-[--bg-surface] border border-[--border] text-[11px] font-bold text-[--text-secondary] hover:text-[--text] active:bg-[--bg-elevated]">
+                              <Pencil className="w-3.5 h-3.5" /> Editar
+                            </Link>
+                            <div className="w-9 h-9 flex-shrink-0">
+                              <DeleteProductButton id={product.id} name={product.name} onDelete={() => fetchProducts(page)} />
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-4 hidden md:table-cell">
-                          <span className="text-[11px] uppercase tracking-[0.15em] text-[#666]">{product.category?.name || product.categoryName || '—'}</span>
+
+                        {/* Desktop Only Columns */}
+                        <td className="px-4 sm:px-5 py-3 hidden md:table-cell">
+                          <span className="text-[11px] font-medium text-[--text-secondary]">{product.category?.name || product.categoryName || '—'}</span>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-4 sm:px-5 py-3 hidden sm:table-cell">
                           <div>
-                            <span className="text-[13px] font-serif italic text-[#c9a55a]">{formatARS(product.price)}</span>
+                            <span className="font-display font-semibold text-[13px] text-[--accent] tabular-nums">{formatARS(product.price)}</span>
                             {hasDiscount && (
-                              <span className="block text-[9px] uppercase tracking-[0.15em] text-[#444] line-through mt-0.5">{formatARS(product.discountPrice)}</span>
+                              <span className="block text-[11px] text-[--text-tertiary] line-through mt-0.5 tabular-nums">{formatARS(product.discountPrice)}</span>
                             )}
                           </div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-4 sm:px-5 py-3 hidden sm:table-cell">
                           <StatusBadge status={product.status} />
                         </td>
-                        <td className="px-5 py-4 text-center">
-                          {product.status === 'OUT_OF_STOCK' ? (
-                            <span className="text-[10px] uppercase tracking-[0.15em] text-[#C0392B]">0</span>
-                          ) : product.status === 'PREORDER' ? (
-                            <span className="text-[10px] uppercase tracking-[0.15em] text-[#c9a55a]">PRE-ORDER</span>
-                          ) : (
-                            <span className="text-[10px] uppercase tracking-[0.15em] text-[#3cb371]">IN STOCK</span>
-                          )}
-                        </td>
-                        <td className="px-5 py-4">
+                        <td className="px-4 sm:px-5 py-3 hidden sm:table-cell">
                           <div className="flex items-center justify-end gap-1">
                             <Link
                               href={`/product/${product.id}`}
                               target="_blank"
-                              className="p-2 rounded-none text-[#666] hover:text-[#e8e8e8] hover:bg-[#141414] transition-all duration-300"
-                              title="View in store"
+                              className="p-2 rounded-xl text-[--text-tertiary] hover:text-[--text] hover:bg-[--bg-surface] transition-all duration-200"
+                              title="Ver en tienda"
                             >
-                              <Eye className="w-4 h-4" strokeWidth={1} />
+                              <Eye className="w-[15px] h-[15px]" strokeWidth={1.75} />
                             </Link>
                             <Link
                               href={`/admin/products/${product.id}/edit`}
-                              className="p-2 rounded-none text-[#666] hover:text-[#e8e8e8] hover:bg-[#141414] transition-all duration-300"
-                              title="Edit"
+                              className="p-2 rounded-xl text-[--text-tertiary] hover:text-[--text] hover:bg-[--bg-surface] transition-all duration-200"
+                              title="Editar"
                             >
-                              <Pencil className="w-4 h-4" strokeWidth={1} />
+                              <Pencil className="w-[15px] h-[15px]" strokeWidth={1.75} />
                             </Link>
                             <DeleteProductButton id={product.id} name={product.name} onDelete={() => fetchProducts(page)} />
                           </div>
@@ -309,17 +314,17 @@ export function ProductList({ initialCategories }: { initialCategories: Category
 
             {/* Pagination */}
             {pages > 1 && (
-              <div className="flex items-center justify-between px-5 py-4 border-t border-[#1a1a1a]">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#444]">
-                  PAGE {page} OF {pages} · {total} PIECES
+              <div className="flex items-center justify-between px-5 py-3.5 border-t border-[--border]">
+                <span className="text-[11px] font-medium text-[--text-tertiary]">
+                  Página {page} de {pages}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => { const p = Math.max(1, page - 1); setPage(p); fetchProducts(p) }}
                     disabled={page <= 1}
-                    className="flex items-center gap-2 h-10 px-4 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] text-[8px] uppercase tracking-[0.2em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-[--bg] border border-[--border] text-[--text-secondary] hover:text-[--text] hover:border-[--border-mid] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    <ChevronLeft className="w-4 h-4" strokeWidth={1} /> PREV
+                    <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                   <div className="flex items-center gap-1">
                     {Array.from({ length: Math.min(5, pages) }, (_, i) => {
@@ -329,10 +334,10 @@ export function ProductList({ initialCategories }: { initialCategories: Category
                         <button
                           key={p}
                           onClick={() => { setPage(p); fetchProducts(p) }}
-                          className={`w-9 h-9 rounded-none text-[10px] font-medium uppercase tracking-[0.15em] transition-all duration-300 ${
+                          className={`w-8 h-8 rounded-lg text-[11px] font-semibold transition-all duration-200 ${
                             p === page
-                              ? 'bg-[#c9a55a] text-[#0a0a0a]'
-                              : 'bg-[#0a0a0a] border border-[#1a1a1a] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a]'
+                              ? 'bg-[--accent] text-[oklch(9%_0.006_75)]'
+                              : 'bg-[--bg] border border-[--border] text-[--text-secondary] hover:text-[--text] hover:border-[--border-mid]'
                           }`}
                         >
                           {p}
@@ -343,9 +348,9 @@ export function ProductList({ initialCategories }: { initialCategories: Category
                   <button
                     onClick={() => { const p = Math.min(pages, page + 1); setPage(p); fetchProducts(p) }}
                     disabled={page >= pages}
-                    className="flex items-center gap-2 h-10 px-4 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] text-[8px] uppercase tracking-[0.2em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-[--bg] border border-[--border] text-[--text-secondary] hover:text-[--text] hover:border-[--border-mid] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    NEXT <ChevronRight className="w-4 h-4" strokeWidth={1} />
+                    <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
                   </button>
                 </div>
               </div>

@@ -12,7 +12,7 @@ export default async function AdminDashboard() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <Suspense fallback={
-        <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none overflow-hidden">
+        <div className="bg-[--bg-surface] border border-[--border] rounded-none overflow-hidden">
           {Array.from({ length: 6 }).map((_, i) => <TableRowSkeleton key={i} />)}
         </div>
       }>

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Search, Package } from 'lucide-react'
+import { Package, X, SlidersHorizontal, ChevronRight, TrendingUp, Sparkles } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ImageFade } from '@/components/ImageFade'
 import { formatARS, discountPercent } from '@/lib/format'
@@ -18,167 +18,183 @@ export function CatalogClient({
 }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(initialCategory)
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
+  const pillsRef = useRef<HTMLDivElement>(null)
 
   const activeCat = categories.find(c => c.id === activeCategory)
-  const subcategories = activeCat?.children || []
 
   const filtered = useMemo(() => {
     return products.filter(p => {
-      let matchCat = true
-      if (activeSubcategory) {
-        matchCat = p.categoryId === activeSubcategory
-      } else if (activeCategory) {
-        const ids = activeCat?.children?.map((c: any) => c.id) || []
-        matchCat = p.categoryId === activeCategory || ids.includes(p.categoryId)
+      if (activeSubcategory) return p.categoryId === activeSubcategory
+      if (activeCategory) {
+        const childIds = activeCat?.children?.map((c: any) => c.id) || []
+        return p.categoryId === activeCategory || childIds.includes(p.categoryId)
       }
-      const q = search.toLowerCase()
-      const matchSearch =
-        !q ||
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q)
-      return matchCat && matchSearch
+      return true
     })
-  }, [products, activeCategory, activeSubcategory, search, activeCat])
+  }, [products, activeCategory, activeSubcategory, activeCat])
+
+  const subcategories = activeCat?.children || []
+
+  // Featured = first product, grid = rest
+  const featuredProduct = filtered[0]
+  const gridProducts = filtered.slice(1)
 
   return (
-    <>
-      {/* Sticky search bar - Minimal */}
-      <div className="sticky top-16 z-40 px-6 py-4 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
-        <div className="relative max-w-7xl mx-auto">
-          <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444] pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search collection…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full bg-transparent border-b border-[#1a1a1a] h-10 pl-8 pr-10 text-[13px] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#c9a55a]/30 transition-colors tracking-[0.1em]"
-          />
-          {search && (
+    <div className="w-full">
+      {/* ── Products section ─────────────────────────── */}
+      <section className="px-4 md:px-8 pt-8 pb-16 md:pb-20 container-desktop mx-auto">
+
+        {/* Empty state */}
+        {filtered.length === 0 ? (
+          <div className="py-28 text-center animate-fade-in">
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[--bg-elevated] border border-[--border] flex items-center justify-center">
+              <Package className="w-7 h-7 text-[--text-tertiary]" strokeWidth={1.25} />
+            </div>
+            <p className="font-display font-bold text-[18px] text-[--text-secondary]">Sin resultados</p>
+            <p className="text-[12px] text-[--text-tertiary] mt-1.5 max-w-[220px] mx-auto">
+              Esta categoría no tiene productos disponibles aún.
+            </p>
             <button
-              onClick={() => setSearch('')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-[#444] hover:text-[#e8e8e8] transition-colors duration-300"
+              onClick={() => { setActiveCategory(null); setActiveSubcategory(null) }}
+              className="mt-6 inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[--border] text-[12px] font-semibold text-[--text-secondary] hover:text-[--accent] hover:border-[--accent]/30 transition-all duration-200 press"
             >
-              <Search className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
+              Ver todo el catálogo
             </button>
-          )}
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto">
-        {/* Categories - Minimal pills */}
-        {!search && (
-          <section className="px-6 py-8">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide -mr-6 pr-6 pb-2">
-              {categories.map(cat => {
-                const isActive = activeCategory === cat.id
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => {
-                      setActiveCategory(isActive ? null : cat.id)
-                      setActiveSubcategory(null)
-                    }}
-                    className={`flex-shrink-0 px-5 py-2.5 rounded-none text-[10px] uppercase tracking-[0.2em] transition-all duration-300 ${
-                      isActive 
-                        ? 'bg-[#c9a55a] text-[#0a0a0a]' 
-                        : 'bg-[#0f0f0f] border border-[#1a1a1a] text-[#666] hover:border-[#2a2a2a] hover:text-[#888]'
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                )
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Products grid - Luxury minimal */}
-        <section className="px-6 pb-12 pt-4">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-[9px] font-normal uppercase tracking-[0.3em] text-[#666]">
-              {search ? `"${search.toUpperCase()}"` : activeCategory ? activeCat?.name : 'COLLECTION'}
-            </h2>
-            <span className="text-[9px] uppercase tracking-[0.3em] text-[#444]">{filtered.length} PIECES</span>
           </div>
+        ) : (
+          <div className="space-y-5 md:space-y-8">
 
-          {filtered.length === 0 ? (
-            <div className="py-20 text-center">
-              <Package className="w-10 h-10 text-[#222] mx-auto mb-4" strokeWidth={1} />
-              <p className="font-serif text-lg font-light text-[#666] tracking-[0.1em] mb-2">
-                {search ? 'NO RESULTS' : 'UNAVAILABLE'}
-              </p>
-              <p className="text-[12px] text-[#444] tracking-[0.05em]">
-                {search ? 'Try a different search term' : 'This collection is currently empty'}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 lg:gap-6">
-              {filtered.map((product, i) => (
-                <ScrollReveal key={product.id} delay={Math.min(i * 0.05, 0.25)}>
+            {/* Product grid: 2 col mobile, 3 desktop */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+              {/* Featured card */}
+              {featuredProduct && (
+                <ScrollReveal delay={0} className="col-span-2">
+                  <FeaturedCard product={featuredProduct} />
+                </ScrollReveal>
+              )}
+
+              {/* Regular products */}
+              {gridProducts.map((product, i) => (
+                <ScrollReveal key={product.id} delay={Math.min((i + 1) * 0.05, 0.3)}>
                   <ProductCard product={product} />
                 </ScrollReveal>
               ))}
             </div>
-          )}
-        </section>
-      </div>
-    </>
+          </div>
+        )}
+      </section>
+    </div>
   )
 }
 
+/* ── Category pill ───────────────────────────────────── */
+function CategoryPill({
+  label,
+  active,
+  count,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  count?: number
+  onClick: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-shrink-0 h-9 px-4 rounded-full text-[12px] font-semibold tracking-[0.02em] transition-all duration-250 press ${
+        active
+          ? 'bg-gradient-to-r from-[--accent] to-[oklch(63%_0.18_42)] text-white shadow-md shadow-[--accent-glow]'
+          : 'text-[--text-secondary] hover:text-[--text] bg-[--bg-elevated] border border-[--border] hover:border-[--border-mid]'
+      }`}
+    >
+      {label}
+      {count !== undefined && active && (
+        <span className="ml-1.5 opacity-70 font-normal tabular-nums text-[10px]">{count}</span>
+      )}
+    </button>
+  )
+}
+
+/* ── Product card ────────────────────────────────────── */
 function ProductCard({ product }: { product: any }) {
   const img = getFirstImage(product)
   const hasDiscount = product.discountPrice && product.discountPrice > product.price
+  const isOOS = product.status === 'OUT_OF_STOCK'
+  const isPreorder = product.status === 'PREORDER'
 
   return (
-    <Link href={`/product/${product.id}`} className="group flex flex-col">
-      {/* Image container - Minimal border */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#0f0f0f] mb-4 border border-[#1a1a1a] group-hover:border-[#2a2a2a] transition-colors duration-500">
+    <Link
+      href={`/product/${product.id}`}
+      className="group flex flex-col focus-visible:outline-[--accent] bg-[#1a1a1a] rounded-2xl p-2 md:p-3 hover:bg-[#222] transition-colors duration-200 border border-transparent hover:border-[#333]"
+    >
+      {/* Image */}
+      <div className={`relative aspect-square overflow-hidden bg-[#e5e5e5] rounded-xl ${isOOS ? 'opacity-80' : ''}`}>
         {img ? (
-          <ImageFade src={img} alt={product.name} containerClassName="w-full h-full" className="product-img-hover" />
+          <ImageFade
+            src={img}
+            alt={product.name}
+            containerClassName="w-full h-full"
+            className="img-zoom"
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-6 h-6 text-[#222]" strokeWidth={1} />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[--bg-elevated] to-[--bg-surface]">
+            <Package className="w-7 h-7 text-[--text-tertiary]" strokeWidth={1} />
           </div>
         )}
 
-        {/* Status badges - Minimal */}
-        {product.status === 'OUT_OF_STOCK' && (
-          <div className="absolute inset-0 bg-[#0a0a0a]/80 flex items-center justify-center backdrop-blur-[2px]">
-            <span className="text-[8px] font-normal text-[#666] uppercase tracking-[0.2em]">Unavailable</span>
+        {/* OOS overlay */}
+        {isOOS && (
+          <div className="absolute inset-0 bg-[--bg]/65 backdrop-blur-[1px] flex items-center justify-center">
+            <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[--text-tertiary] bg-[--bg-surface]/80 px-2.5 py-1 rounded-full">
+              Agotado
+            </span>
           </div>
         )}
 
-        {product.status === 'PREORDER' && (
-          <div className="absolute top-3 left-3 px-2 py-1 bg-[#0f0f0f]/90 border border-[#1a1a1a] text-[8px] font-normal uppercase tracking-[0.2em] text-[#c9a55a]">
-            By Order
-          </div>
-        )}
-
-        {hasDiscount && product.status !== 'OUT_OF_STOCK' && (
-          <div className="absolute top-3 right-3 px-2 py-1 bg-[#0f0f0f]/90 border border-[#1a1a1a] text-[8px] font-bold uppercase tracking-[0.2em] text-[#c44]">
-            -{discountPercent(product.price, product.discountPrice)}%
-          </div>
-        )}
-      </div>
-
-      {/* Product info - Minimal typography */}
-      <div className="space-y-2">
-        <h3 className="font-serif text-[14px] font-light text-[#e8e8e8] leading-[1.3] tracking-[0.05em] group-hover:text-[#c9a55a] transition-colors duration-300">
-          {product.name}
-        </h3>
-        <div className="flex items-center gap-2">
-          <span className="font-serif text-[14px] italic text-[#c9a55a]">{formatARS(product.price)}</span>
-          {hasDiscount && (
-            <span className="text-[12px] text-[#444] line-through">{formatARS(product.discountPrice)}</span>
+        {/* Badges */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
+          {hasDiscount && !isOOS && (
+            <span className="bg-gradient-to-r from-[--red] to-[oklch(53%_0.20_25)] text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md tracking-wide shadow-sm">
+              -{discountPercent(product.price, product.discountPrice)}%
+            </span>
+          )}
+          {isPreorder && (
+            <span className="bg-[--bg-elevated]/95 text-[--accent] text-[9px] font-bold px-2 py-0.5 rounded-md tracking-wide ring-1 ring-[--accent]/25 shadow-sm">
+              Encargo
+            </span>
           )}
         </div>
+
+        {/* Quick-view arrow on hover */}
+        <div className="absolute bottom-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="w-7 h-7 rounded-full bg-[--bg-surface]/90 backdrop-blur-sm border border-[--border] flex items-center justify-center shadow-md">
+            <ChevronRight className="w-3.5 h-3.5 text-[--text-secondary]" />
+          </div>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="flex flex-col gap-0.5 px-1 pb-1 pt-3">
         {product.category && (
-          <span className="text-[9px] uppercase tracking-[0.2em] text-[#444]">
+          <span className="text-[10px] font-medium text-[--text-tertiary] line-clamp-1">
             {product.category.name}
           </span>
         )}
+        <h3 className="text-[13px] md:text-[14px] font-bold text-white leading-tight line-clamp-1 group-hover:text-[--accent] transition-colors duration-200">
+          {product.name}
+        </h3>
+        <div className="flex items-baseline gap-2 mt-1">
+          <span className="text-[14px] font-extrabold text-[#E5B567] tabular-nums">
+            {formatARS(product.price)}
+          </span>
+          {hasDiscount && (
+            <span className="text-[11px] text-[--text-tertiary] line-through tabular-nums">
+              {formatARS(product.discountPrice)}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   )
@@ -192,4 +208,66 @@ function getFirstImage(product: any): string | null {
     }
   } catch {}
   return product.imagePath || product.imageUrl || null
+}
+
+/* ── Featured card — full width ─────────────────────── */
+function FeaturedCard({ product }: { product: any }) {
+  const img = getFirstImage(product)
+  const hasDiscount = product.discountPrice && product.discountPrice > product.price
+  const isOOS = product.status === 'OUT_OF_STOCK'
+  const isPreorder = product.status === 'PREORDER'
+
+  return (
+    <Link href={`/product/${product.id}`} className="group block h-full">
+      <div className="relative w-full h-full min-h-[220px] md:min-h-[280px] overflow-hidden rounded-2xl bg-[#1a1a1a] hover:bg-[#222] transition-colors duration-200 border border-transparent hover:border-[#333]">
+        {/* Image */}
+        {img ? (
+          <ImageFade
+            src={img}
+            alt={product.name}
+            containerClassName="w-full h-full"
+            className="img-zoom"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[--bg-elevated] to-[--bg-surface]">
+            <Package className="w-14 h-14 text-[--text-tertiary]" strokeWidth={0.75} />
+          </div>
+        )}
+
+        {/* Gradient scrim */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none" />
+
+        {/* Top badges */}
+        <div className="absolute top-4 left-4 flex gap-2 items-center">
+          <div className="flex items-center gap-1.5 bg-[--accent]/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide backdrop-blur-sm shadow-lg">
+            <TrendingUp className="w-3 h-3" />
+            Destacado
+          </div>
+          {hasDiscount && !isOOS && (
+            <span className="bg-gradient-to-r from-[--red] to-[oklch(53%_0.20_25)] text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wide shadow-lg">
+              -{discountPercent(product.price, product.discountPrice)}% OFF
+            </span>
+          )}
+          {isPreorder && (
+            <span className="bg-[--bg-elevated]/90 text-[--accent] text-[10px] font-bold px-2.5 py-1 rounded-full ring-1 ring-[--accent]/25">
+              Por encargo
+            </span>
+          )}
+        </div>
+
+        {/* Overlaid content */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-[#111] via-[#111]/60 to-transparent">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] md:text-[11px] font-medium text-white/70">Featured</span>
+            <h3 className="font-display font-bold text-white text-[18px] md:text-[24px] leading-tight line-clamp-2 mt-1">
+              {product.name}
+            </h3>
+            <span className="font-display font-extrabold text-[16px] md:text-[20px] text-[#E5B567] tabular-nums mt-1.5">
+              {formatARS(product.price)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
 }

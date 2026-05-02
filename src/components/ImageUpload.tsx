@@ -102,22 +102,22 @@ export function ImageUpload({
             const isBlob = url.startsWith('blob:')
             const isLoading = uploading.has(index)
             return (
-               <div key={`${url}-${index}`} className="relative aspect-square rounded-sm overflow-hidden bg-[#2A2520] border border-[#2E2925]">
+               <div key={`${url}-${index}`} className="relative aspect-square rounded-sm overflow-hidden bg-[--bg-surface] border border-[--border]">
                 <img src={url} alt="" className="w-full h-full object-cover" />
                 {(isBlob || isLoading) && (
-                  <div className="absolute inset-0 bg-[#1A1714]/50 flex flex-col items-center justify-center gap-1">
-                    <Loader2 className="w-5 h-5 text-[#F0EAE0] animate-spin" />
-                    <span className="text-[10px] text-[#8A8278]">Subiendo</span>
+                  <div className="absolute inset-0 bg-[--bg]/50 flex flex-col items-center justify-center gap-1">
+                    <Loader2 className="w-5 h-5 text-[--text] animate-spin" />
+                    <span className="text-[10px] text-[--text-secondary]">Subiendo</span>
                   </div>
                 )}
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); removeImage(index) }}
-                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-[#1A1714]/70 flex items-center justify-center text-[#F0EAE0] hover:bg-[#C0392B] transition-colors duration-300"
+                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-[--bg]/70 flex items-center justify-center text-[--text] hover:bg-[--red] transition-colors duration-300"
                 >
                   <X className="w-3 h-3" />
                 </button>
-                <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-[#1A1714]/70 text-[9px] text-[#8A8278] font-medium">
+                <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-[--bg]/70 text-[9px] text-[--text-secondary] font-medium">
                   {index + 1}
                 </span>
               </div>
@@ -126,18 +126,18 @@ export function ImageUpload({
         </div>
       )}
 
-      <div className="flex gap-1 p-1 bg-[#2A2520] rounded-sm w-fit">
+      <div className="flex gap-1 p-1 bg-[--bg-surface] rounded-sm w-fit">
         <button
           type="button"
           onClick={() => setMode('upload')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] uppercase tracking-[0.12em] font-normal transition-colors duration-300 ${mode === 'upload' ? 'bg-[#1A1714] text-[#F0EAE0]' : 'text-[#8A8278] hover:text-[#F0EAE0]'}`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] uppercase tracking-[0.12em] font-normal transition-colors duration-300 ${mode === 'upload' ? 'bg-[--bg] text-[--text]' : 'text-[--text-secondary] hover:text-[--text]'}`}
         >
           <Upload className="w-3.5 h-3.5" /> Subir
         </button>
         <button
           type="button"
           onClick={() => setMode('url')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] uppercase tracking-[0.12em] font-normal transition-colors duration-300 ${mode === 'url' ? 'bg-[#1A1714] text-[#F0EAE0]' : 'text-[#8A8278] hover:text-[#F0EAE0]'}`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[11px] uppercase tracking-[0.12em] font-normal transition-colors duration-300 ${mode === 'url' ? 'bg-[--bg] text-[--text]' : 'text-[--text-secondary] hover:text-[--text]'}`}
         >
           <Link2 className="w-3.5 h-3.5" /> URL
         </button>
@@ -149,15 +149,15 @@ export function ImageUpload({
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onClick={() => inputRef.current?.click()}
-          className={`relative w-full h-36 sm:h-44 rounded-sm border-2 border-dashed cursor-pointer flex flex-col items-center justify-center gap-1.5 transition-all duration-300 ${dragOver ? 'border-[#C9A55A] bg-[#C9A55A]/5' : 'border-[#2E2925] hover:border-[#3D3830]'}`}
+          className={`relative w-full h-36 sm:h-44 rounded-sm border-2 border-dashed cursor-pointer flex flex-col items-center justify-center gap-1.5 transition-all duration-300 ${dragOver ? 'border-[--accent] bg-[--accent]/5' : 'border-[--border] hover:border-[--border]'}`}
         >
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${dragOver ? 'bg-[#C9A55A]/10' : 'bg-[#2A2520]'}`}>
-            <Images className={`w-5 h-5 ${dragOver ? 'text-[#C9A55A]' : 'text-[#8A8278]'}`} />
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${dragOver ? 'bg-[--accent]/10' : 'bg-[--bg-surface]'}`}>
+            <Images className={`w-5 h-5 ${dragOver ? 'text-[--accent]' : 'text-[--text-secondary]'}`} />
           </div>
-          <span className="text-sm text-[#8A8278] font-medium">
+          <span className="text-sm text-[--text-secondary] font-medium">
             {multiple ? 'Arrastrá imágenes o hacé clic' : 'Arrastrá una imagen o hacé clic'}
           </span>
-          <span className="text-[11px] text-[#8A8278]/40">JPG, PNG, WEBP · Máx 5MB</span>
+          <span className="text-[11px] text-[--text-secondary]/40">JPG, PNG, WEBP · Máx 5MB</span>
           <input ref={inputRef} type="file" accept="image/*" multiple={multiple} onChange={handleChange} className="hidden" />
         </div>
       ) : (
@@ -168,9 +168,9 @@ export function ImageUpload({
             value={urlInput}
             onChange={e => setUrlInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addUrlImage())}
-            className="flex-1 bg-transparent border-b border-[#3D3830] h-11 px-0 text-[13px] text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors"
+            className="flex-1 bg-transparent border-b border-[--border] h-11 px-0 text-[13px] text-[--text] placeholder-[#8A8278]/30 focus:outline-none focus:border-[--accent] transition-colors"
           />
-          <button type="button" onClick={addUrlImage} className="px-4 h-11 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[11px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300">
+          <button type="button" onClick={addUrlImage} className="px-4 h-11 rounded-sm border border-[--accent] bg-transparent text-[--accent] text-[11px] uppercase tracking-[0.15em] font-normal hover:bg-[--accent] hover:text-[--bg] active:scale-[0.98] transition-all duration-300">
             Agregar
           </button>
         </div>

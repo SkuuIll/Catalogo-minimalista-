@@ -42,11 +42,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               borderColor: toast.type === 'error' ? 'rgba(192, 57, 43, 0.25)' : toast.type === 'success' ? 'rgba(60, 179, 113, 0.25)' : 'rgba(201, 165, 90, 0.25)',
             }}
           >
-            {toast.type === 'success' && <CheckCircle className="w-4 h-4 text-[#3cb371] flex-shrink-0" strokeWidth={1.5} />}
-            {toast.type === 'error' && <XCircle className="w-4 h-4 text-[#C0392B] flex-shrink-0" strokeWidth={1.5} />}
-            {toast.type === 'info' && <AlertCircle className="w-4 h-4 text-[#C9A55A] flex-shrink-0" strokeWidth={1.5} />}
-            <span className="text-[13px] text-[#F0EAE0]/90 font-medium flex-1 leading-snug">{toast.message}</span>
-            <button onClick={() => removeToast(toast.id)} className="p-0.5 text-[#8A8278]/40 hover:text-[#8A8278] transition-colors duration-200">
+            {toast.type === 'success' && <CheckCircle className="w-4 h-4 text-[--green] flex-shrink-0" strokeWidth={1.5} />}
+            {toast.type === 'error' && <XCircle className="w-4 h-4 text-[--red] flex-shrink-0" strokeWidth={1.5} />}
+            {toast.type === 'info' && <AlertCircle className="w-4 h-4 text-[--accent] flex-shrink-0" strokeWidth={1.5} />}
+            <span className="text-[13px] text-[--text]/90 font-medium flex-1 leading-snug">{toast.message}</span>
+            <button onClick={() => removeToast(toast.id)} className="p-0.5 text-[--text-secondary]/40 hover:text-[--text-secondary] transition-colors duration-200">
               <X className="w-3.5 h-3.5" strokeWidth={1.5} />
             </button>
           </div>

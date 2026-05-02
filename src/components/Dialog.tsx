@@ -38,9 +38,9 @@ export function ConfirmDialog({
   if (!open) return null
 
   const variantStyles = {
-    danger: { bg: 'bg-[#C0392B]/10', border: 'border-[#C0392B]/30', text: 'text-[#C0392B]', btn: 'bg-[#C0392B] hover:bg-[#C0392B]/90' },
-    warning: { bg: 'bg-[#C9A55A]/10', border: 'border-[#C9A55A]/30', text: 'text-[#C9A55A]', btn: 'bg-[#C9A55A] hover:bg-[#C9A55A]/90' },
-    info: { bg: 'bg-[#C9A55A]/10', border: 'border-[#C9A55A]/30', text: 'text-[#C9A55A]', btn: 'bg-[#C9A55A] hover:bg-[#C9A55A]/90' },
+    danger: { bg: 'bg-[--red]/10', border: 'border-[--red]/30', text: 'text-[--red]', btn: 'bg-[--red] hover:bg-[--red]/90' },
+    warning: { bg: 'bg-[--accent]/10', border: 'border-[--accent]/30', text: 'text-[--accent]', btn: 'bg-[--accent] hover:bg-[--accent]/90' },
+    info: { bg: 'bg-[--accent]/10', border: 'border-[--accent]/30', text: 'text-[--accent]', btn: 'bg-[--accent] hover:bg-[--accent]/90' },
   }
 
   const styles = variantStyles[variant]
@@ -50,7 +50,7 @@ export function ConfirmDialog({
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
       <div
         ref={dialogRef}
-        className="relative w-full max-w-sm bg-[#221E1A] border border-[#2E2925] rounded-3xl p-6 shadow-2xl shadow-black/50 animate-fade-up"
+        className="relative w-full max-w-sm bg-[--bg-surface] border border-[--border] rounded-3xl p-6 shadow-2xl shadow-black/50 animate-fade-up"
       >
         <button
           onClick={onCancel}
@@ -71,7 +71,7 @@ export function ConfirmDialog({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 h-11 rounded-xl bg-[#2A2520] border border-[#2E2925] text-[13px] font-medium text-white/60 hover:text-white hover:border-white/10 transition-all"
+            className="flex-1 h-11 rounded-xl bg-[--bg-surface] border border-[--border] text-[13px] font-medium text-white/60 hover:text-white hover:border-white/10 transition-all"
           >
             {cancelText}
           </button>

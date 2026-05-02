@@ -23,10 +23,10 @@ interface LogEntry {
 }
 
 const levelConfig: Record<string, { label: string; color: string; bg: string; border: string; icon: any }> = {
-  error: { label: 'ERROR', color: 'text-[#C0392B]', bg: 'bg-[#C0392B]/5', border: 'border-[#C0392B]/20', icon: AlertTriangle },
-  warn: { label: 'WARNING', color: 'text-[#c9a55a]', bg: 'bg-[#c9a55a]/5', border: 'border-[#c9a55a]/20', icon: AlertTriangle },
-  info: { label: 'INFO', color: 'text-[#3cb371]', bg: 'bg-[#3cb371]/5', border: 'border-[#3cb371]/20', icon: Info },
-  debug: { label: 'DEBUG', color: 'text-[#666]', bg: 'bg-[#666]/5', border: 'border-[#666]/10', icon: Bug },
+  error: { label: 'ERROR', color: 'text-[--red]', bg: 'bg-[--red]/5', border: 'border-[--red]/20', icon: AlertTriangle },
+  warn: { label: 'WARNING', color: 'text-[--accent]', bg: 'bg-[--accent]/5', border: 'border-[--accent]/20', icon: AlertTriangle },
+  info: { label: 'INFO', color: 'text-[--green]', bg: 'bg-[--green]/5', border: 'border-[--green]/20', icon: Info },
+  debug: { label: 'DEBUG', color: 'text-[--text-secondary]', bg: 'bg-[--text-secondary]/5', border: 'border-[--text-secondary]/10', icon: Bug },
 }
 
 function timeAgo(dateStr: string): string {
@@ -120,22 +120,22 @@ export default function LogsPage() {
     <div className="max-w-[1200px] mx-auto space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="font-serif text-2xl font-light text-[#e8e8e8] tracking-[0.05em]">SYSTEM LOGS</h1>
-        <p className="text-[9px] uppercase tracking-[0.25em] text-[#666] mt-1">REAL-TIME ERRORS AND EVENTS</p>
+        <h1 className="font-serif text-2xl font-light text-[--text] tracking-[0.05em]">SYSTEM LOGS</h1>
+        <p className="text-[9px] uppercase tracking-[0.25em] text-[--text-secondary] mt-1">REAL-TIME ERRORS AND EVENTS</p>
       </div>
 
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total logs', value: stats.total, icon: <Clock className="w-4 h-4" strokeWidth={1} />, color: 'text-[#e8e8e8]' },
-          { label: 'Errors', value: stats.errors, icon: <AlertTriangle className="w-4 h-4" strokeWidth={1} />, color: 'text-[#C0392B]' },
-          { label: 'Warnings', value: stats.warnings, icon: <AlertTriangle className="w-4 h-4" strokeWidth={1} />, color: 'text-[#c9a55a]' },
-          { label: 'Unresolved', value: stats.unresolved, icon: <CheckCircle className="w-4 h-4" strokeWidth={1} />, color: 'text-[#c9a55a]' },
+          { label: 'Total logs', value: stats.total, icon: <Clock className="w-4 h-4" strokeWidth={1} />, color: 'text-[--text]' },
+          { label: 'Errors', value: stats.errors, icon: <AlertTriangle className="w-4 h-4" strokeWidth={1} />, color: 'text-[--red]' },
+          { label: 'Warnings', value: stats.warnings, icon: <AlertTriangle className="w-4 h-4" strokeWidth={1} />, color: 'text-[--accent]' },
+          { label: 'Unresolved', value: stats.unresolved, icon: <CheckCircle className="w-4 h-4" strokeWidth={1} />, color: 'text-[--accent]' },
         ].map(stat => (
-          <div key={stat.label} className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none px-5 py-4">
+          <div key={stat.label} className="bg-[--bg-surface] border border-[--border] rounded-none px-5 py-4">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[#222]">{stat.icon}</span>
-              <span className="text-[8px] font-medium uppercase tracking-[0.25em] text-[#666]">{stat.label}</span>
+              <span className="text-[--text-tertiary]">{stat.icon}</span>
+              <span className="text-[8px] font-medium uppercase tracking-[0.25em] text-[--text-secondary]">{stat.label}</span>
             </div>
             <span className={`text-2xl font-bold ${stat.color}`}>{stat.value}</span>
           </div>
@@ -144,13 +144,13 @@ export default function LogsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-1 bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-0.5">
+        <div className="flex items-center gap-1 bg-[--bg-surface] border border-[--border] rounded-none p-0.5">
           {(['all', 'error', 'warn', 'info', 'debug'] as LogLevel[]).map(l => (
             <button
               key={l}
               onClick={() => { setLevel(l); setPage(1); fetchLogs(1) }}
               className={`px-4 py-2 rounded-none text-[8px] font-medium uppercase tracking-[0.2em] transition-all ${
-                level === l ? 'bg-[#c9a55a] text-[#0a0a0a]' : 'text-[#666] hover:text-[#e8e8e8]'
+                level === l ? 'bg-[--accent] text-[--bg]' : 'text-[--text-secondary] hover:text-[--text]'
               }`}
             >
               {l === 'all' ? 'ALL' : levelConfig[l]?.label || l}
@@ -158,7 +158,7 @@ export default function LogsPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-1 bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-0.5">
+        <div className="flex items-center gap-1 bg-[--bg-surface] border border-[--border] rounded-none p-0.5">
           {([
             { value: 'all', label: 'All' },
             { value: 'false', label: 'Unresolved' },
@@ -168,7 +168,7 @@ export default function LogsPage() {
               key={opt.value}
               onClick={() => { setResolved(opt.value); setPage(1); fetchLogs(1) }}
               className={`px-4 py-2 rounded-none text-[8px] font-medium uppercase tracking-[0.2em] transition-all ${
-                resolved === opt.value ? 'bg-[#c9a55a] text-[#0a0a0a]' : 'text-[#666] hover:text-[#e8e8e8]'
+                resolved === opt.value ? 'bg-[--accent] text-[--bg]' : 'text-[--text-secondary] hover:text-[--text]'
               }`}
             >
               {opt.label}
@@ -177,16 +177,16 @@ export default function LogsPage() {
         </div>
 
         <div className="flex-1 min-w-[180px] max-w-sm relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444] pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[--text-tertiary] pointer-events-none" />
           <input
             type="text"
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             placeholder="SEARCH ERRORS"
-            className="w-full bg-[#0f0f0f] border border-[#1a1a1a] rounded-none h-11 pl-11 pr-4 text-[13px] uppercase tracking-[0.15em] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#2a2a2a] transition-all"
+            className="w-full bg-[--bg-surface] border border-[--border] rounded-none h-11 pl-11 pr-4 text-[13px] uppercase tracking-[0.15em] text-[--text] placeholder-[#444] focus:outline-none focus:border-[--border] transition-all"
           />
           {searchInput && (
-            <button onClick={() => { setSearchInput(''); setSearch(''); fetchLogs(1) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-[#e8e8e8] transition-colors">
+            <button onClick={() => { setSearchInput(''); setSearch(''); fetchLogs(1) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-[--text-secondary] hover:text-[--text] transition-colors">
               <X className="w-4 h-4" strokeWidth={1} />
             </button>
           )}
@@ -195,8 +195,8 @@ export default function LogsPage() {
 
       {/* Results count */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-[#444]">{total} ENTRIES</span>
-        {search && <span className="text-[9px] uppercase tracking-[0.2em] text-[#c9a55a]">SEARCHING: "{search}"</span>}
+        <span className="text-[10px] uppercase tracking-[0.2em] text-[--text-tertiary]">{total} ENTRIES</span>
+        {search && <span className="text-[9px] uppercase tracking-[0.2em] text-[--accent]">SEARCHING: "{search}"</span>}
       </div>
 
       {/* Logs list */}
@@ -204,16 +204,16 @@ export default function LogsPage() {
         {loading ? (
           <div className="space-y-2">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-20 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] animate-pulse" />
+              <div key={i} className="h-20 rounded-none bg-[--bg-surface] border border-[--border] animate-pulse" />
             ))}
           </div>
         ) : logs.length === 0 ? (
           <div className="py-20 text-center">
-            <div className="w-16 h-16 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] flex items-center justify-center mx-auto mb-5">
-              <CheckCircle className="w-7 h-7 text-[#3cb371]/40" strokeWidth={1} />
+            <div className="w-16 h-16 rounded-none bg-[--bg] border border-[--border] flex items-center justify-center mx-auto mb-5">
+              <CheckCircle className="w-7 h-7 text-[--green]/40" strokeWidth={1} />
             </div>
-            <p className="text-[#666] text-[13px] uppercase tracking-[0.2em] mb-1">NO ERRORS REGISTERED</p>
-            <p className="text-[#444] text-[11px] uppercase tracking-[0.15em]">ALL SYSTEMS OPERATIONAL</p>
+            <p className="text-[--text-secondary] text-[13px] uppercase tracking-[0.2em] mb-1">NO ERRORS REGISTERED</p>
+            <p className="text-[--text-tertiary] text-[11px] uppercase tracking-[0.15em]">ALL SYSTEMS OPERATIONAL</p>
           </div>
         ) : (
           logs.map(log => {
@@ -224,8 +224,8 @@ export default function LogsPage() {
             return (
               <div
                 key={log.id}
-                className={`bg-[#0f0f0f] border rounded-none transition-all ${
-                  isExpanded ? `border-[#c9a55a]/30` : 'border-[#1a1a1a] hover:border-[#2a2a2a]'
+                className={`bg-[--bg-surface] border rounded-none transition-all ${
+                  isExpanded ? `border-[--accent]/30` : 'border-[--border] hover:border-[--border]'
                 }`}
               >
                 <div className="flex items-start gap-4 p-5">
@@ -235,14 +235,14 @@ export default function LogsPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
-                      <p className="text-[13px] font-serif font-light text-[#e8e8e8] leading-relaxed line-clamp-2 tracking-[0.05em]">{log.message}</p>
+                      <p className="text-[13px] font-serif font-light text-[--text] leading-relaxed line-clamp-2 tracking-[0.05em]">{log.message}</p>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         {log.resolved && (
-                          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-[#3cb371] bg-[#3cb371]/5 px-2.5 py-1 rounded-none border border-[#3cb371]/20">RESOLVED</span>
+                          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-[--green] bg-[--green]/5 px-2.5 py-1 rounded-none border border-[--green]/20">RESOLVED</span>
                         )}
                         <button
                           onClick={() => handleResolve(log.id, log.resolved)}
-                          className="p-2 rounded-none text-[#666] hover:text-[#3cb371] hover:bg-[#3cb371]/5 transition-all"
+                          className="p-2 rounded-none text-[--text-secondary] hover:text-[--green] hover:bg-[--green]/5 transition-all"
                           title={log.resolved ? 'Mark unresolved' : 'Mark resolved'}
                         >
                           <CheckCircle className="w-4 h-4" strokeWidth={1} />
@@ -250,7 +250,7 @@ export default function LogsPage() {
                         <button
                           onClick={() => handleDelete(log.id)}
                           disabled={deletingId === log.id}
-                          className="p-2 rounded-none text-[#666] hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all disabled:opacity-30"
+                          className="p-2 rounded-none text-[--text-secondary] hover:text-[--red] hover:bg-[--red]/5 transition-all disabled:opacity-30"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" strokeWidth={1} />
@@ -258,7 +258,7 @@ export default function LogsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 mt-2.5 text-[10px] uppercase tracking-[0.15em] text-[#444]">
+                    <div className="flex items-center gap-4 mt-2.5 text-[10px] uppercase tracking-[0.15em] text-[--text-tertiary]">
                       {log.url && (
                         <span className="truncate max-w-[180px]" title={log.url}>
                           {new URL(log.url).pathname}
@@ -267,7 +267,7 @@ export default function LogsPage() {
                       <span>{timeAgo(log.createdAt)}</span>
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : log.id)}
-                        className="flex items-center gap-1.5 text-[#666] hover:text-[#e8e8e8] transition-colors"
+                        className="flex items-center gap-1.5 text-[--text-secondary] hover:text-[--text] transition-colors"
                       >
                         <Filter className="w-3 h-3" strokeWidth={1} /> DETAILS
                       </button>
@@ -277,24 +277,24 @@ export default function LogsPage() {
                       <div className="mt-4 space-y-4">
                         {log.stack && (
                           <div>
-                            <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#444] mb-2">STACK TRACE</p>
-                            <pre className="text-[11px] text-[#666] bg-[#0a0a0a] rounded-none p-4 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed max-h-40 border border-[#1a1a1a]">
+                            <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[--text-tertiary] mb-2">STACK TRACE</p>
+                            <pre className="text-[11px] text-[--text-secondary] bg-[--bg] rounded-none p-4 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed max-h-40 border border-[--border]">
                               {log.stack}
                             </pre>
                           </div>
                         )}
                         {log.metadata && (
                           <div>
-                            <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#444] mb-2">METADATA</p>
-                            <pre className="text-[11px] text-[#666] bg-[#0a0a0a] rounded-none p-4 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed border border-[#1a1a1a]">
+                            <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[--text-tertiary] mb-2">METADATA</p>
+                            <pre className="text-[11px] text-[--text-secondary] bg-[--bg] rounded-none p-4 overflow-x-auto whitespace-pre-wrap font-mono leading-relaxed border border-[--border]">
                               {JSON.stringify(JSON.parse(log.metadata), null, 2)}
                             </pre>
                           </div>
                         )}
                         {log.userAgent && (
                           <div>
-                            <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[#444] mb-1">USER AGENT</p>
-                            <p className="text-[11px] text-[#666] font-mono">{log.userAgent}</p>
+                            <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-[--text-tertiary] mb-1">USER AGENT</p>
+                            <p className="text-[11px] text-[--text-secondary] font-mono">{log.userAgent}</p>
                           </div>
                         )}
                       </div>
@@ -313,15 +313,15 @@ export default function LogsPage() {
           <button
             onClick={() => { const p = Math.max(1, page - 1); setPage(p); fetchLogs(p) }}
             disabled={page <= 1}
-            className="flex items-center gap-2 h-11 px-5 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] text-[9px] uppercase tracking-[0.2em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 h-11 px-5 rounded-none bg-[--bg-surface] border border-[--border] text-[9px] uppercase tracking-[0.2em] text-[--text-secondary] hover:text-[--text] hover:border-[--border] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-4 h-4" strokeWidth={1} /> PREV
           </button>
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[#444] px-4">{page} / {pages}</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[--text-tertiary] px-4">{page} / {pages}</span>
           <button
             onClick={() => { const p = Math.min(pages, page + 1); setPage(p); fetchLogs(p) }}
             disabled={page >= pages}
-            className="flex items-center gap-2 h-11 px-5 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] text-[9px] uppercase tracking-[0.2em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 h-11 px-5 rounded-none bg-[--bg-surface] border border-[--border] text-[9px] uppercase tracking-[0.2em] text-[--text-secondary] hover:text-[--text] hover:border-[--border] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
             NEXT <ChevronRight className="w-4 h-4" strokeWidth={1} />
           </button>

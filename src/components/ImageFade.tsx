@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/cn'
 
 export function ImageFade({
@@ -15,14 +15,22 @@ export function ImageFade({
   containerClassName?: string
 }) {
   const [loaded, setLoaded] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setLoaded(true)
+    }
+  }, [src])
 
   return (
     <div className={cn('relative overflow-hidden', containerClassName)}>
       {/* Blur placeholder */}
       {!loaded && (
-        <div className="absolute inset-0 bg-[#2A2520] animate-pulse" />
+        <div className="absolute inset-0 bg-[--bg-elevated] animate-pulse" />
       )}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}

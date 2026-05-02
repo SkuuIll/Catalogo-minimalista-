@@ -18,20 +18,20 @@
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--bg` | `#060606` | Fondo principal (true black) |
-| `--bg-surface` | `#0d0d0d` | Superficies elevadas (cards, nav strips) |
-| `--bg-elevated` | `#111111` | Inputs, elementos interactivos |
-| `--accent` | `#bf9b4e` | Dorado apagado — CTAs primarios, precios, highlights |
-| `--accent-dim` | `#9b7a34` | Hover states del accent |
-| `--text` | `#ededed` | Texto principal (~95% white) |
-| `--text-secondary` | `#8a8a8a` | Texto secundario (~54% white) — mínimo para legibilidad |
-| `--text-tertiary` | `#5a5a5a` | Texto terciario (~35% white) — solo para elementos decorativos |
-| `--border` | `#1a1a1a` | Bordes estándar |
-| `--red` | `#e05555` | Error, out of stock |
-| `--green` | `#3cb371` | Success, available |
-| `--amber` | `#d4a030` | Warning, preorder |
+| `--bg` | `oklch(14% 0 0)` | Fondo principal (Gris oscuro, no negro puro) |
+| `--bg-surface` | `oklch(18% 0 0)` | Superficies elevadas (cards, nav strips) |
+| `--bg-elevated` | `oklch(22% 0 0)` | Inputs, elementos interactivos |
+| `--accent` | `oklch(75% 0.15 80)` | Dorado Premium — CTAs primarios, precios, highlights |
+| `--accent-dim` | `oklch(65% 0.15 80)` | Hover states del accent |
+| `--text` | `oklch(96% 0 0)` | Texto principal (Off-white) |
+| `--text-secondary` | `oklch(70% 0 0)` | Texto secundario (Gris claro) |
+| `--text-tertiary` | `oklch(50% 0 0)` | Texto terciario (Gris medio) |
+| `--border` | `oklch(22% 0 0)` | Bordes estándar |
+| `--red` | `oklch(58% 0.20 25)` | Error, out of stock |
+| `--green` | `oklch(60% 0.17 155)` | Success, available |
+| `--amber` | `oklch(72% 0.13 75)` | Warning, preorder |
 
-**Contraste mínimo**: `white/40` sobre `#060606` (3.5:1 ratio). Nunca usar `white/30` o menor para texto funcional.
+**Contraste mínimo**: Mantener legibilidad sobre fondo oscuro. Nunca usar opacidades bajas extremas para texto funcional.
 
 ## 3. Typography
 
@@ -74,10 +74,10 @@
 
 | Level | Implementation |
 |-------|---------------|
-| Base | `bg-[#060606]` (flat, no shadow) |
-| Raised | `bg-[#0d0d0d]` + `border border-[#1a1a1a]` |
-| Floating | `bg-[#0d0d0d]` + `border border-[#1a1a1a]` + `shadow-2xl shadow-black/40` |
-| Overlay/modal | `bg-[#0d0d0d]/98` + `backdrop-blur-2xl` + `border border-[#1a1a1a]` |
+| Base | `bg-[var(--bg)]` (flat, no shadow) |
+| Raised | `bg-[var(--bg-surface)]` + `border border-[var(--border)]` |
+| Floating | `bg-[var(--bg-elevated)]` + `border border-[var(--border)]` + shadow |
+| Overlay/modal | `bg-[var(--bg)]/90` + `backdrop-blur-2xl` + `border border-[var(--border)]` |
 
 **Nunca**: box-shadow sin border. No usar drop-shadow de Tailwind por defecto.
 

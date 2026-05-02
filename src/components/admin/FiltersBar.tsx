@@ -38,7 +38,7 @@ export function FiltersBar({ categories }: FiltersBarProps) {
   const hasFilters = statusFilter !== 'all' || categoryFilter !== 'all' || sortBy !== 'newest'
 
   return (
-    <div className="bg-[#221E1A] border border-[#2E2925] rounded-2xl p-4 mb-4">
+    <div className="bg-[--bg-surface] border border-[--border] rounded-2xl p-4 mb-4">
       <div className="flex flex-wrap gap-4 items-center">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-white/30" />
@@ -48,7 +48,7 @@ export function FiltersBar({ categories }: FiltersBarProps) {
         <select
           value={statusFilter}
           onChange={(e) => updateFilter('status', e.target.value)}
-          className="bg-[#2A2520] border border-[#2E2925] rounded-lg h-9 px-3 text-xs text-white/70 appearance-none cursor-pointer hover:border-white/10 transition-all"
+          className="bg-[--bg-surface] border border-[--border] rounded-lg h-9 px-3 text-xs text-white/70 appearance-none cursor-pointer hover:border-white/10 transition-all"
         >
           <option value="all">Todos los estados</option>
           <option value="AVAILABLE">Disponible</option>
@@ -59,7 +59,7 @@ export function FiltersBar({ categories }: FiltersBarProps) {
         <select
           value={categoryFilter}
           onChange={(e) => updateFilter('category', e.target.value)}
-          className="bg-[#2A2520] border border-[#2E2925] rounded-lg h-9 px-3 text-xs text-white/70 appearance-none cursor-pointer hover:border-white/10 transition-all"
+          className="bg-[--bg-surface] border border-[--border] rounded-lg h-9 px-3 text-xs text-white/70 appearance-none cursor-pointer hover:border-white/10 transition-all"
         >
           <option value="all">Todas las categorías</option>
           {categories.map(cat => (
@@ -70,7 +70,7 @@ export function FiltersBar({ categories }: FiltersBarProps) {
         <select
           value={sortBy}
           onChange={(e) => updateFilter('sort', e.target.value)}
-          className="bg-[#2A2520] border border-[#2E2925] rounded-lg h-9 px-3 text-xs text-white/70 appearance-none cursor-pointer hover:border-white/10 transition-all"
+          className="bg-[--bg-surface] border border-[--border] rounded-lg h-9 px-3 text-xs text-white/70 appearance-none cursor-pointer hover:border-white/10 transition-all"
         >
           <option value="newest">Más reciente</option>
           <option value="oldest">Más antiguo</option>
@@ -82,7 +82,7 @@ export function FiltersBar({ categories }: FiltersBarProps) {
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-[#C0392B]/10 border border-[#C0392B]/20 text-[11px] text-[#C0392B] hover:bg-[#C0392B]/20 transition-all"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-[--red]/10 border border-[--red]/20 text-[11px] text-[--red] hover:bg-[--red]/20 transition-all"
           >
             <X className="w-3 h-3" /> Limpiar
           </button>

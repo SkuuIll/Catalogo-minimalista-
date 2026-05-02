@@ -88,7 +88,7 @@ export default function AdminReviewsPage() {
         <Star
           key={star}
           className={`w-3.5 h-3.5 ${
-            star <= rating ? 'fill-[#c9a55a] text-[#c9a55a]' : 'fill-none text-[#444]'
+            star <= rating ? 'fill-[#c9a55a] text-[--accent]' : 'fill-none text-[--text-tertiary]'
           }`}
           strokeWidth={1}
         />
@@ -97,14 +97,14 @@ export default function AdminReviewsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
+    <div className="min-h-screen bg-[--bg]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[--bg]/95 backdrop-blur-xl border-b border-[--border]">
         <div className="flex items-center h-16 px-6 gap-4 max-w-7xl mx-auto">
-          <Link href="/admin" className="p-2 -ml-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300">
+          <Link href="/admin" className="p-2 -ml-2 text-[--text-secondary] hover:text-[--text] transition-colors duration-300">
             <ArrowLeft className="w-4 h-4" strokeWidth={1} />
           </Link>
-          <h1 className="font-serif text-lg font-light text-[#e8e8e8] tracking-[0.1em]">REVIEWS</h1>
-          <span className="ml-auto text-[9px] uppercase tracking-[0.25em] text-[#666]">
+          <h1 className="font-serif text-lg font-light text-[--text] tracking-[0.1em]">REVIEWS</h1>
+          <span className="ml-auto text-[9px] uppercase tracking-[0.25em] text-[--text-secondary]">
             {reviews.length} REVIEWS
           </span>
         </div>
@@ -121,8 +121,8 @@ export default function AdminReviewsPage() {
               onClick={() => setFilter(f)}
               className={`px-5 py-2.5 rounded-none text-[8px] uppercase tracking-[0.25em] font-medium transition-all duration-300 ${
                 filter === f
-                  ? 'bg-[#c9a55a] text-[#0a0a0a]'
-                  : 'bg-[#0f0f0f] border border-[#1a1a1a] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a]'
+                  ? 'bg-[--accent] text-[--bg]'
+                  : 'bg-[--bg-surface] border border-[--border] text-[--text-secondary] hover:text-[--text] hover:border-[--border]'
               }`}
             >
               {f === 'all' ? 'ALL' : f === 'pending' ? 'PENDING' : f === 'approved' ? 'APPROVED' : 'REJECTED'}
@@ -134,16 +134,16 @@ export default function AdminReviewsPage() {
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-32 bg-[#0f0f0f] border border-[#1a1a1a] rounded-none animate-pulse" />
+              <div key={i} className="h-32 bg-[--bg-surface] border border-[--border] rounded-none animate-pulse" />
             ))}
           </div>
         ) : reviews.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] flex items-center justify-center mx-auto mb-5">
-              <User className="w-7 h-7 text-[#222]" strokeWidth={1} />
+            <div className="w-16 h-16 rounded-none bg-[--bg] border border-[--border] flex items-center justify-center mx-auto mb-5">
+              <User className="w-7 h-7 text-[--text-tertiary]" strokeWidth={1} />
             </div>
-            <p className="text-[#666] text-[13px] uppercase tracking-[0.2em] mb-1">NO REVIEWS</p>
-            <p className="text-[#444] text-[11px] uppercase tracking-[0.15em]">
+            <p className="text-[--text-secondary] text-[13px] uppercase tracking-[0.2em] mb-1">NO REVIEWS</p>
+            <p className="text-[--text-tertiary] text-[11px] uppercase tracking-[0.15em]">
               {filter === 'pending' ? 'No pending reviews to moderate' : 'No reviews yet'}
             </p>
           </div>
@@ -152,14 +152,14 @@ export default function AdminReviewsPage() {
             {reviews.map((review) => (
               <div
                 key={review.id}
-                className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-none p-5 hover:border-[#2a2a2a] transition-colors duration-300"
+                className="bg-[--bg-surface] border border-[--border] rounded-none p-5 hover:border-[--border] transition-colors duration-300"
               >
                 <div className="flex items-start gap-4">
                   {/* Product thumbnail */}
                   <Link
                     href={`/product/${review.productId}`}
                     target="_blank"
-                    className="w-16 h-16 rounded-none bg-[#0a0a0a] border border-[#1a1a1a] overflow-hidden flex-shrink-0"
+                    className="w-16 h-16 rounded-none bg-[--bg] border border-[--border] overflow-hidden flex-shrink-0"
                   >
                     {review.product.imageUrl ? (
                       <img
@@ -169,7 +169,7 @@ export default function AdminReviewsPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-[#222]" strokeWidth={1} />
+                        <User className="w-5 h-5 text-[--text-tertiary]" strokeWidth={1} />
                       </div>
                     )}
                   </Link>
@@ -179,36 +179,36 @@ export default function AdminReviewsPage() {
                     <div className="flex items-center gap-2 mb-2">
                       {renderStars(review.rating)}
                       {review.verified && (
-                        <span className="inline-flex items-center gap-1.5 text-[8px] uppercase tracking-[0.2em] text-[#3cb371] bg-[#3cb371]/10 px-2.5 py-1 rounded-none border border-[#3cb371]/20">
+                        <span className="inline-flex items-center gap-1.5 text-[8px] uppercase tracking-[0.2em] text-[--green] bg-[--green]/10 px-2.5 py-1 rounded-none border border-[--green]/20">
                           <CheckCircle className="w-3 h-3" strokeWidth={1} />
                           VERIFIED
                         </span>
                       )}
                       <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-none border ${
                         review.approved
-                          ? 'text-[#3cb371] bg-[#3cb371]/10 border-[#3cb371]/20'
-                          : 'text-[#c9a55a] bg-[#c9a55a]/10 border-[#c9a55a]/20'
+                          ? 'text-[--green] bg-[--green]/10 border-[--green]/20'
+                          : 'text-[--accent] bg-[--accent]/10 border-[--accent]/20'
                       }`}>
                         {review.approved ? 'APPROVED' : 'PENDING'}
                       </span>
                     </div>
 
                     {review.title && (
-                      <h4 className="font-serif text-[14px] font-light text-[#e8e8e8] mb-1 tracking-[0.05em]">{review.title}</h4>
+                      <h4 className="font-serif text-[14px] font-light text-[--text] mb-1 tracking-[0.05em]">{review.title}</h4>
                     )}
                     {review.comment && (
-                      <p className="text-[13px] text-[#888] line-clamp-2 mb-2 leading-relaxed">{review.comment}</p>
+                      <p className="text-[13px] text-[--text-secondary] line-clamp-2 mb-2 leading-relaxed">{review.comment}</p>
                     )}
 
-                    <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.15em] text-[#666]">
-                      <span>BY <span className="text-[#e8e8e8]">{review.authorName}</span></span>
+                    <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.15em] text-[--text-secondary]">
+                      <span>BY <span className="text-[--text]">{review.authorName}</span></span>
                       <span>•</span>
                       <span>{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                       <span>•</span>
                       <Link
                         href={`/product/${review.productId}`}
                         target="_blank"
-                        className="text-[#c9a55a] hover:text-[#e8e8e8] flex items-center gap-1"
+                        className="text-[--accent] hover:text-[--text] flex items-center gap-1"
                       >
                         <Eye className="w-3.5 h-3.5" strokeWidth={1} />
                         VIEW PRODUCT
@@ -222,14 +222,14 @@ export default function AdminReviewsPage() {
                       <>
                         <button
                           onClick={() => handleApprove(review.id, true)}
-                          className="p-2 rounded-none bg-[#3cb371]/10 text-[#3cb371] hover:bg-[#3cb371]/20 transition-colors"
+                          className="p-2 rounded-none bg-[--green]/10 text-[--green] hover:bg-[--green]/20 transition-colors"
                           title="Approve"
                         >
                           <CheckCircle className="w-4 h-4" strokeWidth={1} />
                         </button>
                         <button
                           onClick={() => handleApprove(review.id, false)}
-                          className="p-2 rounded-none bg-[#c9a55a]/10 text-[#c9a55a] hover:bg-[#c9a55a]/20 transition-colors"
+                          className="p-2 rounded-none bg-[--accent]/10 text-[--accent] hover:bg-[--accent]/20 transition-colors"
                           title="Reject"
                         >
                           <XCircle className="w-4 h-4" strokeWidth={1} />
@@ -238,7 +238,7 @@ export default function AdminReviewsPage() {
                     )}
                     <button
                       onClick={() => handleDelete(review.id)}
-                      className="p-2 rounded-none bg-[#C0392B]/10 text-[#C0392B] hover:bg-[#C0392B]/20 transition-colors"
+                      className="p-2 rounded-none bg-[--red]/10 text-[--red] hover:bg-[--red]/20 transition-colors"
                       title="Delete"
                     >
                       <Trash2 className="w-4 h-4" strokeWidth={1} />

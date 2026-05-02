@@ -31,26 +31,26 @@ export function PWAInstallPrompt() {
   if (!show || installed) return null
 
   return (
-    <div className="fixed bottom-16 left-3 right-3 z-[80] sm:hidden">
-      <div className="bg-[#161310] border border-[#2E2925] rounded-sm p-4 shadow-2xl shadow-black/50">
+    <div className="fixed bottom-[72px] left-4 right-4 z-[80] sm:hidden animate-slide-up">
+      <div className="bg-[--bg-elevated]/95 backdrop-blur-xl border border-[--border] rounded-2xl p-4 shadow-2xl shadow-black/40">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-sm bg-[#C9A55A]/10 border border-[#C9A55A]/20 flex items-center justify-center flex-shrink-0">
-            <Download className="w-5 h-5 text-[#C9A55A]" />
+          <div className="w-10 h-10 rounded-xl bg-[--accent-soft] flex items-center justify-center flex-shrink-0">
+            <Download className="w-5 h-5 text-[--accent]" strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-light text-[#F0EAE0] tracking-[0.02em]">Instalar app</h4>
-            <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] mt-0.5">Acceso rápido desde tu pantalla de inicio.</p>
-            <div className="flex gap-2 mt-3">
-              <button onClick={handleInstall} className="h-9 px-4 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[11px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.97] transition-all duration-300">
+            <h4 className="font-display font-semibold text-[14px] text-[--text] tracking-tight">App Disponible</h4>
+            <p className="text-[11px] font-medium text-[--text-tertiary] mt-0.5">Añadila a tu pantalla de inicio.</p>
+            <div className="flex items-center gap-2 mt-3">
+              <button onClick={handleInstall} className="flex-1 h-9 rounded-xl bg-[--accent] text-[--bg] text-[12px] font-bold tracking-wide hover:opacity-90 active:scale-[0.97] transition-all duration-300">
                 Instalar
               </button>
-              <button onClick={() => setShow(false)} className="h-9 px-4 rounded-sm text-[11px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300">
+              <button onClick={() => setShow(false)} className="px-4 h-9 rounded-xl bg-[--bg-surface] border border-[--border] text-[11px] font-bold text-[--text-secondary] hover:text-[--text] active:bg-[--bg] transition-all duration-300">
                 Ahora no
               </button>
             </div>
           </div>
-          <button onClick={() => setShow(false)} className="p-1 text-[#8A8278]/30 hover:text-[#8A8278] transition-colors duration-300">
-            <X className="w-3.5 h-3.5" />
+          <button onClick={() => setShow(false)} className="p-1 -mr-1 text-[--text-tertiary] hover:text-[--text] transition-colors duration-300">
+            <X className="w-4 h-4" strokeWidth={1.5} />
           </button>
         </div>
       </div>

@@ -141,53 +141,53 @@ export default function EditProductPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1A1714] flex items-center justify-center">
-        <div className="flex items-center gap-3 text-[#8A8278]">
+      <div className="min-h-screen bg-[--bg] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-[--text-secondary]">
           <Loader2 className="w-5 h-5 animate-spin" />
-          <span className="text-sm">Cargando producto…</span>
+          <span className="text-[13px] font-medium">Cargando producto…</span>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1A1714]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#161310]/95 backdrop-blur-md border-b border-[#2E2925]/60">
-        <div className="flex items-center h-12 px-4 gap-3 max-w-7xl mx-auto">
-          <Link href="/admin" className="p-1.5 -ml-1 text-[#8A8278] hover:text-[#F0EAE0] transition-colors duration-300 rounded-sm">
-            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+    <div className="min-h-screen bg-[--bg]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[--bg]/95 backdrop-blur-md border-b border-[--border]">
+        <div className="flex items-center h-14 px-4 gap-3 max-w-7xl mx-auto">
+          <Link href="/admin" className="p-2 -ml-2 text-[--text-secondary] hover:text-[--text] transition-colors duration-300 rounded-lg">
+            <ArrowLeft className="w-5 h-5" strokeWidth={1.5} />
           </Link>
           <div className="min-w-0">
-            <h1 className="font-serif text-sm font-light text-[#F0EAE0] tracking-[0.02em] truncate">
+            <h1 className="font-display font-semibold text-[15px] text-[--text] tracking-wide truncate">
               {productName || 'Editar producto'}
             </h1>
           </div>
           <Link
             href={`/product/${id}`}
             target="_blank"
-            className="ml-auto inline-flex items-center gap-1.5 h-8 px-3 rounded-sm bg-[#2A2520] border border-[#2E2925] text-[11px] uppercase tracking-[0.12em] text-[#8A8278] hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all duration-300"
+            className="ml-auto inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg bg-[--bg-surface] border border-[--border] text-[11px] font-bold tracking-wide text-[--text-secondary] hover:text-[--text] hover:bg-[--bg-elevated] hover:border-[--border-mid] transition-all duration-300"
           >
-            <Eye className="w-3 h-3" strokeWidth={1.5} /> Ver
+            <Eye className="w-3.5 h-3.5" strokeWidth={1.5} /> Ver
           </Link>
         </div>
       </header>
 
-      <div className="h-12" />
+      <div className="h-14" />
 
       <main className="max-w-2xl mx-auto py-6 px-4">
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Images */}
-          <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5">
-            <label className="text-[11px] font-normal uppercase tracking-[0.12em] text-[#C9A55A] mb-3 block">
+          <div className="bg-[--bg-surface] border border-[--border] rounded-2xl p-5">
+            <label className="text-[12px] font-semibold tracking-wide text-[--text] mb-3 block">
               Imágenes del producto
             </label>
             <ImageUpload onUpload={urls => setImages(urls)} defaultImages={images} multiple />
           </div>
 
           {/* Core fields */}
-          <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5 space-y-5">
-            <p className="text-[11px] font-normal uppercase tracking-[0.12em] text-[#C9A55A]">Información básica</p>
+          <div className="bg-[--bg-surface] border border-[--border] rounded-2xl p-5 space-y-5">
+            <FieldLabel>Información básica</FieldLabel>
 
             <div>
               <label className="field-label">Nombre del producto *</label>
@@ -203,11 +203,11 @@ export default function EditProductPage() {
               <textarea
                 name="description" rows={4} required
                 value={formData.description} onChange={handleChange}
-                className="w-full bg-transparent border-b border-[#3D3830] p-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors resize-none leading-relaxed"
+                className="w-full bg-transparent border-b border-[--border-mid] py-3 text-[14px] text-[--text] placeholder:text-[--text-tertiary] focus:outline-none focus:border-[--accent] transition-colors resize-none leading-relaxed"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3">
               <div>
                 <label className="field-label">Precio (ARS) *</label>
                 <input
@@ -217,7 +217,7 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="field-label">Precio original <span className="text-[#8A8278]/40 normal-case font-normal">(si hay oferta)</span></label>
+                <label className="field-label">Precio original <span className="text-[--text-tertiary] font-normal normal-case">(si hay oferta)</span></label>
                 <input
                   type="number" name="discountPrice" step="0.01" min="0"
                   value={formData.discountPrice} onChange={handleChange}
@@ -227,27 +227,27 @@ export default function EditProductPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3">
               <div>
                 <label className="field-label">Estado</label>
                 <select
                   name="status" value={formData.status} onChange={handleChange}
-                  className="field-input appearance-none"
+                  className="field-input appearance-none bg-transparent"
                 >
-                  <option value="AVAILABLE">Disponible</option>
-                  <option value="PREORDER">Por pedido</option>
-                  <option value="OUT_OF_STOCK">Sin stock</option>
+                  <option value="AVAILABLE" className="bg-[--bg-surface]">Disponible</option>
+                  <option value="PREORDER" className="bg-[--bg-surface]">Por encargo</option>
+                  <option value="OUT_OF_STOCK" className="bg-[--bg-surface]">Agotado</option>
                 </select>
               </div>
               <div>
                 <label className="field-label">Categoría</label>
                 <select
                   name="categoryId" value={formData.categoryId} onChange={handleChange}
-                  className="field-input appearance-none"
+                  className="field-input appearance-none bg-transparent"
                 >
-                  <option value="">Sin categoría</option>
+                  <option value="" className="bg-[--bg-surface]">Sin categoría</option>
                   {categories.filter(c => !c.parentId).map(cat => (
-                    <optgroup key={cat.id} label={cat.name}>
+                    <optgroup key={cat.id} label={cat.name} className="bg-[--bg-surface]">
                        <option value={cat.id}>{cat.name} (principal)</option>
                       {categories.filter(c => c.parentId === cat.id).map(sub => (
                         <option key={sub.id} value={sub.id}>└ {sub.name}</option>
@@ -258,54 +258,54 @@ export default function EditProductPage() {
               </div>
             </div>
 
-            <label className="flex items-center gap-2.5 p-3 rounded-sm bg-[#2A2520] border border-[#2E2925] cursor-pointer hover:border-[#3D3830] transition-colors duration-300">
+            <label className="flex items-center gap-3 p-4 rounded-xl bg-[--bg-elevated] border border-[--border] cursor-pointer hover:border-[--border-mid] transition-colors duration-300">
               <input
                 type="checkbox" name="featured"
                 checked={formData.featured} onChange={handleChange}
-                className="w-4 h-4 rounded accent-[#C9A55A]"
+                className="w-5 h-5 rounded accent-[--accent]"
               />
               <div>
-                <span className="text-sm text-[#F0EAE0]/70 font-medium">Producto destacado</span>
-                <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278]">Aparece en la sección destacados del catálogo</p>
+                <span className="text-[13px] font-semibold text-[--text]">Producto destacado</span>
+                <p className="text-[11px] text-[--text-tertiary] mt-0.5">Aparece grande al inicio del catálogo</p>
               </div>
             </label>
           </div>
 
           {/* Specifications */}
-          <div className="bg-[#221E1A] border border-[#2E2925] rounded-sm p-5">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-[--bg-surface] border border-[--border] rounded-2xl p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div>
-                <p className="text-[11px] font-normal uppercase tracking-[0.12em] text-[#C9A55A]">Especificaciones técnicas</p>
-                <p className="text-[11px] uppercase tracking-[0.15em] text-[#8A8278] mt-0.5">{specs.length > 0 ? `${specs.length} especificaciones` : 'Sin especificaciones aún'}</p>
+                <FieldLabel>Especificaciones</FieldLabel>
+                <p className="text-[11px] text-[--text-tertiary] mt-1">{specs.length > 0 ? `${specs.length} especificaciones` : 'Sin especificaciones aún'}</p>
               </div>
               <button
                 type="button" onClick={generateSpecs} disabled={generating}
-                className="inline-flex items-center gap-1.5 h-8 px-3 rounded-sm bg-[#C9A55A]/10 border border-[#C9A55A]/20 text-[11px] uppercase tracking-[0.12em] text-[#C9A55A] hover:bg-[#C9A55A]/20 transition-all duration-300 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-xl bg-[--accent-soft] text-[--accent] text-[11px] font-bold tracking-wide hover:opacity-80 transition-all duration-300 disabled:opacity-50 w-full sm:w-auto"
               >
-                {generating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                {generating ? 'Generando…' : 'Generar con IA'}
+                {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+                {generating ? 'Generando…' : 'Autocompletar con IA'}
               </button>
             </div>
 
             {specs.length > 0 && (
-              <div className="space-y-2 mb-3">
+              <div className="space-y-3 mb-4">
                 {specs.map((s, i) => (
-                  <div key={i} className="flex gap-2 items-center">
+                  <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-center bg-[--bg-elevated] p-3 rounded-xl border border-[--border]">
                     <input
                       value={s.key} onChange={e => updateSpec(i, 'key', e.target.value)}
-                      placeholder="Característica"
-                      className="flex-1 bg-transparent border-b border-[#3D3830] h-10 px-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors"
+                      placeholder="Ej: Material"
+                      className="w-full bg-transparent border-b border-[--border-mid] h-10 px-1 text-[13px] text-[--text] placeholder:text-[--text-tertiary] focus:outline-none focus:border-[--accent] transition-colors"
                     />
                     <input
                       value={s.value} onChange={e => updateSpec(i, 'value', e.target.value)}
-                      placeholder="Valor"
-                      className="flex-1 bg-transparent border-b border-[#3D3830] h-10 px-3 text-sm text-[#F0EAE0] placeholder-[#8A8278]/30 focus:outline-none focus:border-[#C9A55A] transition-colors"
+                      placeholder="Ej: Cuero sintético"
+                      className="w-full bg-transparent border-b border-[--border-mid] h-10 px-1 text-[13px] text-[--text] placeholder:text-[--text-tertiary] focus:outline-none focus:border-[--accent] transition-colors"
                     />
                     <button
                       type="button" onClick={() => removeSpec(i)}
-                      className="p-2 text-[#8A8278] hover:text-[#C0392B] hover:bg-[#C0392B]/5 rounded-sm transition-all duration-300 flex-shrink-0"
+                      className="p-2 self-end sm:self-auto text-[--text-tertiary] hover:text-[--red] hover:bg-[--red]/10 rounded-lg transition-all duration-300 flex-shrink-0"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
@@ -314,24 +314,24 @@ export default function EditProductPage() {
 
             <button
               type="button" onClick={addSpec}
-              className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.12em] text-[#C9A55A]/60 hover:text-[#C9A55A] transition-colors duration-300"
+              className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-[--text-secondary] hover:text-[--text] transition-colors duration-300"
             >
-              <Plus className="w-3.5 h-3.5" />
-              Agregar especificación
+              <Plus className="w-4 h-4" />
+              AGREGAR FILA
             </button>
           </div>
 
           {/* Submit */}
-          <div className="flex justify-end gap-3 pb-8">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pb-8 pt-2">
             <Link
               href="/admin"
-              className="h-11 px-6 rounded-sm border border-[#2E2925] bg-transparent text-[12px] uppercase tracking-[0.15em] text-[#8A8278] hover:text-[#F0EAE0] hover:border-[#3D3830] transition-all duration-300 flex items-center"
+              className="h-12 sm:h-11 px-6 rounded-xl border border-[--border] bg-transparent text-[12px] font-bold tracking-wide text-[--text-secondary] hover:text-[--text] hover:bg-[--bg-elevated] transition-all duration-300 flex items-center justify-center"
             >
               Cancelar
             </Link>
             <button
               type="submit" disabled={saving}
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-sm border border-[#C9A55A] bg-transparent text-[#C9A55A] text-[12px] uppercase tracking-[0.15em] font-normal hover:bg-[#C9A55A] hover:text-[#1A1714] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 px-8 rounded-xl bg-[--accent] text-[--bg] text-[12px] font-bold tracking-wide hover:opacity-90 active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               {saving ? 'Guardando…' : 'Guardar cambios'}
@@ -344,32 +344,37 @@ export default function EditProductPage() {
         .field-label {
           display: block;
           font-size: 11px;
-          font-weight: 400;
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: #C9A55A;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          color: var(--text-secondary);
           margin-bottom: 6px;
         }
         .field-input {
           width: 100%;
           background: transparent;
           border: none;
-          border-bottom: 1px solid #3D3830;
+          border-bottom: 1px solid var(--border-mid);
           border-radius: 0;
           height: 44px;
-          padding: 0 0 0 0;
+          padding: 0;
           font-size: 14px;
-          color: #F0EAE0;
+          color: var(--text);
           outline: none;
           transition: border-color 0.3s ease;
         }
         .field-input:focus {
-          border-bottom-color: #C9A55A;
+          border-bottom-color: var(--accent);
         }
         .field-input::placeholder {
-          color: rgb(138 130 120 / 0.30);
+          color: var(--text-tertiary);
         }
       `}</style>
     </div>
+  )
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="text-[13px] font-bold text-[--text] border-b border-[--border] pb-3 mb-1">{children}</h3>
   )
 }

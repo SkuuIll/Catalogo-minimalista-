@@ -39,7 +39,7 @@ export function DeleteProductButton({ id, name, onDelete }: { id: string; name: 
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isDeleting}
-        className="p-2 rounded-lg text-white/15 hover:text-[#C0392B] hover:bg-[#C0392B]/5 transition-all disabled:opacity-50"
+        className="p-2 rounded-lg text-white/15 hover:text-[--red] hover:bg-[--red]/5 transition-all disabled:opacity-50"
         title="Eliminar producto"
       >
         {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -84,7 +84,7 @@ export function ToggleFeaturedButton({ id, featured, onToggle }: { id: string; f
     <button
       onClick={handleToggle}
       disabled={loading}
-      className={`p-2 rounded-lg transition-all ${featured ? 'text-[#C9A55A] bg-[#C9A55A]/10 hover:bg-[#C9A55A]/20' : 'text-white/25 hover:text-[#C9A55A] hover:bg-[#C9A55A]/5'} disabled:opacity-50`}
+      className={`p-2 rounded-lg transition-all ${featured ? 'text-[--accent] bg-[--accent]/10 hover:bg-[--accent]/20' : 'text-white/25 hover:text-[--accent] hover:bg-[--accent]/5'} disabled:opacity-50`}
       title={featured ? 'Quitar de destacados' : 'Marcar como destacado'}
     >
       <Loader2 className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />

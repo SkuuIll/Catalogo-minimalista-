@@ -26,7 +26,7 @@ echo ""
 
 # 2. Reiniciar servidor
 echo -e "${YELLOW}🔄 Paso 2: Reiniciando servidor PM2...${NC}"
-pm2 restart catalogo --update-env
+pm2 restart aura-catalog --update-env
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Servidor reiniciado${NC}"
 else

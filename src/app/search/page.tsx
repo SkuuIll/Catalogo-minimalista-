@@ -1,28 +1,35 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { formatARS } from '@/lib/format'
 import { BottomNav } from '@/components/BottomNav'
-import { MobileMenu } from '@/components/MobileMenu'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { ImageFade } from '@/components/ImageFade'
 import { SearchSkeleton } from '@/components/Skeleton'
-import { Search, ArrowLeft, Package, X, Clock } from 'lucide-react'
+import { Search, ArrowLeft, Package, X, Clock, Zap, TrendingUp, ChevronRight } from 'lucide-react'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 export default function SearchPage() {
   const [query, setQuery] = useState('')
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [recent, setRecent] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetch('/api/products')
       .then(r => r.json())
-      .then(data => { setProducts(Array.isArray(data) ? data : data.products || []); setLoading(false) })
+      .then(data => {
+        setProducts(Array.isArray(data) ? data : data.products || [])
+        setLoading(false)
+      })
     const saved = localStorage.getItem('recentSearches')
     if (saved) {
       try { setRecent(JSON.parse(saved).slice(0, 8)) } catch {}
     }
+    // Auto-focus
+    setTimeout(() => inputRef.current?.focus(), 100)
   }, [])
 
   useEffect(() => {
@@ -54,80 +61,137 @@ export default function SearchPage() {
     localStorage.removeItem('recentSearches')
   }
 
+  const hasQuery = query.trim().length > 0
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-16">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-[#1a1a1a]">
-        <div className="flex items-center gap-3 h-16 px-6 max-w-7xl mx-auto">
-          <Link href="/" className="p-2 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300 flex-shrink-0">
-            <ArrowLeft className="w-4 h-4" strokeWidth={1} />
+    <div className="flex flex-col min-h-full pb-16 md:pb-0">
+
+      {/* ── Header / Search bar ─────────────────── */}
+      <header className="sticky top-0 z-50 nav-glass border-b border-[--border]">
+        <div className="flex items-center gap-2 h-14 md:h-16 px-3 md:px-6 container-desktop mx-auto">
+
+          {/* Back */}
+          <Link
+            href="/"
+            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full text-[--text-secondary] hover:text-[--text] hover:bg-[--bg-elevated] border border-transparent hover:border-[--border] transition-all duration-200"
+          >
+            <ArrowLeft className="w-4 h-4" strokeWidth={2} />
           </Link>
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#444] pointer-events-none" />
+
+          {/* Search input */}
+          <div className="flex-1 relative flex items-center bg-[--bg-elevated] border border-[--border] rounded-2xl focus-within:border-[--accent]/40 focus-within:bg-[--bg-surface] transition-all duration-200">
+            <Search className="absolute left-3.5 w-4 h-4 text-[--text-tertiary] pointer-events-none shrink-0" />
             <input
-              autoFocus
-              type="text"
-              placeholder="SEARCH"
+              ref={inputRef}
+              type="search"
+              placeholder="Buscar productos, categorías..."
               value={query}
               onChange={e => setQuery(e.target.value)}
-              className="w-full bg-transparent border-b border-[#1a1a1a] h-12 pl-12 pr-10 text-[14px] uppercase tracking-[0.2em] text-[#e8e8e8] placeholder-[#444] focus:outline-none focus:border-[#c9a55a] transition-colors"
+              className="w-full bg-transparent h-10 pl-10 pr-10 text-[14px] font-medium text-[--text] placeholder:text-[--text-tertiary] focus:outline-none focus:ring-0"
             />
-            {query && (
+            {hasQuery && (
               <button
-                onClick={() => setQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-[#666] hover:text-[#e8e8e8] transition-colors duration-300"
+                onClick={() => { setQuery(''); inputRef.current?.focus() }}
+                className="absolute right-2.5 w-6 h-6 flex items-center justify-center rounded-full bg-[--bg-elevated] text-[--text-tertiary] hover:text-[--text] transition-colors"
               >
-                <X className="w-3.5 h-3.5" strokeWidth={1} />
+                <X className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             )}
           </div>
-          <MobileMenu />
+
+          <ThemeToggle />
         </div>
+
+        {/* Results count bar */}
+        {hasQuery && !loading && (
+          <div className="px-4 md:px-6 py-1.5 border-t border-[--border] bg-[--bg-surface]/50">
+            <div className="container-desktop mx-auto flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-[--text-secondary]">
+                {results.length > 0 ? (
+                  <><span className="text-[--accent]">{results.length}</span> resultados para &ldquo;{query}&rdquo;</>
+                ) : (
+                  <>Sin resultados para &ldquo;{query}&rdquo;</>
+                )}
+              </span>
+              {results.length > 0 && (
+                <span className="text-[10px] text-[--text-tertiary]">{products.length} productos en total</span>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
-      <div className="h-16" />
+      <main className="px-4 md:px-8 pt-6 pb-10 container-desktop mx-auto">
 
-      <main className="px-6 pt-10 max-w-7xl mx-auto">
         {loading ? (
           <SearchSkeleton />
-        ) : query.trim() ? (
-          <section>
-            <div className="flex justify-between items-baseline mb-6">
-              <h2 className="text-[9px] font-normal uppercase tracking-[0.3em] text-[#666]">
-                {results.length > 0 ? `"${query.toUpperCase()}"` : 'NO RESULTS'}
-              </h2>
-              <span className="text-[9px] uppercase tracking-[0.25em] text-[#666]">{results.length} PIECES</span>
-            </div>
 
-            {results.length === 0 ? (
-              <div className="py-20 text-center">
-                <Package className="w-12 h-12 text-[#222] mx-auto mb-6" strokeWidth={1} />
-                <p className="text-[#666] text-[13px] uppercase tracking-[0.2em] mb-2">NO RESULTS FOR "{query.toUpperCase()}"</p>
-                <p className="text-[#444] text-[11px] uppercase tracking-[0.15em] mb-6">TRY ANOTHER TERM OR BROWSE CATEGORIES</p>
-                <button
-                  onClick={() => setQuery('')}
-                  className="text-[9px] uppercase tracking-[0.25em] text-[#c9a55a] hover:text-[#e8e8e8] transition-colors"
-                >
-                  CLEAR SEARCH
-                </button>
+        ) : hasQuery ? (
+          /* ── Search results ─────────────────────── */
+          results.length === 0 ? (
+            <div className="py-28 text-center animate-fade-in">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[--bg-elevated] border border-[--border] flex items-center justify-center">
+                <Search className="w-6 h-6 text-[--text-tertiary]" strokeWidth={1.25} />
               </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 lg:gap-6">
-                {results.map(p => <SearchProductCard key={p.id} product={p} />)}
-              </div>
-            )}
-          </section>
+              <p className="font-display font-bold text-[18px] text-[--text-secondary]">Sin resultados</p>
+              <p className="text-[12px] text-[--text-tertiary] mt-1.5 max-w-[240px] mx-auto">
+                No encontramos nada para &ldquo;{query}&rdquo;. Intentá con otro término.
+              </p>
+              <button
+                onClick={() => setQuery('')}
+                className="mt-6 inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[--border] text-[12px] font-semibold text-[--text-secondary] hover:text-[--accent] hover:border-[--accent]/30 transition-all duration-200 press"
+              >
+                <X className="w-3.5 h-3.5" />
+                Limpiar búsqueda
+              </button>
+
+              {/* Suggestions */}
+              {recent.length > 0 && (
+                <div className="mt-10 text-left max-w-sm mx-auto">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[--text-tertiary] mb-3">Búsquedas anteriores</p>
+                  <div className="flex flex-wrap gap-2">
+                    {recent.slice(0, 4).map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setQuery(t)}
+                        className="flex items-center gap-1.5 h-8 px-3 rounded-full bg-[--bg-elevated] border border-[--border] text-[11px] font-semibold text-[--text-secondary] hover:text-[--text] transition-all press"
+                      >
+                        <Clock className="w-3 h-3" strokeWidth={1.5} />
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+              {results.map((p, i) => (
+                <ScrollReveal key={p.id} delay={Math.min(i * 0.04, 0.2)}>
+                  <SearchProductCard product={p} />
+                </ScrollReveal>
+              ))}
+            </div>
+          )
+
         ) : (
+          /* ── Default state ───────────────────────── */
           <>
+            {/* Recent searches */}
             {recent.length > 0 && (
-              <section className="mb-10">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-[9px] font-normal uppercase tracking-[0.3em] text-[#666]">RECENT SEARCHES</h2>
+              <section className="mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5 text-[--text-tertiary]" strokeWidth={2} />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[--text-secondary]">
+                      Recientes
+                    </span>
+                  </div>
                   <button
                     onClick={clearRecent}
-                    className="text-[9px] uppercase tracking-[0.25em] text-[#666] hover:text-[#e8e8e8] transition-colors"
+                    className="text-[11px] font-semibold text-[--text-tertiary] hover:text-[--red] transition-colors"
                   >
-                    CLEAR
+                    Borrar
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -135,9 +199,9 @@ export default function SearchPage() {
                     <button
                       key={t}
                       onClick={() => setQuery(t)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-none bg-[#0f0f0f] border border-[#1a1a1a] text-[9px] uppercase tracking-[0.2em] text-[#666] hover:text-[#e8e8e8] hover:border-[#2a2a2a] transition-all duration-300"
+                      className="flex items-center gap-1.5 h-9 px-3.5 rounded-full bg-[--bg-surface] border border-[--border] text-[12px] font-semibold text-[--text-secondary] hover:text-[--text] hover:border-[--accent]/30 transition-all duration-200 press"
                     >
-                      <Clock className="w-3 h-3 flex-shrink-0" strokeWidth={1} />
+                      <Clock className="w-3 h-3 text-[--text-tertiary]" strokeWidth={1.5} />
                       {t}
                     </button>
                   ))}
@@ -145,11 +209,35 @@ export default function SearchPage() {
               </section>
             )}
 
+            {/* Trending / full catalog */}
             <section>
-              <h2 className="text-[9px] font-normal uppercase tracking-[0.3em] text-[#666] mb-6">COLLECTION</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 lg:gap-6">
-                {products.slice(0, 12).map(p => <SearchProductCard key={p.id} product={p} />)}
+              <div className="flex items-center gap-2 mb-5">
+                <TrendingUp className="w-4 h-4 text-[--accent]" strokeWidth={2} />
+                <h2 className="font-display font-bold text-[16px] text-[--text] tracking-tight">
+                  Colección completa
+                </h2>
+                <span className="ml-auto text-[11px] font-bold text-[--text-tertiary] tabular-nums bg-[--bg-elevated] px-2.5 py-1 rounded-full border border-[--border]">
+                  {products.length}
+                </span>
               </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+                {products.slice(0, 12).map((p, i) => (
+                  <ScrollReveal key={p.id} delay={Math.min(i * 0.04, 0.2)}>
+                    <SearchProductCard product={p} />
+                  </ScrollReveal>
+                ))}
+              </div>
+              {products.length > 12 && (
+                <div className="mt-8 text-center">
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 h-11 px-6 rounded-2xl border border-[--border] bg-[--bg-surface] text-[13px] font-semibold text-[--text-secondary] hover:text-[--accent] hover:border-[--accent]/30 transition-all duration-200 press"
+                  >
+                    Ver los {products.length} productos
+                    <ChevronRight className="w-4 h-4" strokeWidth={2} />
+                  </Link>
+                </div>
+              )}
             </section>
           </>
         )}
@@ -164,20 +252,56 @@ function SearchProductCard({ product }: { product: any }) {
   let imgs: string[] = []
   try { if (product.images) imgs = JSON.parse(product.images) } catch {}
   const img = imgs[0] || product.imagePath || product.imageUrl
+  const hasDiscount = product.discountPrice && product.discountPrice > product.price
+  const isOOS = product.status === 'OUT_OF_STOCK'
 
   return (
-    <Link href={`/product/${product.id}`} className="group flex flex-col transition-all duration-300 hover:-translate-y-1">
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#0f0f0f] mb-4 border border-[#1a1a1a] group-hover:border-[#2a2a2a] transition-all duration-500">
+    <Link href={`/product/${product.id}`} className="group flex flex-col gap-2 press">
+      <div className={`relative aspect-[3/4] overflow-hidden bg-[--bg-elevated] rounded-2xl border border-[--border] card-hover ${isOOS ? 'opacity-70' : ''}`}>
         {img ? (
-          <ImageFade src={img} alt={product.name} containerClassName="w-full h-full" className="product-img-hover" />
+          <ImageFade src={img} alt={product.name} containerClassName="w-full h-full" className="img-zoom" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-6 h-6 text-[#222]" strokeWidth={1} />
+            <Package className="w-6 h-6 text-[--text-tertiary]" strokeWidth={1} />
           </div>
         )}
+        {isOOS && (
+          <div className="absolute inset-0 bg-[--bg]/60 flex items-center justify-center">
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[--text-tertiary] bg-[--bg-surface]/80 px-2 py-0.5 rounded-full">Agotado</span>
+          </div>
+        )}
+        {hasDiscount && !isOOS && (
+          <span className="absolute top-2 left-2 bg-gradient-to-r from-[--red] to-[oklch(53%_0.20_25)] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-md tracking-wide shadow-sm">
+            -{Math.round(((product.discountPrice! - product.price) / product.discountPrice!) * 100)}%
+          </span>
+        )}
+        {/* Quick action */}
+        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="w-6 h-6 rounded-full bg-[--bg-surface]/90 border border-[--border] flex items-center justify-center shadow-md">
+            <ChevronRight className="w-3 h-3 text-[--text-secondary]" />
+          </div>
+        </div>
       </div>
-      <h3 className="font-serif text-[14px] font-light text-[#e8e8e8] leading-[1.3] mb-1 tracking-[0.05em] group-hover:text-[#c9a55a] transition-colors duration-300">{product.name}</h3>
-      <span className="font-serif text-[14px] italic text-[#c9a55a]">{formatARS(product.price)}</span>
+      <div className="flex flex-col gap-0.5 px-0.5">
+        {product.category && (
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[--text-tertiary]">
+            {product.category.name}
+          </span>
+        )}
+        <h3 className="text-[12px] md:text-[13px] font-semibold text-[--text] leading-snug line-clamp-2 group-hover:text-[--accent] transition-colors duration-200">
+          {product.name}
+        </h3>
+        <div className="flex items-baseline gap-2">
+          <span className="text-[13px] font-extrabold gradient-text tabular-nums">
+            {formatARS(product.price)}
+          </span>
+          {hasDiscount && (
+            <span className="text-[10px] text-[--text-tertiary] line-through tabular-nums">
+              {formatARS(product.discountPrice!)}
+            </span>
+          )}
+        </div>
+      </div>
     </Link>
   )
 }
